@@ -24,7 +24,7 @@ export class WebBluetoothSerial {
 	}
 
 	checkWebBluetoothApiAvailable() {
-		return Boolean(navigator?.bluetooth);
+		return Boolean(navigator?.bluetooth) && navigator.bluetooth.requestDevice;
 	}
 
 	async connect() {
@@ -90,12 +90,6 @@ export class WebBluetoothSerial {
 			this.receiveValue(rawValue);
 		});
 
-		await this.sendData('AT Z');
-		await this.sendData('AT E=0');
-		await this.sendData('AT ST=96');
-		await this.sendData('AT AL');
-		await this.sendData('0100');
-
 		this.log('Підписку створено - готовий до роботи.');
 
 		this.isConnected = true;
@@ -138,7 +132,7 @@ export class WebBluetoothSerial {
 		this.receiveBuffer = '';
 	}
 
-	pendingCommandPromise: Promise<unknown> | null = null;
+	pendingCommandPromise: Promise<string> | null = null;
 
 	async sendData(data: string) {
 		if (!this.writeCharacteristic) {

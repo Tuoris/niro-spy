@@ -21,5 +21,10 @@
   "commandHkmcBmsInfo04": "Kia Niro інформація з BMS #4",
   "commandHkmcBmsInfo05": "Kia Niro інформація з BMS #5",
   "commandHkmcBmsInfo06": "Kia Niro інформація з BMS #6",
-  "parseHkmcEvClusterInfo02": "Kia Niro інформація з CLUSTER #2"
+  "parseHkmcEvClusterInfo02": "Kia Niro інформація з CLUSTER #2",
+  "commandPidsSupported": "Підтримувані PID'и",
+  "commandWarmStart": "Теплий старт",
+  "commandEchoOff": "Вимкнути повторення команди",
+  "commandExtendWaitTimeout": "Збільшити час очікування на відповідь",
+  "commandAllowLongObd2Responses": "Дозволити довгі OBD2 відповіді"
 }
