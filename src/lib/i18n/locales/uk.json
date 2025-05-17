@@ -22,6 +22,8 @@
   "commandHkmcBmsInfo05": "Kia Niro інформація з BMS #5",
   "commandHkmcBmsInfo06": "Kia Niro інформація з BMS #6",
   "parseHkmcEvClusterInfo02": "Kia Niro інформація з CLUSTER #2",
+  "parseHkmcEvAbsInfo01": "Kia Niro інформація з ABS #2",
+  "parseHkmcEvVmcuInfo01": "Kia Niro інформація з VMCU #2",
   "commandPidsSupported": "Підтримувані PID'и",
   "commandWarmStart": "Теплий старт",
   "commandEchoOff": "Вимкнути повторення команди",

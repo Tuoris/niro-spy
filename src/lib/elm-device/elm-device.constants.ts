@@ -15,12 +15,12 @@ export const COMMANDS = {
 	},
 	ECHO_OFF: {
 		i18Label: 'commandEchoOff',
-		payload: 'AT E=0',
+		payload: 'AT E 0',
 		responseParser: obdParsers.defaultParser
 	},
 	EXTEND_WAIT_TIMEOUT: {
 		i18Label: 'commandExtendWaitTimeout',
-		payload: 'AT ST=96',
+		payload: 'AT ST 96',
 		responseParser: obdParsers.defaultParser
 	},
 	ALLOW_LONG_OBD2_RESPONSES: {
@@ -93,11 +93,6 @@ export const COMMANDS = {
 		payload: '015E',
 		responseParser: obdParsers.parseEngineFuelRate
 	},
-	EXTENDED_TIMEOUT: {
-		i18Label: 'commandExtendedTimeout',
-		payload: 'AT ST 96',
-		responseParser: obdParsers.defaultParser
-	},
 	HKMC_BMS_INFO01: {
 		i18Label: 'commandHkmcBmsInfo01',
 		payload: '220101',
@@ -134,10 +129,22 @@ export const COMMANDS = {
 		header: '7E4',
 		responseParser: hkmcParsers.parseHkmcEvBmsInfo06
 	},
-	PARSE_HKMC_EV_CLUSTER_INFO02: {
+	HKMC_EV_CLUSTER_INFO02: {
 		i18Label: 'parseHkmcEvClusterInfo02',
 		payload: '22B002',
-		header: '7C^',
+		header: '7C6',
 		responseParser: hkmcParsers.parseHkmcEvClusterInfo02
+	},
+	HKMC_EV_ABS_INFO01: {
+		i18Label: 'parseHkmcEvAbsInfo01',
+		payload: '22C101',
+		header: '7D1',
+		responseParser: hkmcParsers.parseHkmcEvAbsInfo01
+	},
+	HKMC_EV_VMCU_INFO01: {
+		i18Label: 'parseHkmcEvVmcuInfo01',
+		payload: '2101',
+		header: '7E2',
+		responseParser: hkmcParsers.parseHkmcEvVmcuInfo01
 	}
 } as const;

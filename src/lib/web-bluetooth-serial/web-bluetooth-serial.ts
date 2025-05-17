@@ -111,14 +111,9 @@ export class WebBluetoothSerial {
 		}
 	}
 
-	insertProfilingTiming: ((param: [string, number]) => void) | null = null;
-
 	resolveReceivedValue(value: string) {
 		if (this.commandTimeStart) {
 			const commandTime = new Date().valueOf() - this.commandTimeStart;
-			if (this.insertProfilingTiming) {
-				this.insertProfilingTiming([this.currentCommand, commandTime]);
-			}
 			this.log(`Час виконання: ${commandTime} мілісекунд.`);
 		} else {
 			console.warn('Отримано результат без початкового часу виконання.');

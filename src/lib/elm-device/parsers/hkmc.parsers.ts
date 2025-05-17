@@ -42,17 +42,19 @@ export function parseHkmcEvBmsInfo01(value: string) {
 
 	const auxBatteryVoltage = unsignedIntFromBytes(separatePacketBytes[4][5]) / 10;
 
-	const cumulativeChargeCurrent =
+	const cumulativeCapacityCharged =
 		unsignedIntFromBytes([separatePacketBytes[4][6], ...separatePacketBytes[5].slice(0, 3)]) / 100;
 
-	const cumulativeDischargeCurrent = unsignedIntFromBytes(separatePacketBytes[5].slice(3, 7)) / 100;
+	const cumulativeCapacityDischarged =
+		unsignedIntFromBytes(separatePacketBytes[5].slice(3, 7)) / 100;
 
-	const cumulativeEnergyCharge = unsignedIntFromBytes(separatePacketBytes[6].slice(0, 4)) / 10;
-	const cumulativeEnergyDischarge =
+	const cumulativeEnergyCharged = unsignedIntFromBytes(separatePacketBytes[6].slice(0, 4)) / 10;
+	const cumulativeEnergyDischarged =
 		unsignedIntFromBytes([...separatePacketBytes[6].slice(4, 7), separatePacketBytes[7][0]]) / 10;
 
-	const averageCellVoltageWhileCharge = cumulativeEnergyCharge / cumulativeChargeCurrent;
-	const averageCellVoltageWhileDischarge = cumulativeEnergyDischarge / cumulativeDischargeCurrent;
+	const averageCellVoltageWhileCharge = cumulativeEnergyCharged / cumulativeCapacityCharged;
+	const averageCellVoltageWhileDischarge =
+		cumulativeEnergyDischarged / cumulativeCapacityDischarged;
 
 	const operationalTimeSeconds = unsignedIntFromBytes(separatePacketBytes[7].slice(1, 5));
 	const operationalTimeHours = operationalTimeSeconds / 60;
@@ -91,10 +93,10 @@ export function parseHkmcEvBmsInfo01(value: string) {
 		batteryFanMod,
 		batteryFanSpeed,
 		auxBatteryVoltage,
-		cumulativeChargeCurrent,
-		cumulativeDischargeCurrent,
-		cumulativeEnergyCharge,
-		cumulativeEnergyDischarge,
+		cumulativeCapacityCharged,
+		cumulativeCapacityDischarged,
+		cumulativeEnergyCharged,
+		cumulativeEnergyDischarged,
 		averageCellVoltageWhileCharge,
 		averageCellVoltageWhileDischarge,
 		operationalTimeSeconds,
@@ -474,5 +476,49 @@ export function parseHkmcEvClusterInfo02(value: string) {
 
 	return {
 		odometerKm
+	};
+}
+
+export const sampleHkmcEvAbsInfo01 = `02A 
+0: 62 C1 01 5F D7 E7 
+1: D0 FF FF 00 FF 01 E1 
+2: D4 00 00 00 00 FF 82 
+3: FF 00 34 F5 01 00 00 
+4: FF FF 7F 17 08 01 07 
+5: FC 44 FF 39 FF 3F FF
+6: FF AA AA AA AA AA AA
+>`;
+
+export function parseHkmcEvAbsInfo01(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const steeringWheelAngle =
+		(unsignedIntFromBytes(separatePacketBytes[4].slice(2, 4)) - 2 ** 15) / 10;
+
+	const brakePedalPositionRelative = unsignedIntFromBytes(separatePacketBytes[5][1]);
+
+	return {
+		steeringWheelAngle,
+		brakePedalPositionRelative
+	};
+}
+
+export const sampleHkmcEvVmcuInfo01 = `018 
+0: 61 01 FF F8 00 00
+1: 09 21 5A FC 0A 89 05
+2: 32 1D 00 00 99 72 34
+3: 04 20 20 05 00 00 00
+>`;
+
+export function parseHkmcEvVmcuInfo01(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const acceleratorPedalPositionRelative = unsignedIntFromBytes(separatePacketBytes[2][1]) / 2;
+
+	const vehicleSpeed = unsignedIntFromBytes(separatePacketBytes[2].slice(2, 4)) / 100;
+
+	return {
+		acceleratorPedalPositionRelative,
+		vehicleSpeed
 	};
 }

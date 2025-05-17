@@ -1,5 +1,23 @@
 <script lang="ts">
-	import { connect } from '$lib/combined.svelte';
+	import { enterDemoMode, exitDemoMode, isInDemoMode } from '$lib/demo-mode.svelte';
+	import {
+		connect as realConnect,
+		mockConnect,
+		startDataReading as realStartDataReading,
+		mockStartDataReading,
+		bluetoothState
+	} from '$lib/bluetooth.store.svelte';
+
+	const connect = isInDemoMode ? mockConnect : realConnect;
+	const startDataReading = isInDemoMode ? mockStartDataReading : realStartDataReading;
+	const connectAndStartDataReading = async () => {
+		const isConnectedSuccessfully = await connect();
+		if (isConnectedSuccessfully) {
+			startDataReading();
+		}
+	};
+
+	let elmDeviceStatus = $derived(bluetoothState.elmDeviceStatus);
 
 	const buttonVariants = {
 		primary:
@@ -12,9 +30,37 @@
 </script>
 
 <div class="flex flex-col items-stretch gap-2">
-	<button class={buttonVariants.primary} onclick={connect}>З'єднатись зі сканером</button>
-
-	<a href="all-parameters" class={buttonVariants.secondary}>Всі параметри</a>
-
-	<a href="all-parameters" class={buttonVariants.disabled}>Всі параметри</a>
+	<button class={buttonVariants.primary} onclick={connectAndStartDataReading}
+		>З'єднатись зі сканером</button
+	>
+	<hr />
+	<a
+		href="all-parameters"
+		class={elmDeviceStatus === 'ready' ? buttonVariants.secondary : buttonVariants.disabled}
+		>Всі параметри</a
+	>
+	<a
+		href="/"
+		class={elmDeviceStatus === 'ready' ? buttonVariants.secondary : buttonVariants.disabled}
+	>
+		🚧 Акумулятор</a
+	>
+	<a
+		href="/"
+		class={elmDeviceStatus === 'ready' ? buttonVariants.secondary : buttonVariants.disabled}
+	>
+		🚧 Витрата</a
+	>
+	<hr />
+	<a
+		href="/"
+		class={buttonVariants.secondary}
+		onclick={isInDemoMode ? exitDemoMode : enterDemoMode}
+	>
+		{#if isInDemoMode}
+			Вийти з Демо режиму
+		{:else}
+			Демо режим
+		{/if}</a
+	>
 </div>
