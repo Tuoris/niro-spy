@@ -1,0 +1,478 @@
+import { signedIntFromBytes, unsignedIntFromBytes } from './elm-parser.utils';
+
+export function parseUdsInfoBuffer(buffer: string) {
+	const joinedBuffer = buffer.replaceAll('\n', '').replaceAll('\r', '');
+
+	const numberedPackets = Array.from(
+		joinedBuffer.matchAll(/\d\:(\s[0-9A-F][0-9A-F]){6,7}/gm).map((match) => match[0])
+	);
+
+	const packets = numberedPackets.map((packet) => packet.split(':')[1].trim().split(' '));
+
+	return packets;
+}
+
+export const sampleBmsInfo01 =
+	'7F 22 12 \r7F 22 12 \r03E \r0: 62 01 01 FF F7 E7 \r7F 22 121: FF 88 35 93 3E 1C 83 \r2: 00 28 0E D4 05 04 043: 04 04 04 00 00 03 C14: 03 C1 36 00 00 92 005: 06 C0 E4 00 06 A2 CE6: 00 02 8E 5C 00 02 717: 1F 01 35 B3 3E 0D 018: 7C 00 00 00 00 03 E8>';
+
+export function parseHkmcEvBmsInfo01(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const socBms = unsignedIntFromBytes(separatePacketBytes[1][1]) / 2;
+	const maxRegenerationPower = unsignedIntFromBytes(separatePacketBytes[1].slice(2, 4)) / 100;
+	const maxPower = unsignedIntFromBytes(separatePacketBytes[1].slice(4, 6)) / 100;
+	const batteryCurrent = signedIntFromBytes(separatePacketBytes[2].slice(0, 2)) / 10;
+	const batteryVoltage = unsignedIntFromBytes(separatePacketBytes[2].slice(2, 4)) / 10;
+
+	const batteryMaxTemp = signedIntFromBytes(separatePacketBytes[2][4]);
+	const batteryMinTemp = signedIntFromBytes(separatePacketBytes[2][5]);
+	const batteryTemp1 = signedIntFromBytes(separatePacketBytes[2][6]);
+	const batteryTemp2 = signedIntFromBytes(separatePacketBytes[3][0]);
+	const batteryTemp3 = signedIntFromBytes(separatePacketBytes[3][1]);
+	const batteryTemp4 = signedIntFromBytes(separatePacketBytes[3][2]);
+
+	const batteryInletTemp = signedIntFromBytes(separatePacketBytes[3][5]);
+	const batteryMaxCellVoltage = unsignedIntFromBytes(separatePacketBytes[3][6]) / 50;
+	const batteryMaxCellVoltageNo = unsignedIntFromBytes(separatePacketBytes[4][0]);
+	const batteryMinCellVoltage = unsignedIntFromBytes(separatePacketBytes[4][1]) / 50;
+	const batteryMinCellVoltageNo = unsignedIntFromBytes(separatePacketBytes[4][2]);
+
+	const batteryFanMod = unsignedIntFromBytes(separatePacketBytes[4][3]);
+	const batteryFanSpeed = unsignedIntFromBytes(separatePacketBytes[4][4]);
+
+	const auxBatteryVoltage = unsignedIntFromBytes(separatePacketBytes[4][5]) / 10;
+
+	const cumulativeChargeCurrent =
+		unsignedIntFromBytes([separatePacketBytes[4][6], ...separatePacketBytes[5].slice(0, 3)]) / 100;
+
+	const cumulativeDischargeCurrent = unsignedIntFromBytes(separatePacketBytes[5].slice(3, 7)) / 100;
+
+	const cumulativeEnergyCharge = unsignedIntFromBytes(separatePacketBytes[6].slice(0, 4)) / 10;
+	const cumulativeEnergyDischarge =
+		unsignedIntFromBytes([...separatePacketBytes[6].slice(4, 7), separatePacketBytes[7][0]]) / 10;
+
+	const averageCellVoltageWhileCharge = cumulativeEnergyCharge / cumulativeChargeCurrent;
+	const averageCellVoltageWhileDischarge = cumulativeEnergyDischarge / cumulativeDischargeCurrent;
+
+	const operationalTimeSeconds = unsignedIntFromBytes(separatePacketBytes[7].slice(1, 5));
+	const operationalTimeHours = operationalTimeSeconds / 60;
+
+	const bmsIgnition = unsignedIntFromBytes(separatePacketBytes[7][5]).toString(2);
+	const bmsCapacitorVoltage = unsignedIntFromBytes([
+		separatePacketBytes[7][6],
+		separatePacketBytes[8][0]
+	]);
+
+	const motorRpm1 = unsignedIntFromBytes(separatePacketBytes[8].slice(1, 3));
+	const motorRpm2 = unsignedIntFromBytes(separatePacketBytes[8].slice(3, 5));
+
+	const surgeResistorKOhm = unsignedIntFromBytes(separatePacketBytes[8].slice(5, 7));
+
+	const batteryPower = batteryCurrent * batteryVoltage;
+
+	return {
+		socBms,
+		maxRegenerationPower,
+		maxPower,
+		batteryCurrent,
+		batteryVoltage,
+		batteryPower,
+		batteryMaxTemp,
+		batteryMinTemp,
+		batteryTemp1,
+		batteryTemp2,
+		batteryTemp3,
+		batteryTemp4,
+		batteryInletTemp,
+		batteryMaxCellVoltage,
+		batteryMaxCellVoltageNo,
+		batteryMinCellVoltage,
+		batteryMinCellVoltageNo,
+		batteryFanMod,
+		batteryFanSpeed,
+		auxBatteryVoltage,
+		cumulativeChargeCurrent,
+		cumulativeDischargeCurrent,
+		cumulativeEnergyCharge,
+		cumulativeEnergyDischarge,
+		averageCellVoltageWhileCharge,
+		averageCellVoltageWhileDischarge,
+		operationalTimeSeconds,
+		operationalTimeHours,
+		bmsIgnition,
+		bmsCapacitorVoltage,
+		motorRpm1,
+		motorRpm2,
+		surgeResistorKOhm
+	};
+}
+
+export const sampleParseHkmcEvBmsInfo02 = `7F 22 12 
+7F 22 12 
+7F 22 12 
+027 
+0: 62 01 02 FF FF FF 
+1: FF C7 C7 C7 C7 C7 C7
+2: C7 C7 C7 C7 C7 C7 C7
+3: C7 C7 C7 C7 C7 C7 C7
+4: C7 C7 C7 C7 C7 C7 C7
+5: C7 C7 C7 C7 C7 AA AA
+>`;
+
+export function parseHkmcEvBmsInfo02(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const cellVoltages = [];
+
+	for (let rowIndex = 1; rowIndex <= 5; rowIndex++) {
+		const minColumnIndex = rowIndex === 1 ? 1 : 0;
+		const maxColumnIndex = rowIndex === 5 ? 4 : 6;
+
+		for (let columnIndex = minColumnIndex; columnIndex <= maxColumnIndex; columnIndex++) {
+			const cellVoltage = unsignedIntFromBytes(separatePacketBytes[rowIndex][columnIndex]) / 50;
+			cellVoltages.push(cellVoltage);
+		}
+	}
+
+	const [
+		cellVoltage01,
+		cellVoltage02,
+		cellVoltage03,
+		cellVoltage04,
+		cellVoltage05,
+		cellVoltage06,
+		cellVoltage07,
+		cellVoltage08,
+		cellVoltage09,
+		cellVoltage10,
+		cellVoltage11,
+		cellVoltage12,
+		cellVoltage13,
+		cellVoltage14,
+		cellVoltage15,
+		cellVoltage16,
+		cellVoltage17,
+		cellVoltage18,
+		cellVoltage19,
+		cellVoltage20,
+		cellVoltage21,
+		cellVoltage22,
+		cellVoltage23,
+		cellVoltage24,
+		cellVoltage25,
+		cellVoltage26,
+		cellVoltage27,
+		cellVoltage28,
+		cellVoltage29,
+		cellVoltage30,
+		cellVoltage31,
+		cellVoltage32
+	] = cellVoltages;
+
+	return {
+		cellVoltage01,
+		cellVoltage02,
+		cellVoltage03,
+		cellVoltage04,
+		cellVoltage05,
+		cellVoltage06,
+		cellVoltage07,
+		cellVoltage08,
+		cellVoltage09,
+		cellVoltage10,
+		cellVoltage11,
+		cellVoltage12,
+		cellVoltage13,
+		cellVoltage14,
+		cellVoltage15,
+		cellVoltage16,
+		cellVoltage17,
+		cellVoltage18,
+		cellVoltage19,
+		cellVoltage20,
+		cellVoltage21,
+		cellVoltage22,
+		cellVoltage23,
+		cellVoltage24,
+		cellVoltage25,
+		cellVoltage26,
+		cellVoltage27,
+		cellVoltage28,
+		cellVoltage29,
+		cellVoltage30,
+		cellVoltage31,
+		cellVoltage32
+	};
+}
+
+export const sampleParseHkmcEvBmsInfo03 = `7F 22 12 
+7F 22 12 
+7F 22 12 
+027 
+0: 62 01 03 FF FF FF 
+1: FF C7 C7 C7 C7 C7 C7
+2: C7 C7 C7 C7 C7 C7 C7
+3: C7 C7 C7 C7 C7 C7 C7
+4: C7 C7 C7 C7 C7 C7 C7
+5: C7 C7 C7 C7 C7 AA AA
+>`;
+
+export function parseHkmcEvBmsInfo03(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const cellVoltages = [];
+
+	for (let rowIndex = 1; rowIndex <= 5; rowIndex++) {
+		const minColumnIndex = rowIndex === 1 ? 1 : 0;
+		const maxColumnIndex = rowIndex === 5 ? 4 : 6;
+
+		for (let columnIndex = minColumnIndex; columnIndex <= maxColumnIndex; columnIndex++) {
+			const cellVoltage = unsignedIntFromBytes(separatePacketBytes[rowIndex][columnIndex]) / 50;
+			cellVoltages.push(cellVoltage);
+		}
+	}
+
+	const [
+		cellVoltage33,
+		cellVoltage34,
+		cellVoltage35,
+		cellVoltage36,
+		cellVoltage37,
+		cellVoltage38,
+		cellVoltage39,
+		cellVoltage40,
+		cellVoltage41,
+		cellVoltage42,
+		cellVoltage43,
+		cellVoltage44,
+		cellVoltage45,
+		cellVoltage46,
+		cellVoltage47,
+		cellVoltage48,
+		cellVoltage49,
+		cellVoltage50,
+		cellVoltage51,
+		cellVoltage52,
+		cellVoltage53,
+		cellVoltage54,
+		cellVoltage55,
+		cellVoltage56,
+		cellVoltage57,
+		cellVoltage58,
+		cellVoltage59,
+		cellVoltage60,
+		cellVoltage61,
+		cellVoltage62,
+		cellVoltage63,
+		cellVoltage64
+	] = cellVoltages;
+
+	return {
+		cellVoltage33,
+		cellVoltage34,
+		cellVoltage35,
+		cellVoltage36,
+		cellVoltage37,
+		cellVoltage38,
+		cellVoltage39,
+		cellVoltage40,
+		cellVoltage41,
+		cellVoltage42,
+		cellVoltage43,
+		cellVoltage44,
+		cellVoltage45,
+		cellVoltage46,
+		cellVoltage47,
+		cellVoltage48,
+		cellVoltage49,
+		cellVoltage50,
+		cellVoltage51,
+		cellVoltage52,
+		cellVoltage53,
+		cellVoltage54,
+		cellVoltage55,
+		cellVoltage56,
+		cellVoltage57,
+		cellVoltage58,
+		cellVoltage59,
+		cellVoltage60,
+		cellVoltage61,
+		cellVoltage62,
+		cellVoltage63,
+		cellVoltage64
+	};
+}
+
+export const sampleParseHkmcEvBmsInfo04 = `7F 22 12 
+7F 22 12 
+7F 22 12 
+027 
+0: 62 01 04 FF FF FF
+1: FF C7 C7 C7 C7 C7 C7
+2: C7 C7 C7 C7 C7 C7 C7
+3: C7 C7 C7 C7 C7 C7 C7
+4: C7 C7 C7 C7 C7 C7 C7
+5: C7 C7 C7 C7 C7 AA AA
+>`;
+
+export function parseHkmcEvBmsInfo04(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const cellVoltages = [];
+
+	for (let rowIndex = 1; rowIndex <= 5; rowIndex++) {
+		const minColumnIndex = rowIndex === 1 ? 1 : 0;
+		const maxColumnIndex = rowIndex === 5 ? 4 : 6;
+
+		for (let columnIndex = minColumnIndex; columnIndex <= maxColumnIndex; columnIndex++) {
+			const cellVoltage = unsignedIntFromBytes(separatePacketBytes[rowIndex][columnIndex]) / 50;
+			cellVoltages.push(cellVoltage);
+		}
+	}
+
+	const [
+		cellVoltage65,
+		cellVoltage66,
+		cellVoltage67,
+		cellVoltage68,
+		cellVoltage69,
+		cellVoltage70,
+		cellVoltage71,
+		cellVoltage72,
+		cellVoltage73,
+		cellVoltage74,
+		cellVoltage75,
+		cellVoltage76,
+		cellVoltage77,
+		cellVoltage78,
+		cellVoltage79,
+		cellVoltage80,
+		cellVoltage81,
+		cellVoltage82,
+		cellVoltage83,
+		cellVoltage84,
+		cellVoltage85,
+		cellVoltage86,
+		cellVoltage87,
+		cellVoltage88,
+		cellVoltage89,
+		cellVoltage90,
+		cellVoltage91,
+		cellVoltage92,
+		cellVoltage93,
+		cellVoltage94,
+		cellVoltage95,
+		cellVoltage96
+	] = cellVoltages;
+
+	return {
+		cellVoltage65,
+		cellVoltage66,
+		cellVoltage67,
+		cellVoltage68,
+		cellVoltage69,
+		cellVoltage70,
+		cellVoltage71,
+		cellVoltage72,
+		cellVoltage73,
+		cellVoltage74,
+		cellVoltage75,
+		cellVoltage76,
+		cellVoltage77,
+		cellVoltage78,
+		cellVoltage79,
+		cellVoltage80,
+		cellVoltage81,
+		cellVoltage82,
+		cellVoltage83,
+		cellVoltage84,
+		cellVoltage85,
+		cellVoltage86,
+		cellVoltage87,
+		cellVoltage88,
+		cellVoltage89,
+		cellVoltage90,
+		cellVoltage91,
+		cellVoltage92,
+		cellVoltage93,
+		cellVoltage94,
+		cellVoltage95,
+		cellVoltage96
+	};
+}
+
+export const sampleBmsInfo05 =
+	'7F 22 12 \r7F 22 12 \r02E \r0: 62 01 05 00 3F FF \r7F 22 12 \r1: 90 00 00 00 00 00 002: 00 00 00 00 00 00 35 \r3: A5 3E 1C 00 01 50 034: 00 03 E8 47 03 E8 365: 8C 00 00 C1 C1 00 006: 05 00 00 00 00 AA AA>';
+
+export function parseHkmcEvBmsInfo05(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const unknownTempA = signedIntFromBytes(separatePacketBytes[2][2]);
+	const cellVoltageDifference = unsignedIntFromBytes(separatePacketBytes[3][3]) / 50;
+
+	const airbagValue = unsignedIntFromBytes(separatePacketBytes[3][5]).toString(2);
+
+	const heaterTemp = signedIntFromBytes(separatePacketBytes[3][6]);
+
+	const soh = unsignedIntFromBytes(separatePacketBytes[4].slice(1, 3)) / 10;
+
+	const maxDeterioratedCellNo = unsignedIntFromBytes(separatePacketBytes[4][3]);
+
+	const minDeteriorationPercentage = unsignedIntFromBytes(separatePacketBytes[4][4]) / 10;
+
+	const minDeterioratedCellNo = unsignedIntFromBytes(separatePacketBytes[4][3]);
+
+	const socDisplay = unsignedIntFromBytes(separatePacketBytes[5][0]) / 2;
+
+	const cellVoltage97 = unsignedIntFromBytes(separatePacketBytes[5][3]) / 50;
+	const cellVoltage98 = unsignedIntFromBytes(separatePacketBytes[5][4]) / 50;
+
+	const unknownTempB = signedIntFromBytes(separatePacketBytes[6][0]);
+
+	return {
+		unknownTempA,
+		cellVoltageDifference,
+		airbagValue,
+		heaterTemp,
+		soh,
+		maxDeterioratedCellNo,
+		minDeteriorationPercentage,
+		minDeterioratedCellNo,
+		socDisplay,
+		cellVoltage97,
+		cellVoltage98,
+		unknownTempB
+	};
+}
+
+export function parseHkmcEvBmsInfo06(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const coolingWaterTemp = signedIntFromBytes(separatePacketBytes[1][1]);
+	const unknownTempC = signedIntFromBytes(separatePacketBytes[1][3]);
+	const bmsMode = unsignedIntFromBytes(separatePacketBytes[2][4]).toString(2);
+	const unknownTempD = signedIntFromBytes(separatePacketBytes[3][3]);
+
+	return {
+		coolingWaterTemp,
+		unknownTempC,
+		bmsMode,
+		unknownTempD
+	};
+}
+
+export const sampleParseHkmcEvClusterInfo02 = `00F 
+0: 62 B0 02 E0 00 00
+1: 00 FF B5 01 48 D9 00
+2: 00 00 00 00 00 00 00
+>`;
+
+export function parseHkmcEvClusterInfo02(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const odometerKm = unsignedIntFromBytes(separatePacketBytes[1].slice(3, 6));
+
+	return {
+		odometerKm
+	};
+}
