@@ -1,5 +1,5 @@
 import { ElmDevice } from '$lib/elm-device/elm-device';
-import { COMMANDS } from '$lib/elm-device/elm-device.constants';
+import { COMMANDS } from '$lib/elm-device/elm-commands.constants';
 import { WebBluetoothSerial } from '$lib/web-bluetooth-serial';
 import { PARAM_FIELDS, PARAMS_CONFIG, type FieldType } from './common/constants/common.constants';
 import { paramsState } from './params.svelte';
@@ -56,6 +56,7 @@ export async function startDataReading() {
 	while (!stop) {
 		for (const command of [
 			COMMANDS.HKMC_BMS_INFO01,
+			COMMANDS.HKMC_EV_ECU_7D4_INFO01,
 			COMMANDS.HKMC_BMS_INFO02,
 			COMMANDS.HKMC_BMS_INFO03,
 			COMMANDS.HKMC_BMS_INFO04,

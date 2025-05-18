@@ -15,28 +15,37 @@
 		{@render children()}
 	</main>
 	<footer
-		class="flex justify-center gap-4 border-t-1 border-slate-900 bg-slate-100 text-sm text-slate-800"
+		class="flex flex-nowrap justify-center gap-4 border-t-1 border-slate-900 bg-slate-100 text-sm text-slate-800"
 	>
-		<div class="flex items-center gap-2">
+		<div class="flex flex-wrap items-center gap-2">
 			<span class="icon-[mdi--bluetooth-transfer]"></span>
-
-			Bluetooth: {serialConnectionStatus === 'idle' || serialConnectionStatus === 'disconnected'
-				? 'не підключено'
-				: serialConnectionStatus === 'connecting'
-					? "з'єднання..."
-					: serialConnectionStatus === 'error'
-						? 'помилка'
-						: "з'єднано"}
+			<div>
+				<div class="leading-none font-bold">Bluetooth</div>
+				<div>
+					{serialConnectionStatus === 'idle' || serialConnectionStatus === 'disconnected'
+						? 'Не підключено'
+						: serialConnectionStatus === 'connecting'
+							? "З'єднання..."
+							: serialConnectionStatus === 'error'
+								? 'Помилка'
+								: "З'єднано"}
+				</div>
+			</div>
 		</div>
-		<div class="flex items-center gap-2">
+		<div class="flex flex-wrap items-center gap-2">
 			<span class="icon-[mdi--car-info]"></span>
-			ELM 327: {elmDeviceStatus === 'idle'
-				? 'не ініціалізовано'
-				: elmDeviceStatus === 'initializing'
-					? 'ініціалізація'
-					: elmDeviceStatus === 'error'
-						? 'помилка ініціалізації'
-						: 'готовий'}
+			<div>
+				<div class="leading-none font-bold">ELM 327</div>
+				<div>
+					{elmDeviceStatus === 'idle'
+						? 'Не ініціалізовано'
+						: elmDeviceStatus === 'initializing'
+							? 'Ініціалізація'
+							: elmDeviceStatus === 'error'
+								? 'Помилка ініціалізації'
+								: 'Готовий'}
+				</div>
+			</div>
 		</div>
 		<div class="flex items-center gap-2">
 			{#if heartbeat === 1}

@@ -135,8 +135,8 @@
 		const cellHeight = (100 - topAndBottomPadding * 2) / numberOfCharts;
 		const gridConfig = Array.from({ length: numberOfCharts }).map((_, index) => ({
 			top: `${topAndBottomPadding + cellHeight * index + spaceBetweenCharts}%`,
-			left: '5%',
-			right: '5%',
+			left: '60px',
+			right: '30px',
 			height: `${cellHeight - spaceBetweenCharts * 2}%`
 		}));
 

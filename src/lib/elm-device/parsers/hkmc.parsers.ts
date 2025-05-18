@@ -480,12 +480,12 @@ export function parseHkmcEvClusterInfo02(value: string) {
 }
 
 export const sampleHkmcEvAbsInfo01 = `02A 
-0: 62 C1 01 5F D7 E7 
-1: D0 FF FF 00 FF 01 E1 
-2: D4 00 00 00 00 FF 82 
-3: FF 00 34 F5 01 00 00 
-4: FF FF 7F 17 08 01 07 
-5: FC 44 FF 39 FF 3F FF
+0: 62 C1 01 5F D7 E7
+1: D0 FF FF 68 FF 04 E7 
+2: D4 68 68 68 67 FF 7F 
+3: FF 00 30 F4 00 00 00 
+4: FF FF 7F F5 08 0E 07 
+5: F6 00 FF 00 FF 3F FF 
 6: FF AA AA AA AA AA AA
 >`;
 
@@ -497,9 +497,12 @@ export function parseHkmcEvAbsInfo01(value: string) {
 
 	const brakePedalPositionRelative = unsignedIntFromBytes(separatePacketBytes[5][1]);
 
+	const vehicleSpeedAbs = unsignedIntFromBytes(separatePacketBytes[1][3]);
+
 	return {
 		steeringWheelAngle,
-		brakePedalPositionRelative
+		brakePedalPositionRelative,
+		vehicleSpeedAbs
 	};
 }
 
@@ -515,10 +518,27 @@ export function parseHkmcEvVmcuInfo01(value: string) {
 
 	const acceleratorPedalPositionRelative = unsignedIntFromBytes(separatePacketBytes[2][1]) / 2;
 
-	const vehicleSpeed = unsignedIntFromBytes(separatePacketBytes[2].slice(2, 4)) / 100;
+	return {
+		acceleratorPedalPositionRelative
+	};
+}
+
+export const sampleHkmcEcu7D4Info01 = `012 
+0: 62 01 01 95 9A 05
+1: 00 10 FF FF 00 2C 01 
+2: B3 10 10 17 21 AA AA
+>`;
+
+export function parseHkmcEcu7D4Info01(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const vehicleSpeed =
+		unsignedIntFromBytes([separatePacketBytes[1][6], separatePacketBytes[2][0]]) / 10;
+
+	const vehicleSpeedDisplay = unsignedIntFromBytes(separatePacketBytes[1][5]);
 
 	return {
-		acceleratorPedalPositionRelative,
-		vehicleSpeed
+		vehicleSpeed,
+		vehicleSpeedDisplay
 	};
 }
