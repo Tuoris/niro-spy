@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import {
 		PARAM_FIELDS,
 		PARAMS_CONFIG,
@@ -6,10 +7,18 @@
 	} from '$lib/common/constants/common.constants';
 	import { paramsState } from '$lib/params.svelte';
 	import { init, graphic, type ECharts, type EChartsOption } from 'echarts';
-	let values = $state(paramsState.values);
-	const numberOfCharts = Object.values(PARAM_FIELDS).length;
+
 	let chartsElement: HTMLDivElement;
 	let chart: ECharts;
+
+	let values = $state(paramsState.values);
+
+	let selectedParams = $state(paramsState.selectedParams);
+	let chartsToDisplay = Object.values(PARAM_FIELDS).filter((param) =>
+		selectedParams.length ? selectedParams.includes(param) : true
+	);
+
+	const numberOfCharts = chartsToDisplay.length;
 
 	let isPaused = $state(false);
 
@@ -47,7 +56,7 @@
 			}
 		}
 
-		const seriesData: EChartsOption['series'] = Object.values(PARAM_FIELDS).map((field, index) => {
+		const seriesData: EChartsOption['series'] = chartsToDisplay.map((field, index) => {
 			const paramValues = values[field].map(({ value }) => value);
 			const minValue = Math.min(0, Math.min(...paramValues));
 			const maxValue = Math.max(...paramValues);
@@ -130,8 +139,8 @@
 			}
 		};
 
-		const spaceBetweenCharts = 5 - Math.min(0.5 * numberOfCharts, 4.5);
-		const topAndBottomPadding = 1;
+		const spaceBetweenCharts = 1 + 17.1 * Math.exp(-0.45 * numberOfCharts);
+		const topAndBottomPadding = numberOfCharts > 2 ? 1 : 4;
 		const cellHeight = (100 - topAndBottomPadding * 2) / numberOfCharts;
 		const gridConfig = Array.from({ length: numberOfCharts }).map((_, index) => ({
 			top: `${topAndBottomPadding + cellHeight * index + spaceBetweenCharts}%`,
@@ -161,11 +170,13 @@
 					hideOverlap: true
 				}
 			})),
-			yAxis: Object.values(PARAMS_CONFIG).map((config, index) => ({
-				gridIndex: index,
-				name: getConfigForField(config.field)?.name,
-				nameTextStyle: { fontWeight: 700, align: 'left' }
-			})),
+			yAxis: Object.values(PARAMS_CONFIG)
+				.filter((config) => chartsToDisplay.includes(config.field))
+				.map((config, index) => ({
+					gridIndex: index,
+					name: getConfigForField(config.field)?.name,
+					nameTextStyle: { fontWeight: 700, align: 'left' }
+				})),
 			series: seriesData
 		};
 
@@ -217,6 +228,6 @@
 		</div>
 	</div>
 	<div class="w-full flex-grow overflow-auto">
-		<div bind:this={chartsElement} style={`height: ${200 * numberOfCharts}px`}></div>
+		<div bind:this={chartsElement} style={`height: ${240 * numberOfCharts}px`}></div>
 	</div>
 </div>

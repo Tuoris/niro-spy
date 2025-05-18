@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { PARAMS_CONFIG, type FieldType } from '$lib/common/constants/common.constants';
 	import { paramsState } from '$lib/params.svelte';
-	import { number } from 'svelte-i18n';
 
 	let currentlySelectedParams = $state(paramsState.selectedParams);
 
