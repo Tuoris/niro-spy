@@ -146,19 +146,19 @@
 				color: new graphic.LinearGradient(0, 0, 0, 1, [
 					{
 						offset: 0,
-						color: 'rgba(60, 50, 255, 1)'
+						color: 'rgba(0, 166, 244, 1)'
 					},
 					{
 						offset: middlePointOffset * 0.99,
-						color: 'rgba(60, 50, 255, 1)'
+						color: 'rgba(0, 166, 244, 1)'
 					},
 					{
 						offset: Math.min(1, middlePointOffset * 1.01),
-						color: 'rgba(90, 255, 80, 1)'
+						color: 'rgba(187, 244, 81, 1)'
 					},
 					{
 						offset: 1,
-						color: 'rgba(90, 255, 80, 1)'
+						color: 'rgba(187, 244, 81, 1)'
 					}
 				]),
 				areaStyle: {
@@ -166,23 +166,23 @@
 					color: new graphic.LinearGradient(0, 0, 0, 1, [
 						{
 							offset: 0,
-							color: 'rgba(60, 50, 255, 0.8)'
+							color: 'rgba(0, 166, 244, 0.5)'
 						},
 						{
 							offset: Math.max(0, middlePointOffset - 0.005),
-							color: 'rgba(60, 50, 255, 0)'
+							color: 'rgba(0, 166, 244, 0.05)'
 						},
 						{
 							offset: middlePointOffset,
-							color: 'rgba(255, 255, 255, 0)'
+							color: 'rgba(255, 255, 255, 0.05)'
 						},
 						{
 							offset: Math.min(1, middlePointOffset + 0.005),
-							color: 'rgba(90, 255, 80, 0)'
+							color: 'rgba(187, 244, 81, 0.05)'
 						},
 						{
 							offset: 1,
-							color: 'rgba(90, 255, 80, 0.8)'
+							color: 'rgba(187, 244, 81, 0.5)'
 						}
 					])
 				},
@@ -260,7 +260,7 @@
 			>
 				<span class="icon-[mdi--arrow-expand-horizontal]"></span>
 			</Button>
-			<div class="h-full border-l-1 border-slate-900 dark:border-slate-800"></div>
+			<div class="h-full border-l-1 border-neutral-900 dark:border-neutral-800"></div>
 			<Button
 				variant="tertiary"
 				size="compact"

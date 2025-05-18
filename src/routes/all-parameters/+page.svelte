@@ -69,14 +69,14 @@
 		<div class="relative flex grow">
 			<input
 				bind:value={search}
-				class="w-full border-2 border-r-4 border-b-4 border-slate-900 px-2 dark:border-slate-800 dark:bg-slate-700 dark:text-slate-100 dark:active:bg-slate-700"
+				class="w-full border-2 border-r-4 border-b-4 border-neutral-900 px-2 dark:border-neutral-800 dark:bg-neutral-700 dark:text-neutral-100 dark:active:bg-neutral-700"
 				type="text"
 			/>
 			<span
-				class="icon-[mdi--search] pointer-events-none absolute top-1.5 right-2 text-slate-800 dark:text-slate-100"
+				class="icon-[mdi--search] pointer-events-none absolute top-1.5 right-2 text-neutral-800 dark:text-neutral-100"
 			></span>
 		</div>
-		<div class="h-full border-l-1 border-slate-900 dark:border-slate-800"></div>
+		<div class="h-full border-l-1 border-neutral-900 dark:border-neutral-800"></div>
 		<Button
 			variant="tertiary"
 			size="compact"
@@ -93,7 +93,7 @@
 		>
 			<span class="icon-[mdi--checkbox-blank-off-outline]"></span>
 		</Button>
-		<div class="h-full border-l-1 border-slate-900 dark:border-slate-800"></div>
+		<div class="h-full border-l-1 border-neutral-900 dark:border-neutral-800"></div>
 		<ButtonLink
 			href="charts"
 			aria-label="Перейти до графіків"
@@ -104,7 +104,7 @@
 			<span class="icon-[mdi--chart-line]"></span>
 		</ButtonLink>
 	</div>
-	<div class="flex items-center gap-2 px-2 text-sm dark:border-gray-800 dark:text-slate-400">
+	<div class="flex items-center gap-2 px-2 text-sm dark:border-gray-800 dark:text-neutral-400">
 		<span class="icon-[mdi--information-outline]"></span>
 		<span> Виберіть один або декілька параметрів для відображення графіків </span>
 	</div>
@@ -113,7 +113,7 @@
 			<tbody>
 				{#each filteredParams as param}
 					<tr
-						class="border-b border-gray-200 nth-last-1:border-none dark:border-gray-800 dark:text-slate-200"
+						class="border-b border-gray-200 nth-last-1:border-none dark:border-gray-800 dark:text-neutral-200"
 					>
 						<td class="w-10 px-2">
 							<input

@@ -36,7 +36,7 @@
 		🚧 Витрата</ButtonLink
 	>
 	<hr />
-	<ButtonLink href="/" variant={'secondary'} onclick={isInDemoMode ? exitDemoMode : enterDemoMode}>
+	<ButtonLink href="/" variant="tertiary" onclick={isInDemoMode ? exitDemoMode : enterDemoMode}>
 		{#if isInDemoMode}
 			Вийти з Демо режиму
 		{:else}
