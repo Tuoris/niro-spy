@@ -34,7 +34,7 @@
 		{@render children()}
 	</main>
 	<footer
-		class="flex flex-nowrap justify-center gap-4 border-t-1 border-slate-900 bg-slate-100 text-sm text-slate-800"
+		class="flex flex-nowrap justify-center gap-4 border-t-1 border-slate-900 bg-slate-100 py-1 text-sm text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
 	>
 		<div class="flex flex-wrap items-center gap-2">
 			<span class="icon-[mdi--bluetooth-transfer]"></span>

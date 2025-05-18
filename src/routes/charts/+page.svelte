@@ -42,8 +42,8 @@
 
 	const gridConfig = Array.from({ length: numberOfCharts }).map((_, index) => ({
 		top: `${index * CHART_GRID_HEIGHT + 35}px`,
-		left: '20px',
-		right: '30px',
+		left: '10px',
+		right: '10px',
 		height: `${CHART_GRID_HEIGHT - 70}px`
 	}));
 
@@ -51,6 +51,7 @@
 		animationDurationUpdate: 100,
 		animationDelayUpdate: 0,
 		animationDuration: 0,
+		backgroundColor: 'transparent',
 		dataZoom: {
 			type: 'inside',
 			realtime: true,
@@ -63,7 +64,6 @@
 		xAxis: Array.from({ length: numberOfCharts }).map((_, index) => ({
 			type: 'time',
 			gridIndex: index,
-
 			axisLabel: {
 				hideOverlap: true
 			}
@@ -75,20 +75,19 @@
 			nameTextStyle: { fontWeight: 700, align: 'left' },
 			axisLabel: {
 				inside: true,
-				textBorderColor: 'white',
+				textBorderColor: '#111',
 				textBorderWidth: 3,
 				align: 'right',
 				margin: 20,
 				fontSize: 8,
 				showMinLabel: false,
-				showMaxLabel: false,
-				color: 'black'
+				showMaxLabel: false
 			}
 		}))
 	};
 
 	$effect(() => {
-		chart = init(chartsElement, null, { renderer: 'canvas' });
+		chart = init(chartsElement, 'dark', { renderer: 'canvas' });
 		window.addEventListener('resize', () => chart.resize());
 		chart.setOption(staticOptions);
 	});
@@ -225,24 +224,28 @@
 		<a
 			href="/all-parameters"
 			aria-label="Назад"
-			class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold text-white active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300"
+			class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300 dark:border-slate-800 dark:bg-slate-600 dark:active:bg-slate-700"
 		>
-			<span class="icon-[mdi--arrow-back] text-slate-800"></span>
+			<span class="icon-[mdi--arrow-back] text-slate-800 dark:text-slate-100"></span>
 		</a>
 		<div class="flex gap-2">
 			<button
 				aria-label="Перейти до графіків"
-				class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold text-white active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300"
+				class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300 dark:border-slate-800 dark:bg-slate-600 dark:active:bg-slate-700"
 				onclick={downloadData}
 			>
-				<span class="icon-[mdi--file-download-outline] text-slate-800"></span>
+				<span class="icon-[mdi--file-download-outline] text-slate-800 dark:text-slate-100"></span>
 			</button>
 			<button
 				aria-label="Завантажити дані"
-				class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold text-white active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300"
+				class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300 dark:border-slate-800 dark:bg-slate-600 dark:active:bg-slate-700"
 				onclick={() => (isPaused = !isPaused)}
 			>
-				<span class={['text-slate-800', isPaused ? 'icon-[mdi--play]' : 'icon-[mdi--pause]']}
+				<span
+					class={[
+						'text-slate-800 dark:text-slate-100',
+						isPaused ? 'icon-[mdi--play]' : 'icon-[mdi--pause]'
+					]}
 				></span>
 			</button>
 		</div>
