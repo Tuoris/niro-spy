@@ -1,15 +1,34 @@
 <script lang="ts">
 	import '../app.css';
 	import { bluetoothState } from '$lib/bluetooth.store.svelte';
+	import { _ } from 'svelte-i18n';
 
 	let serialConnectionStatus = $derived(bluetoothState.serialConnectionStatus);
 	let elmDeviceStatus = $derived(bluetoothState.elmDeviceStatus);
+	let bluetoothError = $derived(bluetoothState.bluetoothError);
 
 	let heartbeat = $derived.by(() => (bluetoothState.heartbeat % 3) + 1);
 
 	let { children } = $props();
+
+	let notifications: string[] = $derived.by(() => (bluetoothError ? [bluetoothError] : []));
 </script>
 
+<div
+	class={[
+		'pointer-events-none absolute inset-0 flex flex-col justify-end gap-2 pb-12',
+		notifications.length ? 'px-2 py-2' : ''
+	]}
+>
+	{#each notifications as notification, index}
+		<div class="red pointer-events-auto flex rounded-sm border-2 bg-red-400 px-2 py-2">
+			<div></div>
+			<div class="grow">
+				{notification}
+			</div>
+		</div>
+	{/each}
+</div>
 <section class="flex h-full flex-col">
 	<main class="flex grow items-center justify-center overflow-auto">
 		{@render children()}

@@ -31,8 +31,11 @@ export class WebBluetoothSerial {
 		this.log('Запит будь-якого пристрою Bluetooth, який підтримує сервіс ELM327...');
 
 		if (!this.checkWebBluetoothApiAvailable()) {
-			this.log(`Web Bluetooth API не підтримується браузером.`, 'error');
-			return this.isConnected;
+			this.log('Web Bluetooth API не підтримується браузером.', 'error');
+			return {
+				isConnected: this.isConnected,
+				error: `Web Bluetooth API не підтримується браузером.`
+			};
 		}
 
 		try {
@@ -43,10 +46,14 @@ export class WebBluetoothSerial {
 
 			this.log(`Запит пристрою: ${device.name} (${device.id})`);
 			this.bluetoothDevice = device;
-			return await this.connectAndSetupBluetoothSerialDevice();
+			const isConnected = await this.connectAndSetupBluetoothSerialDevice();
+			return { isConnected, error: '' };
 		} catch (error) {
-			this.log(`Помилка: ${error}`, 'error');
-			return this.isConnected;
+			const errorMessage = `${error}`.includes('NotFoundError')
+				? "З'єднання з пристроєм скасовано."
+				: `Помилка: ${error}`;
+			this.log(errorMessage, 'error');
+			return { isConnected: this.isConnected, error: errorMessage };
 		}
 	}
 

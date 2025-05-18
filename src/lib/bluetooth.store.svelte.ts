@@ -6,6 +6,7 @@ import { paramsState } from './params.svelte';
 
 export const bluetoothState = $state({
 	serialConnectionStatus: 'idle',
+	bluetoothError: '',
 	elmDeviceStatus: 'idle',
 	heartbeat: 0
 });
@@ -16,13 +17,15 @@ const elmDevice = new ElmDevice(webBluetoothSerialDevice);
 export async function connect() {
 	if (!webBluetoothSerialDevice.checkWebBluetoothApiAvailable()) {
 		bluetoothState.serialConnectionStatus = 'error';
+		bluetoothState.bluetoothError = 'Web Bluetooth API не підтримується браузером.';
 		return;
 	}
 
 	bluetoothState.serialConnectionStatus = 'connecting';
-	const isConnected = await webBluetoothSerialDevice.connect();
+	const { isConnected, error } = await webBluetoothSerialDevice.connect();
 	if (!isConnected) {
 		bluetoothState.serialConnectionStatus = 'error';
+		bluetoothState.bluetoothError = error;
 		return;
 	}
 
