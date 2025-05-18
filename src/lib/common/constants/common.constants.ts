@@ -36,7 +36,7 @@ export type FieldType = ObjectValues<typeof PARAM_FIELDS>;
 
 export const PARAMS_CONFIG = [
 	{
-		name: 'Споживана потужність',
+		name: 'Миттєва потужність',
 		field: PARAM_FIELDS.BATTERY_POWER,
 		exampleValue: 10510,
 		range: [-140000, 170000],

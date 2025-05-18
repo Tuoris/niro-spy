@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import {
 		PARAM_FIELDS,
 		PARAMS_CONFIG,
@@ -8,8 +7,14 @@
 	import { paramsState } from '$lib/params.svelte';
 	import { init, graphic, type ECharts, type EChartsOption } from 'echarts';
 
+	const CHART_GRID_HEIGHT = 240;
+	const NUMBER_OF_DATA_POINTS_TO_DISPLAY = 40;
+	const APPROXIMATE_UPDATE_INTERVAL = 500;
+
 	let chartsElement: HTMLDivElement;
 	let chart: ECharts;
+
+	let isPaused = $state(false);
 
 	let values = $state(paramsState.values);
 
@@ -17,18 +22,75 @@
 	let chartsToDisplay = Object.values(PARAM_FIELDS).filter((param) =>
 		selectedParams.length ? selectedParams.includes(param) : true
 	);
-
 	const numberOfCharts = chartsToDisplay.length;
-
-	let isPaused = $state(false);
 
 	const getConfigForField = (field: FieldType) =>
 		PARAMS_CONFIG.find(({ field: configField }) => configField === field);
 
+	// Static configuration
+	const tooltipConfig: EChartsOption['tooltip'] = {
+		trigger: 'axis',
+		formatter: (formatterParams) => {
+			// TODO: Fix typing
+			const { seriesName, data, axisValueLabel } = formatterParams[0];
+			const fieldConfig = getConfigForField(seriesName);
+			const name = fieldConfig?.name;
+			const value = fieldConfig?.format(data[1]) ?? data[1];
+			return `<strong>${name}</strong><br />${value} ${fieldConfig?.unit}<br />${axisValueLabel}`;
+		}
+	};
+
+	const gridConfig = Array.from({ length: numberOfCharts }).map((_, index) => ({
+		top: `${index * CHART_GRID_HEIGHT + 35}px`,
+		left: '20px',
+		right: '30px',
+		height: `${CHART_GRID_HEIGHT - 70}px`
+	}));
+
+	const staticOptions: EChartsOption = {
+		animationDurationUpdate: 100,
+		animationDelayUpdate: 0,
+		animationDuration: 0,
+		dataZoom: {
+			type: 'inside',
+			realtime: true,
+			xAxisIndex: Array.from({ length: numberOfCharts }).map((_, index) => index),
+			filterMode: 'none'
+		},
+		grid: gridConfig,
+		tooltip: tooltipConfig,
+
+		xAxis: Array.from({ length: numberOfCharts }).map((_, index) => ({
+			type: 'time',
+			gridIndex: index,
+
+			axisLabel: {
+				hideOverlap: true
+			}
+		})),
+
+		yAxis: chartsToDisplay.map((field, index) => ({
+			gridIndex: index,
+			name: getConfigForField(field)?.name,
+			nameTextStyle: { fontWeight: 700, align: 'left' },
+			axisLabel: {
+				inside: true,
+				textBorderColor: 'white',
+				textBorderWidth: 3,
+				align: 'right',
+				margin: 20,
+				fontSize: 8,
+				showMinLabel: false,
+				showMaxLabel: false,
+				color: 'black'
+			}
+		}))
+	};
+
 	$effect(() => {
 		chart = init(chartsElement, null, { renderer: 'canvas' });
-
 		window.addEventListener('resize', () => chart.resize());
+		chart.setOption(staticOptions);
 	});
 
 	$effect(() => {
@@ -36,21 +98,21 @@
 			return;
 		}
 
-		const numberOfDataPointsToDisplay = 40;
-		const updateInterval = 500;
 		const firstChartData = Object.values(values)[0];
 		const currentPointsCount = firstChartData.length;
 
 		let xAxisStartValue = firstChartData[0].timestamp;
 		let dataZoomExtra: EChartsOption['dataZoom'] = {};
 
-		if (currentPointsCount < numberOfDataPointsToDisplay) {
-			xAxisStartValue -= updateInterval * (numberOfDataPointsToDisplay - currentPointsCount);
+		if (currentPointsCount < NUMBER_OF_DATA_POINTS_TO_DISPLAY) {
+			xAxisStartValue -=
+				APPROXIMATE_UPDATE_INTERVAL * (NUMBER_OF_DATA_POINTS_TO_DISPLAY - currentPointsCount);
 		} else {
 			if (!isPaused) {
 				dataZoomExtra = {
 					rangeMode: ['value', 'value'],
-					startValue: firstChartData[firstChartData.length - numberOfDataPointsToDisplay].timestamp,
+					startValue:
+						firstChartData[firstChartData.length - NUMBER_OF_DATA_POINTS_TO_DISPLAY].timestamp,
 					endValue: firstChartData[firstChartData.length - 1].timestamp
 				};
 			}
@@ -80,15 +142,11 @@
 						color: 'rgba(60, 50, 255, 1)'
 					},
 					{
-						offset: middlePointOffset * 0.98,
+						offset: middlePointOffset * 0.99,
 						color: 'rgba(60, 50, 255, 1)'
 					},
 					{
-						offset: middlePointOffset,
-						color: 'rgba(255, 255, 255, 0)'
-					},
-					{
-						offset: Math.min(1, middlePointOffset * 1.02),
+						offset: Math.min(1, middlePointOffset * 1.01),
 						color: 'rgba(90, 255, 80, 1)'
 					},
 					{
@@ -104,16 +162,16 @@
 							color: 'rgba(60, 50, 255, 0.8)'
 						},
 						{
-							offset: Math.max(0, middlePointOffset - 0.01),
-							color: 'rgba(60, 50, 255, 0.2)'
+							offset: Math.max(0, middlePointOffset - 0.005),
+							color: 'rgba(60, 50, 255, 0)'
 						},
 						{
 							offset: middlePointOffset,
 							color: 'rgba(255, 255, 255, 0)'
 						},
 						{
-							offset: Math.min(1, middlePointOffset + 0.01),
-							color: 'rgba(90, 255, 80, 0.2)'
+							offset: Math.min(1, middlePointOffset + 0.005),
+							color: 'rgba(90, 255, 80, 0)'
 						},
 						{
 							offset: 1,
@@ -127,56 +185,18 @@
 			};
 		});
 
-		const tooltipConfig: EChartsOption['tooltip'] = {
-			trigger: 'axis',
-			formatter: (formatterParams) => {
-				// TODO: Fix typing
-				const { seriesName, data, axisValueLabel } = formatterParams[0];
-				const fieldConfig = getConfigForField(seriesName);
-				const name = fieldConfig?.name;
-				const value = fieldConfig?.format(data[1]) ?? data[1];
-				return `<strong>${name}</strong><br />${value} ${fieldConfig?.unit}<br />${axisValueLabel}`;
-			}
-		};
-
-		const spaceBetweenCharts = 1 + 17.1 * Math.exp(-0.45 * numberOfCharts);
-		const topAndBottomPadding = numberOfCharts > 2 ? 1 : 4;
-		const cellHeight = (100 - topAndBottomPadding * 2) / numberOfCharts;
-		const gridConfig = Array.from({ length: numberOfCharts }).map((_, index) => ({
-			top: `${topAndBottomPadding + cellHeight * index + spaceBetweenCharts}%`,
-			left: '60px',
-			right: '30px',
-			height: `${cellHeight - spaceBetweenCharts * 2}%`
-		}));
-
 		const option: EChartsOption = {
-			animationDurationUpdate: 100,
-			animationDelayUpdate: 0,
-			animationDuration: 0,
 			dataZoom: {
-				type: 'inside',
-				realtime: true,
-				xAxisIndex: Array.from({ length: numberOfCharts }).map((_, index) => index),
-				filterMode: 'none',
 				...dataZoomExtra
 			},
-			grid: gridConfig,
-			tooltip: tooltipConfig,
 			xAxis: Array.from({ length: numberOfCharts }).map((_, index) => ({
+				startValue: xAxisStartValue,
 				type: 'time',
 				gridIndex: index,
-				startValue: xAxisStartValue,
 				axisLabel: {
 					hideOverlap: true
 				}
 			})),
-			yAxis: Object.values(PARAMS_CONFIG)
-				.filter((config) => chartsToDisplay.includes(config.field))
-				.map((config, index) => ({
-					gridIndex: index,
-					name: getConfigForField(config.field)?.name,
-					nameTextStyle: { fontWeight: 700, align: 'left' }
-				})),
 			series: seriesData
 		};
 
@@ -228,6 +248,6 @@
 		</div>
 	</div>
 	<div class="w-full flex-grow overflow-auto">
-		<div bind:this={chartsElement} style={`height: ${240 * numberOfCharts}px`}></div>
+		<div bind:this={chartsElement} style={`height: ${CHART_GRID_HEIGHT * numberOfCharts}px`}></div>
 	</div>
 </div>

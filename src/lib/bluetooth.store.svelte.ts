@@ -133,5 +133,5 @@ export async function mockStartDataReading() {
 			});
 		}
 		bluetoothState.heartbeat += 1;
-	}, 500);
+	}, 700);
 }
