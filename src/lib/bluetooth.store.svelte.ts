@@ -115,8 +115,14 @@ export async function mockStartDataReading() {
 
 			const jitterByField = {
 				[PARAM_FIELDS.BATTERY_POWER]: 8000,
+				[PARAM_FIELDS.SOH]: 1,
 				[PARAM_FIELDS.AVERAGE_CONSUMPTION]: 1,
-				[PARAM_FIELDS.MAX_POWER]: 0
+				[PARAM_FIELDS.MAX_POWER]: 0,
+				[PARAM_FIELDS.BATTERY_MAX_CELL_VOLTAGE]: 0.02,
+				[PARAM_FIELDS.BATTERY_MAX_CELL_VOLTAGE_NO]: 2,
+				[PARAM_FIELDS.BATTERY_MIN_CELL_VOLTAGE]: 0.02,
+				[PARAM_FIELDS.BATTERY_MIN_CELL_VOLTAGE_NO]: 2,
+				[PARAM_FIELDS.AUX_BATTERY_VOLTAGE]: 0.3
 			};
 
 			const jitterValue = jitterByField[field as keyof typeof jitterByField] ?? 10;

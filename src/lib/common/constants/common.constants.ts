@@ -28,7 +28,8 @@ export const PARAM_FIELDS = {
 	BATTERY_MIN_CELL_VOLTAGE_NO: 'batteryMinCellVoltageNo',
 	BATTERY_FAN_MODE: 'batteryFanMode',
 	BATTERY_FAN_SPEED: 'batteryFanSpeed',
-	AUX_BATTERY_VOLTAGE: 'auxBatteryVoltage'
+	AUX_BATTERY_VOLTAGE: 'auxBatteryVoltage',
+	VEHICLE_SPEED_ABS: 'vehicleSpeedAbs'
 } as const;
 
 export type FieldType = ObjectValues<typeof PARAM_FIELDS>;
@@ -59,7 +60,7 @@ export const PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed(2)
 	},
 	{
-		name: "Здоров'я акумулятора (SOH)",
+		name: "Здоров'я батареї (SOH)",
 		field: PARAM_FIELDS.SOH,
 		exampleValue: 100,
 		range: [0, 100],
@@ -141,7 +142,7 @@ export const PARAMS_CONFIG = [
 	{
 		name: 'Максимальна напруга елемента батареї',
 		field: PARAM_FIELDS.BATTERY_MAX_CELL_VOLTAGE,
-		exampleValue: 4.15,
+		exampleValue: 3.74,
 		range: [2.2, 4.2],
 		unit: 'В',
 		format: (value: number) => value.toFixed(2)
@@ -157,7 +158,7 @@ export const PARAMS_CONFIG = [
 	{
 		name: 'Мінімальна напруга елемента батареї',
 		field: PARAM_FIELDS.BATTERY_MIN_CELL_VOLTAGE,
-		exampleValue: 3.1,
+		exampleValue: 3.7,
 		range: [2.2, 4.2],
 		unit: 'В',
 		format: (value: number) => value.toFixed(2)
@@ -248,6 +249,14 @@ export const PARAMS_CONFIG = [
 		exampleValue: 9450,
 		range: [0, Infinity],
 		unit: 'кВт·год',
+		format: (value: number) => value.toFixed()
+	},
+	{
+		name: 'Швидкість (ABS)',
+		field: PARAM_FIELDS.VEHICLE_SPEED_ABS,
+		exampleValue: 45,
+		range: [0, 255],
+		unit: 'км/год',
 		format: (value: number) => value.toFixed()
 	},
 	{

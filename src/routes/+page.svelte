@@ -43,7 +43,7 @@
 		href="/"
 		class={elmDeviceStatus === 'ready' ? buttonVariants.secondary : buttonVariants.disabled}
 	>
-		🚧 Акумулятор</a
+		🚧 Батарея</a
 	>
 	<a
 		href="/"

@@ -2,7 +2,18 @@
 	import { PARAMS_CONFIG, type FieldType } from '$lib/common/constants/common.constants';
 	import { paramsState } from '$lib/params.svelte';
 
+	let search = $state('');
 	let currentlySelectedParams = $state(paramsState.selectedParams);
+
+	const filteredParams = $derived(
+		PARAMS_CONFIG.filter((config) => {
+			const searchValue = search.trim().toLowerCase();
+			return (
+				config.name.toLowerCase().includes(searchValue) ||
+				config.unit.toLocaleLowerCase().includes(searchValue)
+			);
+		})
+	);
 
 	const toggleParam = (paramField: FieldType) => {
 		if (currentlySelectedParams.includes(paramField)) {
@@ -10,6 +21,22 @@
 		} else {
 			currentlySelectedParams = [paramField, ...currentlySelectedParams];
 		}
+	};
+
+	const deselectVisibleParams = () => {
+		const paramsToDeselect = filteredParams.map((config) => config.field);
+
+		currentlySelectedParams = currentlySelectedParams.filter(
+			(selectedParam) => !paramsToDeselect.includes(selectedParam)
+		);
+	};
+
+	const selectVisibleParams = () => {
+		const extraParamsToSelect = filteredParams
+			.map((config) => config.field)
+			.filter((param) => !currentlySelectedParams.includes(param));
+
+		currentlySelectedParams = [...currentlySelectedParams, ...extraParamsToSelect];
 	};
 
 	const getCurrentParamValue = (field: FieldType) => {
@@ -42,10 +69,30 @@
 			<span class="icon-[mdi--arrow-back] text-slate-800"></span>
 		</a>
 		<div class="relative flex grow">
-			<input class="w-full border-2 border-r-4 border-b-4 border-slate-900 px-2" type="text" />
+			<input
+				bind:value={search}
+				class="w-full border-2 border-r-4 border-b-4 border-slate-900 px-2"
+				type="text"
+			/>
 			<span class="icon-[mdi--search] pointer-events-none absolute top-1.5 right-2 text-slate-800"
 			></span>
 		</div>
+		<div class="h-full border-l-1 border-slate-900"></div>
+		<button
+			aria-label="Вибрати всі видимі параметри"
+			class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold text-white active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300"
+			onclick={selectVisibleParams}
+		>
+			<span class="icon-[mdi--checkbox-outline] text-slate-800"></span>
+		</button>
+		<button
+			aria-label="Зняти вибір з видимих параметрів"
+			class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold text-white active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300"
+			onclick={deselectVisibleParams}
+		>
+			<span class="icon-[mdi--checkbox-blank-off-outline] text-slate-800"></span>
+		</button>
+		<div class="h-full border-l-1 border-slate-900"></div>
 		<a
 			href="charts"
 			aria-label="Перейти до графіків"
@@ -58,7 +105,7 @@
 	<div class="w-full flex-grow overflow-auto">
 		<table class="w-full table-fixed">
 			<tbody>
-				{#each PARAMS_CONFIG as param}
+				{#each filteredParams as param}
 					<tr class="border-b border-gray-200 nth-last-1:border-none">
 						<td class="w-10 px-2">
 							<input
