@@ -7,7 +7,7 @@
 	import { paramsState } from '$lib/params.svelte';
 	import { init, graphic, type ECharts, type EChartsOption } from 'echarts';
 
-	const CHART_GRID_HEIGHT = 240;
+	const CHART_GRID_HEIGHT = 220;
 	const NUMBER_OF_DATA_POINTS_TO_DISPLAY = 40;
 	const APPROXIMATE_UPDATE_INTERVAL = 500;
 
@@ -37,14 +37,18 @@
 			const name = fieldConfig?.name;
 			const value = fieldConfig?.format(data[1]) ?? data[1];
 			return `<strong>${name}</strong><br />${value} ${fieldConfig?.unit}<br />${axisValueLabel}`;
+		},
+		confine: true,
+		textStyle: {
+			fontSize: 10
 		}
 	};
 
 	const gridConfig = Array.from({ length: numberOfCharts }).map((_, index) => ({
 		top: `${index * CHART_GRID_HEIGHT + 35}px`,
-		left: '10px',
-		right: '10px',
-		height: `${CHART_GRID_HEIGHT - 70}px`
+		left: '14px',
+		right: '14px',
+		height: `${CHART_GRID_HEIGHT - 80}px`
 	}));
 
 	const staticOptions: EChartsOption = {
@@ -65,7 +69,8 @@
 			type: 'time',
 			gridIndex: index,
 			axisLabel: {
-				hideOverlap: true
+				hideOverlap: true,
+				fontSize: 9
 			}
 		})),
 
@@ -79,7 +84,7 @@
 				textBorderWidth: 3,
 				align: 'right',
 				margin: 20,
-				fontSize: 8,
+				fontSize: 9,
 				showMinLabel: false,
 				showMaxLabel: false
 			}

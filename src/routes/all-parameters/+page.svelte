@@ -119,11 +119,11 @@
 								checked={currentlySelectedParams.includes(param.field)}
 							/>
 						</td>
-						<td class="py-1">{param.name}</td>
+						<td class="py-1" onclick={() => toggleParam(param.field)}>{param.name}</td>
 						<td class="w-28 px-2 py-1 text-end font-bold">
 							{@render formattedValue(getCurrentParamValue(param.field), param?.format)}
 						</td>
-						<td class="w-10 py-2 align-super text-xs break-words">{param.unit}</td>
+						<td class="w-12 py-2 text-xs break-words">{param.unit}</td>
 					</tr>
 				{/each}
 			</tbody>
