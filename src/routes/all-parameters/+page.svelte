@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { PARAMS_CONFIG, type FieldType } from '$lib/common/constants/common.constants';
+	import ButtonLink from '$lib/components/button-link.svelte';
+	import Button from '$lib/components/button.svelte';
 	import { paramsState } from '$lib/params.svelte';
 
 	let search = $state('');
@@ -60,14 +62,10 @@
 {/snippet}
 
 <div class="flex h-full w-full flex-col px-2">
-	<div class="flex gap-2 py-1">
-		<a
-			href="/"
-			aria-label="Назад"
-			class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300 dark:border-slate-800 dark:bg-slate-600 dark:active:bg-slate-700"
-		>
-			<span class="icon-[mdi--arrow-back] text-slate-800 dark:text-slate-100"></span>
-		</a>
+	<div class="flex gap-2 py-2">
+		<ButtonLink href="/" aria-label="Назад" variant="tertiary" size="compact">
+			<span class="icon-[mdi--arrow-back]"></span>
+		</ButtonLink>
 		<div class="relative flex grow">
 			<input
 				bind:value={search}
@@ -79,30 +77,32 @@
 			></span>
 		</div>
 		<div class="h-full border-l-1 border-slate-900 dark:border-slate-800"></div>
-		<button
+		<Button
+			variant="tertiary"
+			size="compact"
 			aria-label="Вибрати всі видимі параметри"
-			class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300 dark:border-slate-800 dark:bg-slate-600 dark:active:bg-slate-700"
 			onclick={selectVisibleParams}
 		>
-			<span class="icon-[mdi--checkbox-outline] text-slate-800 dark:text-slate-100"></span>
-		</button>
-		<button
+			<span class="icon-[mdi--checkbox-outline]"></span>
+		</Button>
+		<Button
+			variant="tertiary"
+			size="compact"
 			aria-label="Зняти вибір з видимих параметрів"
-			class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300 dark:border-slate-800 dark:bg-slate-600 dark:active:bg-slate-700"
 			onclick={deselectVisibleParams}
 		>
-			<span class="icon-[mdi--checkbox-blank-off-outline] text-slate-800 dark:text-slate-100"
-			></span>
-		</button>
+			<span class="icon-[mdi--checkbox-blank-off-outline]"></span>
+		</Button>
 		<div class="h-full border-l-1 border-slate-900 dark:border-slate-800"></div>
-		<a
+		<ButtonLink
 			href="charts"
 			aria-label="Перейти до графіків"
-			class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold text-white active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300 dark:border-slate-800 dark:bg-slate-600 dark:active:bg-slate-700"
+			variant="tertiary"
+			size="compact"
 			onclick={() => (paramsState.selectedParams = currentlySelectedParams)}
 		>
-			<span class="icon-[mdi--chart-line] text-slate-800 dark:text-slate-100"></span>
-		</a>
+			<span class="icon-[mdi--chart-line]"></span>
+		</ButtonLink>
 	</div>
 	<div class="w-full flex-grow overflow-auto">
 		<table class="w-full table-fixed">
