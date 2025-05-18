@@ -8,7 +8,8 @@ export const bluetoothState = $state({
 	serialConnectionStatus: 'idle',
 	bluetoothError: '',
 	elmDeviceStatus: 'idle',
-	heartbeat: 0
+	heartbeat: 0,
+	lastCommandTime: 0
 });
 
 const webBluetoothSerialDevice = new WebBluetoothSerial();
@@ -55,6 +56,7 @@ export async function mockConnect() {
 
 export async function startDataReading() {
 	let stop = false;
+	let start = new Date().valueOf();
 
 	while (!stop) {
 		for (const command of [
@@ -83,6 +85,10 @@ export async function startDataReading() {
 				}
 
 				bluetoothState.heartbeat += 1;
+
+				const end = new Date().valueOf();
+				bluetoothState.lastCommandTime = end - start;
+				start = end;
 			} catch {}
 		}
 
@@ -107,6 +113,7 @@ export async function startDataReading() {
 }
 
 export async function mockStartDataReading() {
+	let start = new Date().valueOf();
 	setInterval(() => {
 		for (const field of Object.values(PARAM_FIELDS)) {
 			const fieldValues = paramsState.values[field];
@@ -136,5 +143,9 @@ export async function mockStartDataReading() {
 			});
 		}
 		bluetoothState.heartbeat += 1;
+
+		const end = new Date().valueOf();
+		bluetoothState.lastCommandTime = end - start;
+		start = end;
 	}, 700);
 }

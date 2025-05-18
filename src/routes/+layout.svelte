@@ -6,7 +6,7 @@
 	let serialConnectionStatus = $derived(bluetoothState.serialConnectionStatus);
 	let elmDeviceStatus = $derived(bluetoothState.elmDeviceStatus);
 	let bluetoothError = $derived(bluetoothState.bluetoothError);
-
+	let lastCommandTime = $derived(bluetoothState.lastCommandTime);
 	let heartbeat = $derived.by(() => (bluetoothState.heartbeat % 3) + 1);
 
 	let { children } = $props();
@@ -74,6 +74,9 @@
 			{:else}
 				<span class="icon-[mdi--signal-cellular-3]"></span>
 			{/if}
+			<span class="block min-w-[6ch] text-end text-sm">
+				{lastCommandTime} мс
+			</span>
 		</div>
 	</footer>
 </section>

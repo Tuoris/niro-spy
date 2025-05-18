@@ -104,6 +104,10 @@
 			<span class="icon-[mdi--chart-line]"></span>
 		</ButtonLink>
 	</div>
+	<div class="flex items-center gap-2 px-2 text-sm dark:border-gray-800 dark:text-slate-400">
+		<span class="icon-[mdi--information-outline]"></span>
+		<span> Виберіть один або декілька параметрів для відображення графіків </span>
+	</div>
 	<div class="w-full flex-grow overflow-auto">
 		<table class="w-full table-fixed">
 			<tbody>
