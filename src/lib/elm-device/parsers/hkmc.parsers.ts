@@ -37,7 +37,7 @@ export function parseHkmcEvBmsInfo01(value: string) {
 	const batteryMinCellVoltage = unsignedIntFromBytes(separatePacketBytes[4][1]) / 50;
 	const batteryMinCellVoltageNo = unsignedIntFromBytes(separatePacketBytes[4][2]);
 
-	const batteryFanMod = unsignedIntFromBytes(separatePacketBytes[4][3]);
+	const batteryFanMode = unsignedIntFromBytes(separatePacketBytes[4][3]);
 	const batteryFanSpeed = unsignedIntFromBytes(separatePacketBytes[4][4]);
 
 	const auxBatteryVoltage = unsignedIntFromBytes(separatePacketBytes[4][5]) / 10;
@@ -90,7 +90,7 @@ export function parseHkmcEvBmsInfo01(value: string) {
 		batteryMaxCellVoltageNo,
 		batteryMinCellVoltage,
 		batteryMinCellVoltageNo,
-		batteryFanMod,
+		batteryFanMode,
 		batteryFanSpeed,
 		auxBatteryVoltage,
 		cumulativeCapacityCharged,

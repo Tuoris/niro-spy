@@ -130,7 +130,7 @@
 			}
 		};
 
-		const spaceBetweenCharts = numberOfCharts > 5 ? 1.5 : 4;
+		const spaceBetweenCharts = 5 - Math.min(0.5 * numberOfCharts, 4.5);
 		const topAndBottomPadding = 1;
 		const cellHeight = (100 - topAndBottomPadding * 2) / numberOfCharts;
 		const gridConfig = Array.from({ length: numberOfCharts }).map((_, index) => ({
