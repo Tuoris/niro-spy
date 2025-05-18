@@ -15,6 +15,7 @@
 	let chart: ECharts;
 
 	let isPaused = $state(false);
+	let isTooltipEnabled = $state(false);
 
 	let values = $state(paramsState.values);
 
@@ -207,6 +208,14 @@
 		chart.setOption(option);
 	});
 
+	$effect(() => {
+		chart.setOption({
+			tooltip: {
+				trigger: isTooltipEnabled ? 'axis' : 'none'
+			}
+		});
+	});
+
 	function downloadData() {
 		const text = JSON.stringify({ values }, null, 4);
 		const now = new Date();
@@ -235,6 +244,23 @@
 		</a>
 		<div class="flex gap-2">
 			<button
+				aria-label="Вибрати точку"
+				class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300 dark:border-slate-800 dark:bg-slate-600 dark:active:bg-slate-700"
+				onclick={() => (isTooltipEnabled = !isTooltipEnabled)}
+			>
+				<span class="icon-[mdi--gesture-touch-hold] text-slate-800 dark:text-slate-100"></span>
+			</button>
+			<button
+				aria-label="Масштабування графіка"
+				class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300 dark:border-slate-800 dark:bg-slate-600 dark:active:bg-slate-700"
+				onclick={() => {
+					isPaused = !isPaused;
+					isTooltipEnabled = false;
+				}}
+			>
+				<span class="icon-[mdi--arrow-expand-horizontal] text-slate-800 dark:text-slate-100"></span>
+			</button>
+			<button
 				aria-label="Перейти до графіків"
 				class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300 dark:border-slate-800 dark:bg-slate-600 dark:active:bg-slate-700"
 				onclick={downloadData}
@@ -242,7 +268,7 @@
 				<span class="icon-[mdi--file-download-outline] text-slate-800 dark:text-slate-100"></span>
 			</button>
 			<button
-				aria-label="Завантажити дані"
+				aria-label="Пауза/Відновити"
 				class="flex rounded-sm border-2 border-r-4 border-b-4 border-slate-900 bg-neutral-200 px-2 py-1 text-center font-bold active:border-t-4 active:border-r-2 active:border-b-2 active:border-l-4 active:bg-neutral-300 dark:border-slate-800 dark:bg-slate-600 dark:active:bg-slate-700"
 				onclick={() => (isPaused = !isPaused)}
 			>
