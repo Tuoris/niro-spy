@@ -30,8 +30,8 @@
 	<ButtonLink href="all-parameters" variant="secondary" disabled={elmDeviceStatus !== 'ready'}
 		>Всі параметри</ButtonLink
 	>
-	<ButtonLink href="/" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
-		🚧 Батарея</ButtonLink
+	<ButtonLink href="/battery" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
+		Батарея</ButtonLink
 	>
 	<ButtonLink href="/" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
 		🚧 Витрата</ButtonLink

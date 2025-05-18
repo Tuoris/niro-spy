@@ -135,7 +135,11 @@ export async function mockStartDataReading() {
 				[PARAM_FIELDS.AUX_BATTERY_VOLTAGE]: 0.3
 			};
 
-			const jitterValue = jitterByField[field as keyof typeof jitterByField] ?? 10;
+			let jitterValue = jitterByField[field as keyof typeof jitterByField] ?? 10;
+
+			if (field.startsWith('cellVoltage')) {
+				jitterValue = 0.008;
+			}
 
 			paramsState.values[field].push({
 				timestamp: new Date().valueOf(),

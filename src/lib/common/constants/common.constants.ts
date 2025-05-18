@@ -1,4 +1,5 @@
 import type { ObjectValues } from '../types/common.types';
+import { CELL_VOLTAGE_NAMES } from './cell-voltage.constants';
 
 export const PARAM_FIELDS = {
 	BATTERY_POWER: 'batteryPower',
@@ -29,10 +30,22 @@ export const PARAM_FIELDS = {
 	BATTERY_FAN_MODE: 'batteryFanMode',
 	BATTERY_FAN_SPEED: 'batteryFanSpeed',
 	AUX_BATTERY_VOLTAGE: 'auxBatteryVoltage',
-	VEHICLE_SPEED_ABS: 'vehicleSpeedAbs'
+	VEHICLE_SPEED_ABS: 'vehicleSpeedAbs',
+	...CELL_VOLTAGE_NAMES
 } as const;
 
 export type FieldType = ObjectValues<typeof PARAM_FIELDS>;
+
+const CELL_VOLTAGE_PARAMS_CONFIG = [
+	...Object.values(CELL_VOLTAGE_NAMES).map((cellVoltageName, index) => ({
+		name: `Напруга комірки ${index + 1}`,
+		field: cellVoltageName,
+		exampleValue: 3.7,
+		range: [2.4, 4.2],
+		unit: 'В',
+		format: (value: number) => value.toFixed(2)
+	}))
+];
 
 export const PARAMS_CONFIG = [
 	{
@@ -266,5 +279,6 @@ export const PARAMS_CONFIG = [
 		range: [0, 40],
 		unit: 'кВт·год/100км',
 		format: (value: number) => value.toFixed()
-	}
+	},
+	...CELL_VOLTAGE_PARAMS_CONFIG
 ];
