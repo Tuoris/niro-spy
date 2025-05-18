@@ -113,7 +113,13 @@ export async function mockStartDataReading() {
 					PARAMS_CONFIG.find(({ field: configField }) => configField === field)?.exampleValue ?? 0;
 			}
 
-			const jitterValue = field === 'batteryPower' ? 8000 : 10;
+			const jitterByField = {
+				[PARAM_FIELDS.BATTERY_POWER]: 8000,
+				[PARAM_FIELDS.AVERAGE_CONSUMPTION]: 1,
+				[PARAM_FIELDS.MAX_POWER]: 0
+			};
+
+			const jitterValue = jitterByField[field as keyof typeof jitterByField] ?? 10;
 
 			paramsState.values[field].push({
 				timestamp: new Date().valueOf(),

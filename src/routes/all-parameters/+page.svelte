@@ -57,11 +57,11 @@
 		</a>
 	</div>
 	<div class="w-full flex-grow overflow-auto">
-		<table class="w-full table-auto">
+		<table class="w-full table-fixed">
 			<tbody>
 				{#each PARAMS_CONFIG as param}
 					<tr class="border-b border-gray-200 nth-last-1:border-none">
-						<td class="px-2">
+						<td class="w-10 px-2">
 							<input
 								type="checkbox"
 								class="h-4 w-4"
@@ -70,10 +70,10 @@
 							/>
 						</td>
 						<td class="py-1">{param.name}</td>
-						<td class="px-2 py-1 text-end font-bold">
+						<td class="w-28 px-2 py-1 text-end font-bold">
 							{@render formattedValue(getCurrentParamValue(param.field), param?.format)}
 						</td>
-						<td class="py-1">{param.unit}</td>
+						<td class="w-10 py-2 align-super text-xs break-words">{param.unit}</td>
 					</tr>
 				{/each}
 			</tbody>

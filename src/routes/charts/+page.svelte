@@ -143,6 +143,7 @@
 		const option: EChartsOption = {
 			animationDurationUpdate: 100,
 			animationDelayUpdate: 0,
+			animationDuration: 0,
 			dataZoom: {
 				type: 'inside',
 				realtime: true,
@@ -155,7 +156,10 @@
 			xAxis: Array.from({ length: numberOfCharts }).map((_, index) => ({
 				type: 'time',
 				gridIndex: index,
-				startValue: xAxisStartValue
+				startValue: xAxisStartValue,
+				axisLabel: {
+					hideOverlap: true
+				}
 			})),
 			yAxis: Object.values(PARAMS_CONFIG).map((config, index) => ({
 				gridIndex: index,
@@ -165,7 +169,6 @@
 			series: seriesData
 		};
 
-		console.log(option);
 		chart.setOption(option);
 	});
 

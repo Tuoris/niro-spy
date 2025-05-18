@@ -24,7 +24,7 @@ export const PARAMS_CONFIG = [
 		exampleValue: 10510,
 		range: [-140000, 170000],
 		unit: 'Вт',
-		format: (value: number) => value.toFixed(2)
+		format: (value: number) => value.toFixed()
 	},
 	{
 		name: 'Швидкість',
@@ -32,7 +32,7 @@ export const PARAMS_CONFIG = [
 		exampleValue: 45,
 		range: [0, 255],
 		unit: 'км/год',
-		format: (value: number) => value.toFixed()
+		format: (value: number) => value.toFixed(1)
 	},
 	{
 		name: 'Рівень заряду',
