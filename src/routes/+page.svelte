@@ -23,7 +23,7 @@
 	let elmDeviceStatus = $derived(bluetoothState.elmDeviceStatus);
 </script>
 
-<div class="absolute top-1 font-bold text-neutral-600">Niro Spy</div>
+<div class="absolute top-1 font-bold text-neutral-600">Niro Spy 🇺🇦</div>
 <div class="flex flex-col items-stretch gap-2">
 	<Button variant="primary" onclick={connectAndStartDataReading}>З'єднатись зі сканером</Button>
 	<hr />
