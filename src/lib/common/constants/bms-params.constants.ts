@@ -265,7 +265,7 @@ export const BMS_PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'Швидкість обертання двигуна 2',
+		name: 'Швидкість обертання двигуна (сенсор 2)',
 		field: BMS_FIELD_NAMES.MOTOR_RPM2,
 		exampleValue: 4000,
 		range: [0, 100],

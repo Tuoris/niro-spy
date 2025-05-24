@@ -99,7 +99,19 @@
 			aria-label="Перейти до графіків"
 			variant="tertiary"
 			size="compact"
-			onclick={() => (paramsState.selectedParams = currentlySelectedParams)}
+			onclick={(event) => {
+				if (currentlySelectedParams.length === 0 || currentlySelectedParams.length > 30) {
+					const confirmed = confirm(
+						"Ви дійсно хочете переглянути таку кількість графіків (більше 30)? Це може уповільнити ваш телефон чи комп'ютер."
+					);
+					console.log(confirmed);
+					if (!confirmed) {
+						event.preventDefault();
+						return;
+					}
+				}
+				paramsState.selectedParams = currentlySelectedParams;
+			}}
 		>
 			<span class="icon-[mdi--chart-line]"></span>
 		</ButtonLink>
