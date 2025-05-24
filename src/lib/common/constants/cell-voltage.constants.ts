@@ -98,3 +98,14 @@ export const CELL_VOLTAGE_NAMES = {
 	CELL_VOLTAGE_97: 'cellVoltage97',
 	CELL_VOLTAGE_98: 'cellVoltage98'
 } as const;
+
+export const CELL_VOLTAGE_PARAMS_CONFIG = [
+	...Object.values(CELL_VOLTAGE_NAMES).map((cellVoltageName, index) => ({
+		name: `Напруга комірки ${index + 1}`,
+		field: cellVoltageName,
+		exampleValue: 3.7,
+		range: [2.4, 4.2],
+		unit: 'В',
+		format: (value: number) => value.toFixed(2)
+	}))
+];

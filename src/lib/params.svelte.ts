@@ -1,4 +1,4 @@
-import { PARAM_FIELDS, type FieldType } from './common/constants/common.constants';
+import { PARAM_FIELDS, type FieldType } from './common/constants/common-params.constants';
 
 type ParamValue = {
 	timestamp: number;

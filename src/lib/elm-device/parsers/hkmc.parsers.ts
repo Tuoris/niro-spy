@@ -59,7 +59,7 @@ export function parseHkmcEvBmsInfo01(value: string) {
 	const operationalTimeSeconds = unsignedIntFromBytes(separatePacketBytes[7].slice(1, 5));
 	const operationalTimeHours = operationalTimeSeconds / 60;
 
-	const bmsIgnition = unsignedIntFromBytes(separatePacketBytes[7][5]).toString(2);
+	const bmsIgnition = unsignedIntFromBytes(separatePacketBytes[7][5]);
 	const bmsCapacitorVoltage = unsignedIntFromBytes([
 		separatePacketBytes[7][6],
 		separatePacketBytes[8][0]
@@ -71,6 +71,8 @@ export function parseHkmcEvBmsInfo01(value: string) {
 	const surgeResistorKOhm = unsignedIntFromBytes(separatePacketBytes[8].slice(5, 7));
 
 	const batteryPower = batteryCurrent * batteryVoltage;
+
+	const isBatteryCharging = batteryPower > 0;
 
 	return {
 		socBms,
@@ -105,7 +107,8 @@ export function parseHkmcEvBmsInfo01(value: string) {
 		bmsCapacitorVoltage,
 		motorRpm1,
 		motorRpm2,
-		surgeResistorKOhm
+		surgeResistorKOhm,
+		isBatteryCharging
 	};
 }
 

@@ -1,7 +1,11 @@
 import { ElmDevice } from '$lib/elm-device/elm-device';
 import { COMMANDS } from '$lib/elm-device/elm-commands.constants';
 import { WebBluetoothSerial } from '$lib/web-bluetooth-serial';
-import { PARAM_FIELDS, PARAMS_CONFIG, type FieldType } from './common/constants/common.constants';
+import {
+	PARAM_FIELDS,
+	PARAMS_CONFIG,
+	type FieldType
+} from './common/constants/common-params.constants';
 import { paramsState } from './params.svelte';
 
 export const bluetoothState = $state({
@@ -118,6 +122,17 @@ export async function mockStartDataReading() {
 	let start = new Date().valueOf();
 	setInterval(() => {
 		for (const field of Object.values(PARAM_FIELDS)) {
+			if (field === PARAM_FIELDS.IS_BATTERY_CHARGING) {
+				const batteryPowerValue = paramsState.values[PARAM_FIELDS.BATTERY_POWER];
+				let previousBatteryPowerValue = batteryPowerValue[batteryPowerValue.length - 1]?.value || 0;
+
+				paramsState.values[field].push({
+					timestamp: new Date().valueOf(),
+					value: previousBatteryPowerValue < 0 ? 1 : 0
+				});
+				continue;
+			}
+
 			const fieldValues = paramsState.values[field];
 			let previousValue = fieldValues[fieldValues.length - 1]?.value;
 			if (previousValue === undefined) {
@@ -130,6 +145,7 @@ export async function mockStartDataReading() {
 				[PARAM_FIELDS.SOH]: 1,
 				[PARAM_FIELDS.AVERAGE_CONSUMPTION]: 1,
 				[PARAM_FIELDS.MAX_POWER]: 0,
+				[PARAM_FIELDS.MAX_REGENERATION_POWER]: 0,
 				[PARAM_FIELDS.BATTERY_MAX_CELL_VOLTAGE]: 0.02,
 				[PARAM_FIELDS.BATTERY_MAX_CELL_VOLTAGE_NO]: 2,
 				[PARAM_FIELDS.BATTERY_MIN_CELL_VOLTAGE]: 0.02,

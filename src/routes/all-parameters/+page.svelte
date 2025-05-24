@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PARAMS_CONFIG, type FieldType } from '$lib/common/constants/common.constants';
+	import { PARAMS_CONFIG, type FieldType } from '$lib/common/constants/common-params.constants';
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { paramsState } from '$lib/params.svelte';

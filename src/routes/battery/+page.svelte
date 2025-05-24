@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PARAM_FIELDS, type FieldType } from '$lib/common/constants/common.constants';
+	import { PARAM_FIELDS, type FieldType } from '$lib/common/constants/common-params.constants';
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import { paramsState } from '$lib/params.svelte';
 	let chartsElement: HTMLDivElement;
@@ -27,6 +27,10 @@
 	let socValue = $derived(getLastLiveValue(PARAM_FIELDS.SOC_BMS));
 	let sohValue = $derived(getLastLiveValue(PARAM_FIELDS.SOH));
 	let averageConsumption = $derived(getLastLiveValue(PARAM_FIELDS.AVERAGE_CONSUMPTION));
+	let maxPower = $derived(getLastLiveValue(PARAM_FIELDS.MAX_POWER));
+	let maxRegenerationPower = $derived(getLastLiveValue(PARAM_FIELDS.MAX_REGENERATION_POWER));
+	let batteryPower = $derived(getLastLiveValue(PARAM_FIELDS.BATTERY_POWER));
+	let isBatteryCharging = $derived(getLastLiveValue(PARAM_FIELDS.IS_BATTERY_CHARGING));
 	let averageTemperature = $derived.by(() => {
 		const temperatures = [
 			getLastLiveValue(PARAM_FIELDS.BATTERY_TEMP_1),
@@ -215,6 +219,15 @@
 			'°C',
 			averageTemperature > 55 || averageTemperature < -10
 		)}
+		{@render valueCard('Доступна потужність', maxPower.toFixed(), 'кВт')}
+		{@render valueCard('Доступна потужність рекуперації', maxRegenerationPower.toFixed(), 'кВт')}
+
+		{@render valueCard(
+			'Миттєва потужність',
+			Math.abs(batteryPower) > 1000 ? (batteryPower / 1000).toFixed(2) : batteryPower.toFixed(),
+			Math.abs(batteryPower) > 1000 ? 'кВт' : 'Вт'
+		)}
+		{@render valueCard('Йде заряджання/рекуперація', isBatteryCharging ? 'так' : 'ні', '')}
 	</div>
 
 	<h2 class="text-center text-lg font-bold dark:text-neutral-400">Елементи</h2>
