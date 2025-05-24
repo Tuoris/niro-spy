@@ -16,6 +16,8 @@ const webBluetoothSerialDevice = new WebBluetoothSerial();
 const elmDevice = new ElmDevice(webBluetoothSerialDevice);
 
 export async function connect() {
+	bluetoothState.bluetoothError = '';
+
 	if (!webBluetoothSerialDevice.checkWebBluetoothApiAvailable()) {
 		bluetoothState.serialConnectionStatus = 'error';
 		bluetoothState.bluetoothError = 'Web Bluetooth API не підтримується браузером.';
