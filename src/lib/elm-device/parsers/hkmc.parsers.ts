@@ -65,14 +65,14 @@ export function parseHkmcEvBmsInfo01(value: string) {
 		separatePacketBytes[8][0]
 	]);
 
-	const motorRpm1 = unsignedIntFromBytes(separatePacketBytes[8].slice(1, 3));
-	const motorRpm2 = unsignedIntFromBytes(separatePacketBytes[8].slice(3, 5));
+	const motorRpm1 = signedIntFromBytes(separatePacketBytes[8].slice(1, 3));
+	const motorRpm2 = signedIntFromBytes(separatePacketBytes[8].slice(3, 5));
 
 	const surgeResistorKOhm = unsignedIntFromBytes(separatePacketBytes[8].slice(5, 7));
 
 	const batteryPower = batteryCurrent * batteryVoltage;
 
-	const isBatteryCharging = batteryPower > 0;
+	const isBatteryCharging = batteryPower < 0;
 
 	return {
 		socBms,
