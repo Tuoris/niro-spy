@@ -618,3 +618,52 @@ export function parseHkmcEvTpmsInfo02(value: string) {
 		rearLeftTireTemperature
 	};
 }
+
+export const sampleAirconInfo00 = `
+22 01 00
+026 
+0: 62 01 00 7E 50 27
+1: C8 FF 7F 64 63 03 EF
+2: 8D FF FF 8D FF 10 FF
+3: FF FF FF FF FF C0 FF
+4: FF 48 D7 8B 8A 00 FF
+5: FF 01 FF FF 00 00 00
+>
+`;
+
+export function parseHkmcEvAirconInfo00(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const interiorTemperature = unsignedIntFromBytes(separatePacketBytes[1][2]) / 2 - 40;
+	const ambientTemperature = unsignedIntFromBytes(separatePacketBytes[1][3]) / 2 - 40;
+	const evaporatorTemperature = unsignedIntFromBytes(separatePacketBytes[1][4]) / 2 - 40;
+
+	return {
+		interiorTemperature,
+		ambientTemperature,
+		evaporatorTemperature
+	};
+}
+
+export const sampleAirconInfo02 = `22 01 02
+014 
+0: 62 01 02 FF F8 00
+1: 00 A5 63 01 01 00 01
+2: 01 00 35 00 00 67 0F
+>					
+`;
+
+export function parseHkmcEvAirconInfo02(value: string) {
+	// Values does not look valid
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const coolantTemperature01 = unsignedIntFromBytes(separatePacketBytes[1][1]) / 2 - 40;
+	const coolantTemperature02 = unsignedIntFromBytes(separatePacketBytes[1][2]) / 2 - 40;
+	const absoluteAirPressure = unsignedIntFromBytes(separatePacketBytes[2][2]) * 20;
+
+	return {
+		coolantTemperature01,
+		coolantTemperature02,
+		absoluteAirPressure
+	};
+}

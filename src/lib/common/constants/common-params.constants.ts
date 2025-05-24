@@ -1,4 +1,5 @@
 import type { ObjectValues } from '../types/common.types';
+import { AIRCON_FIELD_NAMES, AIRCON_PARAMS_CONFIG } from './aircon.constants';
 import { BMS_FIELD_NAMES, BMS_PARAMS_CONFIG } from './bms-params.constants';
 import { CELL_VOLTAGE_NAMES, CELL_VOLTAGE_PARAMS_CONFIG } from './cell-voltage.constants';
 import { TPMS_FIELD_NAMES, TPMS_PARAMS_CONFIG } from './tpms.constant';
@@ -12,7 +13,8 @@ export const PARAM_FIELDS = {
 	BRAKE_PEDAL_POSITION_RELATIVE: 'brakePedalPositionRelative',
 	ACCELERATOR_PEDAL_POSITION_RELATIVE: 'acceleratorPedalPositionRelative',
 	...CELL_VOLTAGE_NAMES,
-	...TPMS_FIELD_NAMES
+	...TPMS_FIELD_NAMES,
+	...AIRCON_FIELD_NAMES
 } as const;
 
 export type FieldType = ObjectValues<typeof PARAM_FIELDS>;
@@ -108,5 +110,6 @@ export const PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed()
 	},
 	...TPMS_PARAMS_CONFIG,
+	...AIRCON_PARAMS_CONFIG,
 	...CELL_VOLTAGE_PARAMS_CONFIG
 ];
