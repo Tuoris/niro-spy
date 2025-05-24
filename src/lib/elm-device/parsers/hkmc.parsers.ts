@@ -59,6 +59,7 @@ export function parseHkmcEvBmsInfo01(value: string) {
 	const operationalTimeSeconds = unsignedIntFromBytes(separatePacketBytes[7].slice(1, 5));
 	const operationalTimeHours = operationalTimeSeconds / 60;
 
+	// DC Charging: 00001001
 	const bmsIgnition = unsignedIntFromBytes(separatePacketBytes[7][5]);
 	const bmsCapacitorVoltage = unsignedIntFromBytes([
 		separatePacketBytes[7][6],
@@ -543,5 +544,77 @@ export function parseHkmcEcu7D4Info01(value: string) {
 	return {
 		vehicleSpeed,
 		vehicleSpeedDisplay
+	};
+}
+
+// TPMS
+// AT SH 7A0
+// First part IDs
+// 22C002
+// Seconds part (with temps and pressures)
+// 22C00B
+
+export const sampleHkmcEvTpmsInfo02 = `017 
+0: 62 C0 0B FF FF 00
+1: 00 AD 3E 01 00 AB 3E
+2: 01 00 A2 3E 01 00 A6
+3: 3D 01 00 AA AA AA AA
+>`;
+
+// Drive to display
+export const sampleHkmcEvTpmsInfo02_01 = `017 
+0: 62 C0 0B FF FF 00
+1: 00 AB 3E 02 00 A9 3E
+2: 02 00 A1 3E 02 00 A5
+3: 3D 02 00 AA AA AA AA
+>`;
+
+// Real-time data
+export const sampleHkmcEvTpmsInfo02_02 = `017 
+0: 62 C0 0B FF FF 00
+1: 00 AC 3E 01 00 A9 3E
+2: 01 00 A1 3D 01 00 A4
+3: 3C 01 00 AA AA AA AA
+>`;
+
+export const TPMS_LIVE_DATA_FLAG = {
+	YES: 0x01,
+	NO: 0x02
+};
+
+export function parseHkmcEvTpmsInfo02(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const barToPsi = 14.5;
+
+	const frontLeftTireLiveData = unsignedIntFromBytes(separatePacketBytes[1][3]);
+	const frontLeftTirePressure = unsignedIntFromBytes(separatePacketBytes[1][1]) / 5 / barToPsi;
+	const frontLeftTireTemperature = unsignedIntFromBytes(separatePacketBytes[1][2]) - 50;
+
+	const frontRightTireLiveData = unsignedIntFromBytes(separatePacketBytes[2][0]);
+	const frontRightTirePressure = unsignedIntFromBytes(separatePacketBytes[1][5]) / 5 / barToPsi;
+	const frontRightTireTemperature = unsignedIntFromBytes(separatePacketBytes[1][6]) - 50;
+
+	const rearRightTireLiveData = unsignedIntFromBytes(separatePacketBytes[2][4]);
+	const rearRightTirePressure = unsignedIntFromBytes(separatePacketBytes[2][2]) / 5 / barToPsi;
+	const rearRightTireTemperature = unsignedIntFromBytes(separatePacketBytes[2][3]) - 50;
+
+	const rearLeftTireLiveData = unsignedIntFromBytes(separatePacketBytes[3][1]);
+	const rearLeftTirePressure = unsignedIntFromBytes(separatePacketBytes[2][6]) / 5 / barToPsi;
+	const rearLeftTireTemperature = unsignedIntFromBytes(separatePacketBytes[3][0]) - 50;
+
+	return {
+		frontLeftTireLiveData,
+		frontLeftTirePressure,
+		frontLeftTireTemperature,
+		frontRightTireLiveData,
+		frontRightTirePressure,
+		frontRightTireTemperature,
+		rearRightTireLiveData,
+		rearRightTirePressure,
+		rearRightTireTemperature,
+		rearLeftTireLiveData,
+		rearLeftTirePressure,
+		rearLeftTireTemperature
 	};
 }

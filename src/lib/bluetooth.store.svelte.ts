@@ -75,7 +75,8 @@ export async function startDataReading() {
 			COMMANDS.HKMC_BMS_INFO06,
 			COMMANDS.HKMC_EV_CLUSTER_INFO02,
 			COMMANDS.HKMC_EV_ABS_INFO01,
-			COMMANDS.HKMC_EV_VMCU_INFO01
+			COMMANDS.HKMC_EV_VMCU_INFO01,
+			COMMANDS.HKMC_EV_TPMS_ECU_INFO02
 		]) {
 			try {
 				const response = await elmDevice.sendCommand(command);
@@ -133,6 +134,15 @@ export async function mockStartDataReading() {
 				continue;
 			}
 
+			if (field.endsWith('TireLiveData')) {
+				paramsState.values[field].push({
+					timestamp: new Date().valueOf(),
+					value: 1
+				});
+
+				continue;
+			}
+
 			const fieldValues = paramsState.values[field];
 			let previousValue = fieldValues[fieldValues.length - 1]?.value;
 			if (previousValue === undefined) {
@@ -150,7 +160,15 @@ export async function mockStartDataReading() {
 				[PARAM_FIELDS.BATTERY_MAX_CELL_VOLTAGE_NO]: 2,
 				[PARAM_FIELDS.BATTERY_MIN_CELL_VOLTAGE]: 0.02,
 				[PARAM_FIELDS.BATTERY_MIN_CELL_VOLTAGE_NO]: 2,
-				[PARAM_FIELDS.AUX_BATTERY_VOLTAGE]: 0.3
+				[PARAM_FIELDS.AUX_BATTERY_VOLTAGE]: 0.3,
+				[PARAM_FIELDS.FRONT_LEFT_TIRE_PRESSURE]: 0.1,
+				[PARAM_FIELDS.FRONT_RIGHT_TIRE_PRESSURE]: 0.1,
+				[PARAM_FIELDS.REAR_RIGHT_TIRE_PRESSURE]: 0.1,
+				[PARAM_FIELDS.REAR_LEFT_TIRE_PRESSURE]: 0.1,
+				[PARAM_FIELDS.FRONT_LEFT_TIRE_TEMPERATURE]: 2,
+				[PARAM_FIELDS.FRONT_RIGHT_TIRE_TEMPERATURE]: 2,
+				[PARAM_FIELDS.REAR_RIGHT_TIRE_TEMPERATURE]: 2,
+				[PARAM_FIELDS.REAR_LEFT_TIRE_TEMPERATURE]: 2
 			};
 
 			let jitterValue = jitterByField[field as keyof typeof jitterByField] ?? 10;

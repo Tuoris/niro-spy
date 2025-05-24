@@ -152,5 +152,11 @@ export const COMMANDS = {
 		payload: '220101',
 		header: '7D4',
 		responseParser: hkmcParsers.parseHkmcEcu7D4Info01
+	},
+	HKMC_EV_TPMS_ECU_INFO02: {
+		i18Label: 'parseHkmcEvEcu7D4Info01',
+		payload: '22C00B',
+		header: '7A0',
+		responseParser: hkmcParsers.parseHkmcEvTpmsInfo02
 	}
 } as const;

@@ -33,6 +33,9 @@
 	<ButtonLink href="/battery" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
 		Батарея</ButtonLink
 	>
+	<ButtonLink href="/tpms" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
+		TPMS</ButtonLink
+	>
 	<ButtonLink href="/" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
 		🚧 Витрата</ButtonLink
 	>

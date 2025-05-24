@@ -204,7 +204,7 @@
 		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">Батарея</h2>
 	</div>
 
-	<div class="mt-4 mb-4 grid grid-cols-2 gap-4">
+	<div class="mx-auto mt-4 mb-4 grid max-w-2xl grid-cols-2 gap-4">
 		{@render valueCard('Рівень заряду (SOC)', socValue.toFixed(1), '%', socValue < 10)}
 		{@render valueCard(
 			'Середня витрата (за весь пробіг)',
