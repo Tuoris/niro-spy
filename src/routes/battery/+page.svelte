@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { PARAM_FIELDS, type FieldType } from '$lib/common/constants/common-params.constants';
 	import ButtonLink from '$lib/components/button-link.svelte';
+	import Button from '$lib/components/button.svelte';
 	import { paramsState } from '$lib/params.svelte';
-	let chartsElement: HTMLDivElement;
-	let chart: ECharts;
-	import { init, graphic, type ECharts, type EChartsOption } from 'echarts';
 
 	const NUMBER_OF_BATTERY_CELLS = 98;
 	const NUMBER_OF_ROWS = 7;
@@ -20,6 +18,18 @@
 		}
 
 		const lastValue = liveValuesForParam[liveValuesForParam.length - 1].value;
+
+		return lastValue;
+	};
+
+	const getMinLiveValue = (field: FieldType) => {
+		const liveValuesForParam = liveValues[field];
+
+		if (!liveValuesForParam?.length) {
+			return 0;
+		}
+
+		const lastValue = Math.min(...liveValues[field].map((value) => value.value));
 
 		return lastValue;
 	};
@@ -44,7 +54,12 @@
 		return average;
 	});
 
-	let values = $derived(
+	let isPaused = $state(false);
+	let trackMinCellVoltages = $state(false);
+
+	let lastCellVoltages: number[] = $state([]);
+
+	let cellVoltageValues = $derived(
 		Array.from({ length: NUMBER_OF_BATTERY_CELLS }).map((_, index) => {
 			return getLastLiveValue(
 				`cellVoltage${(index + 1).toString().padStart(2, '0')}` as keyof typeof liveValues
@@ -52,49 +67,23 @@
 		})
 	);
 
-	const rows = Array.from({ length: NUMBER_OF_ROWS }).map((_, index) => index);
-	const columns = Array.from({ length: NUMBER_OF_COLUMNS }).map((_, index) => index);
-	const data = $derived(
-		rows.map((row) => columns.map((column) => [row, column, values[row * 8 + column]])).flat()
+	const cellVoltagesToDisplay = $derived(
+		isPaused
+			? lastCellVoltages
+			: trackMinCellVoltages
+				? Array.from({ length: NUMBER_OF_BATTERY_CELLS }).map((_, index) => {
+						return getMinLiveValue(
+							`cellVoltage${(index + 1).toString().padStart(2, '0')}` as keyof typeof liveValues
+						);
+					})
+				: cellVoltageValues
 	);
 
-	const staticOptions: EChartsOption = {
-		animationDurationUpdate: 100,
-		animationDelayUpdate: 0,
-		animationDuration: 0,
-		backgroundColor: 'transparent',
-
-		grid: {
-			height: '90%',
-			width: '90%',
-			left: 'center',
-			top: '1%'
-		},
-		xAxis: {
-			type: 'category',
-			data: rows,
-			show: false,
-			inverse: false
-		},
-		yAxis: {
-			type: 'category',
-			show: false,
-			inverse: true,
-			data: columns
-		}
-	};
-
-	$effect(() => {
-		chart = init(chartsElement, 'dark', { renderer: 'canvas' });
-		window.addEventListener('resize', () => chart.resize());
-		chart.setOption(staticOptions);
-	});
-
-	$effect(() => {
+	const mostCommonValue = $derived.by(() => {
 		const valuesCount: Record<string, number> = {};
 
-		for (let i = 0; i < values.length; i++) {
-			const value = (values[i] * 100).toFixed();
+		for (let i = 0; i < cellVoltagesToDisplay.length; i++) {
+			const value = (cellVoltagesToDisplay[i] * 100).toFixed();
 			if (!valuesCount[value]) {
 				valuesCount[value] = 0;
 			}
@@ -105,83 +94,29 @@
 		const mostCommonValueAsString = Object.entries(valuesCount).sort((a, b) => b[1] - a[1])[0][0];
 		const mostCommonValue = parseInt(mostCommonValueAsString) / 100;
 
-		const red = '#ba0000';
-		const yellow = '#d69d00';
-		const green = '#006611';
-
-		chart.setOption({
-			tooltip: {
-				formatter: ({ seriesName, dataIndex, data }) =>
-					`<strong>${seriesName} ${dataIndex + 1}</strong><br>${data[2].toFixed(2)} В`
-			},
-			visualMap: {
-				show: false,
-				type: 'piecewise',
-				orient: 'horizontal',
-				left: 'center',
-				bottom: '0',
-				pieces: [
-					{
-						min: mostCommonValue - 1,
-						max: mostCommonValue - 0.2 - 0.001,
-						color: red,
-						label: '>  - 0.2 В'
-					},
-					{
-						min: mostCommonValue - 0.2,
-						max: mostCommonValue - 0.02 - 0.001,
-						color: yellow,
-						label: '> - 0.02 В'
-					},
-					{
-						min: mostCommonValue - 0.02,
-						max: mostCommonValue + 0.02,
-						color: green,
-						label: `${mostCommonValue}`
-					},
-					{
-						min: mostCommonValue + 0.02,
-						max: mostCommonValue + 0.2,
-						color: yellow,
-						label: '> + 0.02 В'
-					},
-					{
-						min: mostCommonValue + 0.2,
-						max: mostCommonValue + 1,
-						color: red,
-						label: '>  - 0.2 В'
-					}
-				],
-				outOfRange: {
-					color: red
-				}
-			},
-			series: [
-				{
-					label: {
-						show: true,
-						formatter: ({ data }) => (data as number[])[2].toFixed(2)
-					},
-					data: data,
-					name: 'Напруга модуля',
-					type: 'heatmap',
-					orient: 'vertical',
-
-					itemStyle: {
-						borderWidth: 2,
-						borderType: 'solid',
-						borderColor: 'rgb(23 23 23)'
-					},
-					emphasis: {
-						itemStyle: {
-							shadowBlur: 10,
-							shadowColor: 'rgba(0, 0, 0, 0.5)'
-						}
-					}
-				}
-			]
-		});
+		return mostCommonValue;
 	});
+
+	const goodCellThreshold = 0.035;
+	const warningCellThreshold = 0.2;
+
+	const getCellColorClass = (currentValue: number, mostCommonValue: number) => {
+		if (
+			currentValue > mostCommonValue - goodCellThreshold &&
+			currentValue < mostCommonValue + goodCellThreshold
+		) {
+			return 'bg-green-400';
+		}
+
+		if (
+			currentValue > mostCommonValue - warningCellThreshold &&
+			currentValue < mostCommonValue + warningCellThreshold
+		) {
+			return 'bg-yellow-400';
+		}
+
+		return 'bg-red-400';
+	};
 </script>
 
 {#snippet valueCard(name: string, value: string, unit: string, showWarning: boolean = false)}
@@ -231,7 +166,59 @@
 	</div>
 
 	<h2 class="text-center text-lg font-bold dark:text-neutral-400">Елементи</h2>
+	<div class="mx-auto max-w-2xl">
+		<div>Найчастіша напруга елементу: <strong>{mostCommonValue}</strong> В</div>
+		<div>
+			Розбіжність напруг: <strong>
+				{Math.abs(Math.max(...cellVoltageValues) - Math.min(...cellVoltageValues)).toFixed(2)}
+			</strong> В
+		</div>
+		<div class="flex items-start justify-between gap-2 py-2">
+			<Button
+				aria-label="Показувати мінімальні/середні напруги"
+				variant="tertiary"
+				size="compact"
+				onclick={() => (trackMinCellVoltages = !trackMinCellVoltages)}
+				><span
+					class={trackMinCellVoltages
+						? 'icon-[mdi--align-vertical-center]'
+						: 'icon-[mdi--align-vertical-bottom]'}
+				></span></Button
+			>
+			<h3>{trackMinCellVoltages ? 'Мінімальні напруги' : 'Поточні напруги'}</h3>
+			<Button
+				variant="tertiary"
+				size="compact"
+				aria-label="Пауза/Відновити"
+				onclick={() => {
+					lastCellVoltages = cellVoltageValues;
+					isPaused = !isPaused;
+				}}
+			>
+				<span class={[isPaused ? 'icon-[mdi--play]' : 'icon-[mdi--pause]']}></span>
+			</Button>
+		</div>
+	</div>
 	<div class="flex w-full justify-center py-4">
-		<div bind:this={chartsElement} style={`height: 700px; width: 100%; max-width: 350px`}></div>
+		<div class="grid grid-cols-7 gap-1">
+			{#each { length: NUMBER_OF_ROWS } as _, rowIndex}
+				{#each { length: NUMBER_OF_COLUMNS } as _, columnIndex}
+					<div
+						class={[
+							'relative flex h-10 w-10 items-center justify-center rounded-sm font-bold text-neutral-800',
+							getCellColorClass(
+								cellVoltagesToDisplay[rowIndex * NUMBER_OF_COLUMNS + columnIndex],
+								mostCommonValue
+							)
+						]}
+					>
+						<small class="absolute top-[-2px] right-1 text-[10px] font-normal">
+							#{rowIndex * NUMBER_OF_COLUMNS + columnIndex + 1}
+						</small>
+						{cellVoltagesToDisplay[rowIndex * NUMBER_OF_COLUMNS + columnIndex].toFixed(2)}
+					</div>
+				{/each}
+			{/each}
+		</div>
 	</div>
 </div>

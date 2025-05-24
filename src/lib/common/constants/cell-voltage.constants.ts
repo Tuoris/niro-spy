@@ -101,7 +101,7 @@ export const CELL_VOLTAGE_NAMES = {
 
 export const CELL_VOLTAGE_PARAMS_CONFIG = [
 	...Object.values(CELL_VOLTAGE_NAMES).map((cellVoltageName, index) => ({
-		name: `Напруга комірки ${index + 1}`,
+		name: `Напруга елементу батареї ${index + 1}`,
 		field: cellVoltageName,
 		exampleValue: 3.7,
 		range: [2.4, 4.2],
