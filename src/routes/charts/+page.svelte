@@ -105,7 +105,7 @@
 			return;
 		}
 
-		const firstChartData = Object.values(values)[0];
+		const firstChartData = Object.values(values).filter((value) => value.length > 0)[0];
 		const currentPointsCount = firstChartData.length;
 
 		let xAxisStartValue = firstChartData[0].timestamp;
