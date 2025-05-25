@@ -126,10 +126,10 @@ export const PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed(3)
 	},
 	{
-		name: 'Cтрум 12 В батареї (?)',
+		name: 'Cтрум 12 В батареї',
 		field: PARAM_FIELDS.AUX_BATTERY_CURRENT,
 		exampleValue: 10,
-		range: [-200, 200],
+		range: [-163.84, 163.84],
 		unit: 'А',
 		format: (value: number) => value.toFixed(3)
 	},
