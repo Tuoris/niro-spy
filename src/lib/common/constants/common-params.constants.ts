@@ -12,6 +12,9 @@ export const PARAM_FIELDS = {
 	ODOMETER_KM: 'odometerKm',
 	BRAKE_PEDAL_POSITION_RELATIVE: 'brakePedalPositionRelative',
 	ACCELERATOR_PEDAL_POSITION_RELATIVE: 'acceleratorPedalPositionRelative',
+	AUX_BATTERY_VOLTAGE: 'auxBatteryVoltage',
+	AUX_BATTERY_CURRENT: 'auxBatteryCurrent',
+	AUX_BATTERY_SOC: 'auxBatterySoc',
 	...CELL_VOLTAGE_NAMES,
 	...TPMS_FIELD_NAMES,
 	...AIRCON_FIELD_NAMES
@@ -97,6 +100,30 @@ export const PARAMS_CONFIG = [
 		name: 'Педаль акселератора',
 		field: PARAM_FIELDS.ACCELERATOR_PEDAL_POSITION_RELATIVE,
 		exampleValue: 10,
+		range: [0, 100],
+		unit: '%',
+		format: (value: number) => value.toFixed()
+	},
+	{
+		name: 'Напруга 12 В батареї',
+		field: PARAM_FIELDS.AUX_BATTERY_VOLTAGE,
+		exampleValue: 14.775,
+		range: [0, 100],
+		unit: 'В',
+		format: (value: number) => value.toFixed(3)
+	},
+	{
+		name: 'Cтрум 12 В батареї',
+		field: PARAM_FIELDS.AUX_BATTERY_CURRENT,
+		exampleValue: 10,
+		range: [-200, 200],
+		unit: 'А',
+		format: (value: number) => value.toFixed(3)
+	},
+	{
+		name: 'Рівень заряду 12 В батареї',
+		field: PARAM_FIELDS.AUX_BATTERY_SOC,
+		exampleValue: 70,
 		range: [0, 100],
 		unit: '%',
 		format: (value: number) => value.toFixed()

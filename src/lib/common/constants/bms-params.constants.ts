@@ -25,7 +25,7 @@ export const BMS_FIELD_NAMES = {
 	BATTERY_MIN_CELL_VOLTAGE_NO: 'batteryMinCellVoltageNo',
 	BATTERY_FAN_MODE: 'batteryFanMode',
 	BATTERY_FAN_SPEED: 'batteryFanSpeed',
-	AUX_BATTERY_VOLTAGE: 'auxBatteryVoltage',
+	AUX_BATTERY_VOLTAGE_BMS: 'auxBatteryVoltageBms',
 
 	OPERATIONAL_TIME_SECONDS: 'operationalTimeSeconds',
 	OPERATIONAL_TIME_HOURS: 'operationalTimeHours',
@@ -200,8 +200,8 @@ export const BMS_PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'Напруга допоміжної батареї',
-		field: BMS_FIELD_NAMES.AUX_BATTERY_VOLTAGE,
+		name: 'Напруга 12 В батареї (BMS)',
+		field: BMS_FIELD_NAMES.AUX_BATTERY_VOLTAGE_BMS,
 		exampleValue: 12.8,
 		range: [9, 16],
 		unit: 'В',

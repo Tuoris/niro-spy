@@ -147,6 +147,12 @@ export const COMMANDS = {
 		header: '7E2',
 		responseParser: hkmcParsers.parseHkmcEvVmcuInfo01
 	},
+	HKMC_EV_VMCU_INFO02: {
+		i18Label: 'parseHkmcEvAbsInfo01',
+		payload: '2102',
+		header: '7E2',
+		responseParser: hkmcParsers.parseHkmcEvVmcuInfo02
+	},
 	HKMC_EV_ECU_7D4_INFO01: {
 		i18Label: 'parseHkmcEvEcu7D4Info01',
 		payload: '220101',

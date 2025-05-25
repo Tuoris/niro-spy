@@ -40,7 +40,7 @@ export function parseHkmcEvBmsInfo01(value: string) {
 	const batteryFanMode = unsignedIntFromBytes(separatePacketBytes[4][3]);
 	const batteryFanSpeed = unsignedIntFromBytes(separatePacketBytes[4][4]);
 
-	const auxBatteryVoltage = unsignedIntFromBytes(separatePacketBytes[4][5]) / 10;
+	const auxBatteryVoltageBms = unsignedIntFromBytes(separatePacketBytes[4][5]) / 10;
 
 	const cumulativeCapacityCharged =
 		unsignedIntFromBytes([separatePacketBytes[4][6], ...separatePacketBytes[5].slice(0, 3)]) / 100;
@@ -95,7 +95,7 @@ export function parseHkmcEvBmsInfo01(value: string) {
 		batteryMinCellVoltageNo,
 		batteryFanMode,
 		batteryFanSpeed,
-		auxBatteryVoltage,
+		auxBatteryVoltageBms,
 		cumulativeCapacityCharged,
 		cumulativeCapacityDischarged,
 		cumulativeEnergyCharged,
@@ -524,6 +524,32 @@ export function parseHkmcEvVmcuInfo01(value: string) {
 
 	return {
 		acceleratorPedalPositionRelative
+	};
+}
+
+export const sampleHkmcEvVmcuInfo02 = `027 
+0: 61 02 F8 FF FC 00
+1: 01 01 00 00 00 94 1F
+2: BC 6E F0 39 D7 0B 02
+3: 93 F1 38 BC 7F 46 1B
+4: 22 5F 00 00 01 01 01
+5: 00 00 01 07 04 00 00
+>`;
+
+export function parseHkmcEvVmcuInfo02(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const auxBatteryVoltage =
+		unsignedIntFromBytes(separatePacketBytes[3].slice(1, 3).reverse()) / 1000;
+	const auxBatteryCurrent =
+		unsignedIntFromBytes(separatePacketBytes[3].slice(3, 5).reverse()) / 1000;
+
+	const auxBatterySoc = unsignedIntFromBytes(separatePacketBytes[3][5]);
+
+	return {
+		auxBatteryVoltage,
+		auxBatteryCurrent,
+		auxBatterySoc
 	};
 }
 
