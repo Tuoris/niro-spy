@@ -137,6 +137,17 @@ export async function mockStartDataReading() {
 				continue;
 			}
 
+			if (field === PARAM_FIELDS.IS_AUX_BATTERY_CHARGING) {
+				const batteryPowerValue = paramsState.values[PARAM_FIELDS.AUX_BATTERY_POWER];
+				let previousBatteryPowerValue = batteryPowerValue[batteryPowerValue.length - 1]?.value || 0;
+
+				paramsState.values[field].push({
+					timestamp: new Date().valueOf(),
+					value: previousBatteryPowerValue < 0 ? 1 : 0
+				});
+				continue;
+			}
+
 			if (field.endsWith('TireLiveData')) {
 				paramsState.values[field].push({
 					timestamp: new Date().valueOf(),

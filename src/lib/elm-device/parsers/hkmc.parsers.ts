@@ -556,15 +556,21 @@ export function parseHkmcEvVmcuInfo02(value: string) {
 
 	const auxBatteryVoltage =
 		unsignedIntFromBytes(separatePacketBytes[3].slice(1, 3).reverse()) / 1000;
-	const auxBatteryCurrent =
-		(unsignedIntFromBytes(separatePacketBytes[3].slice(3, 5).reverse()) - Math.pow(2, 15)) / 200;
+	let auxBatteryCurrent =
+		(unsignedIntFromBytes(separatePacketBytes[3].slice(3, 5).reverse()) - Math.pow(2, 15)) / 100;
+	auxBatteryCurrent = -1 * auxBatteryCurrent; // to be inline with high voltage battery current value
 
 	const auxBatterySoc = unsignedIntFromBytes(separatePacketBytes[3][5]);
+
+	const auxBatteryPower = auxBatteryCurrent * auxBatteryVoltage;
+	const isAuxBatteryCharging = auxBatteryPower < 0;
 
 	return {
 		auxBatteryVoltage,
 		auxBatteryCurrent,
-		auxBatterySoc
+		auxBatterySoc,
+		auxBatteryPower,
+		isAuxBatteryCharging
 	};
 }
 

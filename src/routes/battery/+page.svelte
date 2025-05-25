@@ -162,7 +162,7 @@
 			Math.abs(batteryPower) > 1000 ? (batteryPower / 1000).toFixed(2) : batteryPower.toFixed(),
 			Math.abs(batteryPower) > 1000 ? 'кВт' : 'Вт'
 		)}
-		{@render valueCard('Йде заряджання/рекуперація', isBatteryCharging ? 'так' : 'ні', '')}
+		{@render valueCard('Заряджання/рекуперація', isBatteryCharging ? 'так' : 'ні', '')}
 	</div>
 
 	<h2 class="text-center text-lg font-bold dark:text-neutral-400">Елементи</h2>

@@ -17,6 +17,8 @@ export const PARAM_FIELDS = {
 	AUX_BATTERY_VOLTAGE: 'auxBatteryVoltage',
 	AUX_BATTERY_CURRENT: 'auxBatteryCurrent',
 	AUX_BATTERY_SOC: 'auxBatterySoc',
+	AUX_BATTERY_POWER: 'auxBatteryPower',
+	IS_AUX_BATTERY_CHARGING: 'isAuxBatteryCharging',
 	MOTOR_TEMPERATURE: 'motorTemperature',
 	INVERTER_TEMPERATURE: 'inverterTemperature',
 	...CELL_VOLTAGE_NAMES,
@@ -140,6 +142,22 @@ export const PARAMS_CONFIG = [
 		range: [0, 100],
 		unit: '%',
 		format: (value: number) => value.toFixed()
+	},
+	{
+		name: 'Миттєва потужність 12 В батареї',
+		field: PARAM_FIELDS.AUX_BATTERY_POWER,
+		exampleValue: 24,
+		range: [-2000, 2000],
+		unit: 'Вт',
+		format: (value: number) => value.toFixed(2)
+	},
+	{
+		name: 'Заряджання 12 В батареї',
+		field: PARAM_FIELDS.IS_AUX_BATTERY_CHARGING,
+		exampleValue: 1,
+		range: [0, 1],
+		unit: '',
+		format: (value: number) => (value ? 'так' : 'ні')
 	},
 	{
 		name: 'Температура мотора',
