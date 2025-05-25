@@ -2,6 +2,7 @@
 	import '../app.css';
 	import { bluetoothState } from '$lib/bluetooth.store.svelte';
 	import { _ } from 'svelte-i18n';
+	import { isInDemoMode } from '$lib/demo-mode.svelte';
 
 	let serialConnectionStatus = $derived(bluetoothState.serialConnectionStatus);
 	let elmDeviceStatus = $derived(bluetoothState.elmDeviceStatus);
@@ -34,7 +35,12 @@
 		{@render children()}
 	</main>
 	<footer
-		class="flex flex-nowrap justify-center gap-4 border-t-1 border-neutral-900 bg-neutral-100 py-1 text-sm text-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+		class={[
+			'flex flex-nowrap justify-center gap-4 border-t-1 border-neutral-900 bg-neutral-100 py-1 text-sm text-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
+			isInDemoMode
+				? "after:width-[80%] after:absolute after:scale-125 after:overflow-hidden after:font-bold after:opacity-20 after:content-['Демо-Демо-Демо-Демо-Демо-Демо']"
+				: ''
+		]}
 	>
 		<div class="flex flex-wrap items-center gap-2">
 			<span class="icon-[mdi--bluetooth-transfer]"></span>
