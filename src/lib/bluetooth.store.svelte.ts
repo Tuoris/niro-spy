@@ -100,12 +100,12 @@ export async function startDataReading() {
 			} catch {}
 		}
 
-		const cumulativeEnergyChargedValues =
-			paramsState.values[PARAM_FIELDS.CUMULATIVE_ENERGY_CHARGED];
+		const cumulativeEnergyDischargedValues =
+			paramsState.values[PARAM_FIELDS.CUMULATIVE_ENERGY_DISCHARGED];
 		const odometerValues = paramsState.values[PARAM_FIELDS.ODOMETER_KM];
-		if (cumulativeEnergyChargedValues?.length && odometerValues?.length) {
+		if (cumulativeEnergyDischargedValues?.length && odometerValues?.length) {
 			const lifetimeEfficiency =
-				(cumulativeEnergyChargedValues[cumulativeEnergyChargedValues.length - 1].value /
+				(cumulativeEnergyDischargedValues[cumulativeEnergyDischargedValues.length - 1].value /
 					odometerValues[odometerValues.length - 1].value) *
 				100;
 			if (!paramsState.values[PARAM_FIELDS.AVERAGE_CONSUMPTION]) {
@@ -113,7 +113,7 @@ export async function startDataReading() {
 			}
 			paramsState.values[PARAM_FIELDS.AVERAGE_CONSUMPTION].push({
 				timestamp:
-					cumulativeEnergyChargedValues[cumulativeEnergyChargedValues.length - 1].timestamp,
+					cumulativeEnergyDischargedValues[cumulativeEnergyDischargedValues.length - 1].timestamp,
 				value: lifetimeEfficiency
 			});
 		}
