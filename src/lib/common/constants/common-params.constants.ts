@@ -115,7 +115,7 @@ export const PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed(3)
 	},
 	{
-		name: 'Cтрум 12 В батареї',
+		name: 'Cтрум 12 В батареї (?)',
 		field: PARAM_FIELDS.AUX_BATTERY_CURRENT,
 		exampleValue: 10,
 		range: [-200, 200],
@@ -131,7 +131,7 @@ export const PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'Температура мотора (?)',
+		name: 'Температура мотора',
 		field: PARAM_FIELDS.MOTOR_TEMPERATURE,
 		exampleValue: 22,
 		range: [-256, 256],
@@ -139,7 +139,7 @@ export const PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'Температура інвертора мотора (?)',
+		name: 'Температура інвертора мотора',
 		field: PARAM_FIELDS.INVERTER_TEMPERATURE,
 		exampleValue: 22,
 		range: [-256, 256],
