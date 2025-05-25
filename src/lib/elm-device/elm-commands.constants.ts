@@ -170,5 +170,11 @@ export const COMMANDS = {
 		payload: '220100',
 		header: '7B3',
 		responseParser: hkmcParsers.parseHkmcEvAirconInfo00
+	},
+	HKMC_EV_MCU_INFO02: {
+		i18Label: 'parseHkmcEvEcu7D4Info01',
+		payload: '2102',
+		header: '7E3',
+		responseParser: hkmcParsers.parseHkmcEvMcuInfo02
 	}
 } as const;

@@ -257,7 +257,7 @@ export const BMS_PARAMS_CONFIG = [
 		format: (value: number) => parseInt(`${value}`).toString(2).padStart(8, '0')
 	},
 	{
-		name: 'Швидкість обертання двигуна',
+		name: 'Швидкість обертання мотора',
 		field: BMS_FIELD_NAMES.MOTOR_RPM1,
 		exampleValue: 4000,
 		range: [0, 100],
@@ -265,7 +265,7 @@ export const BMS_PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'Швидкість обертання двигуна (сенсор 2)',
+		name: 'Швидкість обертання мотора (сенсор 2)',
 		field: BMS_FIELD_NAMES.MOTOR_RPM2,
 		exampleValue: 4000,
 		range: [0, 100],

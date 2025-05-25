@@ -701,3 +701,25 @@ export function parseHkmcEvAirconInfo02(value: string) {
 		absoluteAirPressure
 	};
 }
+
+export const sampleHkmcEvMcuInfo02 = `0: 3A 61 02 07 FF FF FF
+1: 00 00 00 00 00 00 1D
+2: 00 08 0B 0D 0D 02 00
+3: 03 00 F6 13 CD AB C2
+4: CD 5C 01 F7 35 8E 00
+5: 63 DD 5E 27 1A EA C1
+6: CD 00 00 60 34 00 00
+7: 00 00 00 00 00 00 00
+8: 00 00 00 00 00 00 00`;
+
+export function parseHkmcEvMcuInfo02(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const motorTemperature = signedIntFromBytes(separatePacketBytes[2][1]) * 2;
+	const inverterTemperature = signedIntFromBytes(separatePacketBytes[2][2]) * 2;
+
+	return {
+		motorTemperature,
+		inverterTemperature
+	};
+}

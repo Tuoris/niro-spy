@@ -78,7 +78,8 @@ export async function startDataReading() {
 			COMMANDS.HKMC_EV_VMCU_INFO01,
 			COMMANDS.HKMC_EV_VMCU_INFO02,
 			COMMANDS.HKMC_EV_TPMS_ECU_INFO02,
-			COMMANDS.HKMC_EV_AIRCON_ECU_INFO00
+			COMMANDS.HKMC_EV_AIRCON_ECU_INFO00,
+			COMMANDS.HKMC_EV_MCU_INFO02
 		]) {
 			try {
 				const response = await elmDevice.sendCommand(command);

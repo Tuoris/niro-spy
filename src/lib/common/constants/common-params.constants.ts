@@ -15,6 +15,8 @@ export const PARAM_FIELDS = {
 	AUX_BATTERY_VOLTAGE: 'auxBatteryVoltage',
 	AUX_BATTERY_CURRENT: 'auxBatteryCurrent',
 	AUX_BATTERY_SOC: 'auxBatterySoc',
+	MOTOR_TEMPERATURE: 'motorTemperature',
+	INVERTER_TEMPERATURE: 'inverterTemperature',
 	...CELL_VOLTAGE_NAMES,
 	...TPMS_FIELD_NAMES,
 	...AIRCON_FIELD_NAMES
@@ -126,6 +128,22 @@ export const PARAMS_CONFIG = [
 		exampleValue: 70,
 		range: [0, 100],
 		unit: '%',
+		format: (value: number) => value.toFixed()
+	},
+	{
+		name: 'Температура мотора (?)',
+		field: PARAM_FIELDS.MOTOR_TEMPERATURE,
+		exampleValue: 22,
+		range: [-256, 256],
+		unit: '°C',
+		format: (value: number) => value.toFixed()
+	},
+	{
+		name: 'Температура інвертора мотора (?)',
+		field: PARAM_FIELDS.INVERTER_TEMPERATURE,
+		exampleValue: 22,
+		range: [-256, 256],
+		unit: '°C',
 		format: (value: number) => value.toFixed()
 	},
 	{
