@@ -1,3 +1,4 @@
+import { HKMC_GEARS } from '$lib/common/constants/vmcu.constants';
 import { signedIntFromBytes, unsignedIntFromBytes } from './elm-parser.utils';
 
 export function parseUdsInfoBuffer(buffer: string) {
@@ -522,10 +523,26 @@ export function parseHkmcEvVmcuInfo01(value: string) {
 
 	const acceleratorPedalPositionRelative = unsignedIntFromBytes(separatePacketBytes[2][1]) / 2;
 
+	const gearByteValue = unsignedIntFromBytes(separatePacketBytes[1][1]);
+
+	let gear;
+	if (gearByteValue & (1 << 0)) {
+		gear = HKMC_GEARS.PARKING;
+	} else if (gearByteValue & (1 << 1)) {
+		gear = HKMC_GEARS.REVERSE;
+	} else if (gearByteValue & (1 << 2)) {
+		gear = HKMC_GEARS.NEUTRAL;
+	} else if (gearByteValue & (1 << 3)) {
+		gear = HKMC_GEARS.DRIVE;
+	}
+
 	return {
-		acceleratorPedalPositionRelative
+		acceleratorPedalPositionRelative,
+		gear
 	};
 }
+
+console.log(parseHkmcEvVmcuInfo01(sampleHkmcEvVmcuInfo01));
 
 export const sampleHkmcEvVmcuInfo02 = `027 
 0: 61 02 F8 FF FC 00

@@ -171,7 +171,8 @@ export async function mockStartDataReading() {
 				[PARAM_FIELDS.FRONT_LEFT_TIRE_TEMPERATURE]: 2,
 				[PARAM_FIELDS.FRONT_RIGHT_TIRE_TEMPERATURE]: 2,
 				[PARAM_FIELDS.REAR_RIGHT_TIRE_TEMPERATURE]: 2,
-				[PARAM_FIELDS.REAR_LEFT_TIRE_TEMPERATURE]: 2
+				[PARAM_FIELDS.REAR_LEFT_TIRE_TEMPERATURE]: 2,
+				[PARAM_FIELDS.GEAR]: 0
 			};
 
 			let jitterValue = jitterByField[field as keyof typeof jitterByField] ?? 10;

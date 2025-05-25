@@ -3,6 +3,7 @@ import { AIRCON_FIELD_NAMES, AIRCON_PARAMS_CONFIG } from './aircon.constants';
 import { BMS_FIELD_NAMES, BMS_PARAMS_CONFIG } from './bms-params.constants';
 import { CELL_VOLTAGE_NAMES, CELL_VOLTAGE_PARAMS_CONFIG } from './cell-voltage.constants';
 import { TPMS_FIELD_NAMES, TPMS_PARAMS_CONFIG } from './tpms.constant';
+import { HKMC_GEARS, HKMC_GEARS_TO_DISPLAY } from './vmcu.constants';
 
 export const PARAM_FIELDS = {
 	...BMS_FIELD_NAMES,
@@ -12,6 +13,7 @@ export const PARAM_FIELDS = {
 	ODOMETER_KM: 'odometerKm',
 	BRAKE_PEDAL_POSITION_RELATIVE: 'brakePedalPositionRelative',
 	ACCELERATOR_PEDAL_POSITION_RELATIVE: 'acceleratorPedalPositionRelative',
+	GEAR: 'gear',
 	AUX_BATTERY_VOLTAGE: 'auxBatteryVoltage',
 	AUX_BATTERY_CURRENT: 'auxBatteryCurrent',
 	AUX_BATTERY_SOC: 'auxBatterySoc',
@@ -105,6 +107,15 @@ export const PARAMS_CONFIG = [
 		range: [0, 100],
 		unit: '%',
 		format: (value: number) => value.toFixed()
+	},
+	{
+		name: 'Передача',
+		field: PARAM_FIELDS.GEAR,
+		exampleValue: 1,
+		range: [1, 4],
+		unit: '',
+		format: (value: number) =>
+			HKMC_GEARS_TO_DISPLAY[value as keyof typeof HKMC_GEARS_TO_DISPLAY] ?? ''
 	},
 	{
 		name: 'Напруга 12 В батареї',

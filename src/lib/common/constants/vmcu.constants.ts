@@ -1,0 +1,13 @@
+export const HKMC_GEARS = {
+	PARKING: 1,
+	REVERSE: 2,
+	NEUTRAL: 3,
+	DRIVE: 4
+} as const;
+
+export const HKMC_GEARS_TO_DISPLAY = {
+	[HKMC_GEARS.PARKING]: 'P',
+	[HKMC_GEARS.REVERSE]: 'R',
+	[HKMC_GEARS.NEUTRAL]: 'N',
+	[HKMC_GEARS.DRIVE]: 'D'
+};
