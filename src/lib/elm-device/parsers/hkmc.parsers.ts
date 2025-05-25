@@ -631,8 +631,16 @@ export const sampleAirconInfo00 = `
 >
 `;
 
+export const invalidAirconInfo00 = `
+026 \r0: 62 01 00 7E 50 273: FF FF FF FF FF 69 FF4: FF 22 EF 67 68 00 FF5: FF 01 FF FF 00 00 00>
+`;
+
 export function parseHkmcEvAirconInfo00(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	if (separatePacketBytes.length < 5) {
+		return {};
+	}
 
 	const interiorTemperature = unsignedIntFromBytes(separatePacketBytes[1][2]) / 2 - 40;
 	const ambientTemperature = unsignedIntFromBytes(separatePacketBytes[1][3]) / 2 - 40;
