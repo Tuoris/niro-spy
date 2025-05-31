@@ -6,5 +6,15 @@
   "battery": "Батарея",
   "tpms": "TPMS",
   "exitDemoMode": "Вийти з Демо режиму",
-  "demoMode": "Демо режим"
+  "demoMode": "Демо режим",
+  "notConnected": "Не підключено",
+  "connecting": "З'єднання...",
+  "error": "Помилка",
+  "connected": "З'єднано",
+  "bluetooth": "Bluetooth",
+  "notInitialized": "Не ініціалізовано",
+  "initializing": "Ініціалізація",
+  "initError": "Помилка ініціалізації",
+  "ready": "Готовий",
+  "lastCommandTimeMs": "{{lastCommandTime}} мс"
 }

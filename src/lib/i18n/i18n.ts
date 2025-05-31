@@ -1,19 +1,24 @@
-import i18next from 'i18next';
+import i18next, { type i18n as I18NType } from 'i18next';
 import uk from './locales/uk.json';
 import en from './locales/en.json';
+import ko from './locales/ko.json';
 import type { ObjectValues } from '$lib/common/types/common.types';
+import { createSubscriber } from 'svelte/reactivity';
 
 export const LOCALES = {
 	UK: 'uk',
-	EN: 'en'
+	EN: 'en',
+	KO: 'ko'
 } as const;
 
 export type Locales = ObjectValues<typeof LOCALES>;
 
-export const currentLocale = window.localStorage.getItem('lang') || LOCALES.UK;
+export type I18NLabel = keyof typeof uk;
 
-await i18next.init({
-	lng: currentLocale,
+const defaultLocale = window.localStorage.getItem('lang') || LOCALES.UK;
+
+const i18nextOptions = {
+	lng: defaultLocale,
 	debug: true,
 	resources: {
 		uk: {
@@ -21,8 +26,53 @@ await i18next.init({
 		},
 		en: {
 			translation: en
+		},
+		ko: {
+			translation: ko
 		}
 	}
-});
+};
 
-export type I18NLabel = keyof typeof uk;
+export class ReactiveI18Next {
+	#subscription;
+	#i18next: I18NType;
+
+	constructor() {
+		this.#i18next = i18next;
+		this.#i18next.init(i18nextOptions);
+
+		this.#subscription = createSubscriber((update) => {
+			this.#i18next.on('initialized', update);
+			this.#i18next.on('languageChanged', () => {
+				window.localStorage.setItem('lang', i18next.resolvedLanguage ?? '');
+				update();
+			});
+		});
+	}
+
+	get t() {
+		this.#subscription();
+
+		return this.#i18next.t;
+	}
+
+	get isInitialized() {
+		this.#subscription();
+
+		return this.#i18next.isInitialized;
+	}
+
+	get resolvedLanguage() {
+		this.#subscription();
+
+		return this.#i18next.resolvedLanguage;
+	}
+
+	get changeLanguage() {
+		this.#subscription();
+
+		return this.#i18next.changeLanguage;
+	}
+}
+
+export const i18n = new ReactiveI18Next();

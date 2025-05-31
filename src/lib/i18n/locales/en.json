@@ -6,5 +6,15 @@
   "battery": "Battery",
   "tpms": "TPMS",
   "exitDemoMode": "Exit Demo Mode",
-  "demoMode": "Demo Mode"
+  "demoMode": "Demo Mode",
+  "notConnected": "Not connected",
+  "connecting": "Connecting...",
+  "error": "Error",
+  "connected": "Connected",
+  "bluetooth": "Bluetooth",
+  "notInitialized": "Not initialized",
+  "initializing": "Initializing",
+  "initError": "Initialization error",
+  "ready": "Ready",
+  "lastCommandTimeMs": "{{lastCommandTime}} ms"
 }

@@ -7,12 +7,11 @@
 		mockStartDataReading,
 		bluetoothState
 	} from '$lib/bluetooth.store.svelte';
-	import { t } from 'i18next';
 	import '/node_modules/flag-icons/css/flag-icons.min.css';
 
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
-	import { currentLocale, LOCALES } from '$lib/i18n/i18n';
+	import { i18n, LOCALES } from '$lib/i18n/i18n';
 
 	const connect = isInDemoMode ? mockConnect : realConnect;
 	const startDataReading = isInDemoMode ? mockStartDataReading : realStartDataReading;
@@ -27,31 +26,34 @@
 
 	const localesConfig = [
 		{
-			locale: LOCALES.UK,
+			language: LOCALES.UK,
 			icon: 'fi-ua'
 		},
 		{
-			locale: LOCALES.EN,
+			language: LOCALES.EN,
 			icon: 'fi-gb'
+		},
+		{
+			language: LOCALES.KO,
+			icon: 'fi-kr'
 		}
 	];
 </script>
 
 <div class="flex shrink justify-between font-bold text-neutral-400">
-	<div class="w-18"></div>
+	<div class="w-30"></div>
 	<div class="py-1">Niro Spy <span class="fi fi-ua"></span></div>
-	<div class="flex w-18 items-center gap-2">
+	<div class="flex w-30 items-center gap-2">
 		{#each localesConfig as localeConfig}
 			<button
-				aria-label={localeConfig.locale}
+				aria-label={localeConfig.language}
 				class={[
 					'flex items-center rounded-xs border p-1',
-					localeConfig.locale === currentLocale ? 'border-neutral-400' : 'border-transparent'
+					localeConfig.language === i18n.resolvedLanguage
+						? 'border-neutral-400'
+						: 'border-transparent'
 				]}
-				onclick={() => {
-					window.localStorage.setItem('lang', localeConfig.locale);
-					window.location.reload();
-				}}
+				onclick={() => i18n.changeLanguage(localeConfig.language)}
 			>
 				<span class={['fi', localeConfig.icon]}></span>
 			</button>
@@ -60,23 +62,25 @@
 </div>
 <div class="flex grow items-center justify-center">
 	<div class="flex flex-col gap-2">
-		<Button variant="primary" onclick={connectAndStartDataReading}>{t('connectToScanner')}</Button>
+		<Button variant="primary" onclick={connectAndStartDataReading}
+			>{i18n.t('connectToScanner')}</Button
+		>
 		<hr />
 		<ButtonLink href="all-parameters" variant="secondary" disabled={elmDeviceStatus !== 'ready'}
-			>{t('allParameters')}</ButtonLink
+			>{i18n.t('allParameters')}</ButtonLink
 		>
 		<ButtonLink href="/battery" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
-			{t('battery')}</ButtonLink
+			{i18n.t('battery')}</ButtonLink
 		>
 		<ButtonLink href="/tpms" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
-			{t('tpms')}</ButtonLink
+			{i18n.t('tpms')}</ButtonLink
 		>
 		<hr />
 		<ButtonLink href="/" variant="tertiary" onclick={isInDemoMode ? exitDemoMode : enterDemoMode}>
 			{#if isInDemoMode}
-				{t('exitDemoMode')}
+				{i18n.t('exitDemoMode')}
 			{:else}
-				{t('demoMode')}
+				{i18n.t('demoMode')}
 			{/if}</ButtonLink
 		>
 	</div>
