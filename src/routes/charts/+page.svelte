@@ -7,14 +7,34 @@
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { paramsState } from '$lib/params.svelte';
-	import { init, graphic, type ECharts, type EChartsOption } from 'echarts';
+	import * as echarts from 'echarts/core';
+	import {
+		DataZoomComponent,
+		GridComponent,
+		TooltipComponent,
+		type GridComponentOption
+	} from 'echarts/components';
+	import { LineChart, type LineSeriesOption } from 'echarts/charts';
+	import { UniversalTransition } from 'echarts/features';
+	import { CanvasRenderer } from 'echarts/renderers';
+
+	echarts.use([
+		GridComponent,
+		LineChart,
+		CanvasRenderer,
+		UniversalTransition,
+		DataZoomComponent,
+		TooltipComponent
+	]);
+
+	type EChartsOption = echarts.ComposeOption<GridComponentOption | LineSeriesOption>;
 
 	const CHART_GRID_HEIGHT = 220;
 	const NUMBER_OF_DATA_POINTS_TO_DISPLAY = 40;
 	const APPROXIMATE_UPDATE_INTERVAL = 500;
 
 	let chartsElement: HTMLDivElement;
-	let chart: ECharts;
+	let chart: echarts.ECharts;
 
 	let isPaused = $state(false);
 	let isTooltipEnabled = $state(false);
@@ -33,8 +53,7 @@
 	// Static configuration
 	const tooltipConfig: EChartsOption['tooltip'] = {
 		trigger: 'axis',
-		formatter: (formatterParams) => {
-			// TODO: Fix typing
+		formatter: (formatterParams: { seriesName: any; data: any; axisValueLabel: any }[]) => {
 			const { seriesName, data, axisValueLabel } = formatterParams[0];
 			const fieldConfig = getConfigForField(seriesName);
 			const name = fieldConfig?.name;
@@ -95,7 +114,7 @@
 	};
 
 	$effect(() => {
-		chart = init(chartsElement, 'dark', { renderer: 'canvas' });
+		chart = echarts.init(chartsElement, 'dark', { renderer: 'canvas' });
 		window.addEventListener('resize', () => chart.resize());
 		chart.setOption(staticOptions);
 	});
@@ -128,7 +147,9 @@
 		const seriesData: EChartsOption['series'] = chartsToDisplay.map((field, index) => {
 			const paramValues = values[field].map(({ value }) => value);
 			const minValue = Math.min(0, Math.min(...paramValues));
-			const maxValue = Math.max(...paramValues);
+			let maxValue = Math.max(...paramValues);
+			maxValue = maxValue < 0 ? 0 : maxValue;
+
 			let middlePointOffset = paramValues.length <= 1 ? 0.5 : maxValue / (maxValue - minValue);
 
 			if (isNaN(middlePointOffset)) {
@@ -143,7 +164,7 @@
 				name: field,
 				type: 'line',
 				symbol: 'none',
-				color: new graphic.LinearGradient(0, 0, 0, 1, [
+				color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
 					{
 						offset: 0,
 						color: 'rgba(0, 166, 244, 1)'
@@ -163,7 +184,7 @@
 				]),
 				areaStyle: {
 					opacity: 0.7,
-					color: new graphic.LinearGradient(0, 0, 0, 1, [
+					color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
 						{
 							offset: 0,
 							color: 'rgba(0, 166, 244, 0.5)'
@@ -194,7 +215,7 @@
 
 		const option: EChartsOption = {
 			dataZoom: {
-				...dataZoomExtra
+				...(dataZoomExtra as object)
 			},
 			xAxis: Array.from({ length: numberOfCharts }).map((_, index) => ({
 				startValue: xAxisStartValue,
