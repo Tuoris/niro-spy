@@ -1,10 +1,22 @@
+import { getGeolocationPermission } from './geolocation.svelte';
+
 export const settingsStore = $state({
-	geolocationAllowed: false
+	geoLocationPermission: 'not available',
+	geolocationEnabled: false
 });
 
-navigator.permissions &&
-	navigator.permissions
-		.query({ name: 'geolocation' })
-		.then((permission) => (settingsStore.geolocationAllowed = permission.state === 'granted'));
+setTimeout(() => {
+	getGeolocationPermission().then((status) => {
+		settingsStore.geoLocationPermission = status;
+		settingsStore.geolocationEnabled =
+			status === 'granted' && `${window.localStorage.getItem('geolocationEnabled')}` === 'true';
+	});
+});
 
-export const isGeolocationAllowed = () => settingsStore.geolocationAllowed;
+export const changeGeolocationEnabled = async (newValue: boolean) => {
+	console.log({ newValue });
+	settingsStore.geolocationEnabled = newValue;
+	window.localStorage.setItem('geolocationEnabled', `${newValue}`);
+};
+
+export const getGeolocationSettingEnabled = () => settingsStore.geolocationEnabled;

@@ -2,6 +2,16 @@ import { PARAM_FIELDS, type FieldType } from './common/constants/common-params.c
 import { paramsState } from './params.svelte';
 import { settingsStore } from './settings.store.svelte';
 
+export const getGeolocationPermission = async () => {
+	if (!navigator.permissions) {
+		return 'not available';
+	}
+
+	const geolocationPermission = await navigator.permissions.query({ name: 'geolocation' });
+
+	return geolocationPermission.state;
+};
+
 const options = {
 	enableHighAccuracy: true,
 	timeout: 10000,
@@ -13,7 +23,7 @@ let geolocationWatchId: any;
 const positionCallback: PositionCallback = (pos) => {
 	const coords = pos.coords;
 
-	const { altitude, speed: speedMs } = coords;
+	const { altitude, speed: speedMetersPerSecond, accuracy } = coords;
 
 	const now = new Date().valueOf();
 	if (altitude) {
@@ -28,8 +38,15 @@ const positionCallback: PositionCallback = (pos) => {
 		});
 	}
 
-	if (speedMs) {
-		const speed = (speedMs * 3600) / 1000;
+	if (speedMetersPerSecond) {
+		if (accuracy && accuracy > 5) {
+			return;
+		}
+
+		const speedKmPerHour = (speedMetersPerSecond * 3600) / 1000;
+
+		if (speedKmPerHour < 0 || speedKmPerHour > 200) {
+		}
 
 		const field = PARAM_FIELDS.SPEED_GPS;
 		if (!paramsState.values[field as FieldType]) {
@@ -38,7 +55,7 @@ const positionCallback: PositionCallback = (pos) => {
 
 		paramsState.values[field as FieldType].push({
 			timestamp: now,
-			value: speed
+			value: speedKmPerHour
 		});
 	}
 };
@@ -48,7 +65,7 @@ const positionErrorCallback: PositionErrorCallback = (err) => {
 };
 
 export const pollGeolocation = () => {
-	if (!settingsStore.geolocationAllowed) {
+	if (!settingsStore.geolocationEnabled) {
 		return;
 	}
 

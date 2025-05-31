@@ -34,7 +34,7 @@
 		{/each}
 	</div>
 	<section class="flex h-full flex-col">
-		<main class="flex grow flex-col flex-wrap overflow-auto">
+		<main class="flex grow flex-col overflow-auto">
 			{@render children()}
 		</main>
 		<footer

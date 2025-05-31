@@ -1,31 +1,36 @@
 <script lang="ts">
 	import ButtonLink from '$lib/components/button-link.svelte';
-	import Button from '$lib/components/button.svelte';
-	import { settingsStore } from '$lib/settings.store.svelte';
+	import { changeGeolocationEnabled, settingsStore } from '$lib/settings.store.svelte';
 
-	const isGeolocationSupported = navigator?.geolocation;
+	let geolocationEnabled = $derived(settingsStore.geolocationEnabled);
 
-	const geolocationRequest = $state({
-		idle: true,
-		loading: false,
-		error: false
-	});
-	const checkGeolocation = () => {
+	let currentGeolocationPermission = $derived(settingsStore.geoLocationPermission);
+
+	const tryChangeGeolocationSetting = (event: Event) => {
+		const target = event.target as HTMLInputElement;
+
+		const newValue = target.checked;
+
+		if (!newValue) {
+			changeGeolocationEnabled(false);
+			return;
+		}
+
+		if (currentGeolocationPermission === 'denied') {
+			return;
+		}
+
 		const options = {
 			enableHighAccuracy: true,
 			timeout: 5000,
 			maximumAge: 0
 		};
-		geolocationRequest.idle = false;
 		navigator.geolocation.getCurrentPosition(
 			() => {
-				geolocationRequest.loading = false;
-				geolocationRequest.error = false;
-				settingsStore.geolocationAllowed = true;
+				changeGeolocationEnabled(true);
 			},
 			() => {
-				geolocationRequest.loading = false;
-				geolocationRequest.error = true;
+				// currentGeolocationPermission = 'denied';
 			},
 			options
 		);
@@ -40,17 +45,27 @@
 		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">Налаштування</h2>
 	</div>
 
-	<div class="mx-auto mt-4 mb-4 flex max-w-2xl flex-col">
-		<div>
-			<Button onclick={checkGeolocation} disabled={!isGeolocationSupported}
-				>{geolocationRequest.idle
-					? 'Використовувати геолокацію'
-					: geolocationRequest.loading
-						? 'Запит використання...'
-						: geolocationRequest.error
-							? 'Помилка'
-							: 'Використання геолокації дозволено'}</Button
-			>
+	<div>
+		<div class="flex items-center justify-between gap-2 border-b-1 border-neutral-600 p-2">
+			<div>
+				<div><strong>Використовувати геолокацію</strong></div>
+				{#if currentGeolocationPermission === 'granted' && !geolocationEnabled}
+					Натисніть на прапорець для використання
+				{:else if currentGeolocationPermission === 'not available'}
+					Недоступно
+				{:else if currentGeolocationPermission === 'denied'}
+					Використання геолокації заборонено
+				{/if}
+			</div>
+			<div class="basis-10 border-l-1 border-neutral-600 pt-1 pl-2">
+				<input
+					type="checkbox"
+					class="h-4 w-4"
+					checked={geolocationEnabled}
+					onclick={tryChangeGeolocationSetting}
+					disabled={currentGeolocationPermission === 'denied'}
+				/>
+			</div>
 		</div>
 	</div>
 </div>

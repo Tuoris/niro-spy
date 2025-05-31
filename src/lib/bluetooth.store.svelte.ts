@@ -7,8 +7,8 @@ import {
 	type FieldType
 } from './common/constants/common-params.constants';
 import { paramsState } from './params.svelte';
-import { pollGeolocation, stopPollingGeolocation } from './pollGeolocation.svelte';
-import { isGeolocationAllowed } from './settings.store.svelte';
+import { pollGeolocation, stopPollingGeolocation } from './geolocation.svelte';
+import { getGeolocationSettingEnabled } from './settings.store.svelte';
 
 export const bluetoothState = $state({
 	serialConnectionStatus: 'idle',
@@ -139,7 +139,7 @@ export async function mockStartDataReading() {
 		for (const field of Object.values(PARAM_FIELDS)) {
 			if (
 				([PARAM_FIELDS.SPEED_GPS, PARAM_FIELDS.ALTITUDE_GPS] as string[]).includes(field) &&
-				isGeolocationAllowed()
+				getGeolocationSettingEnabled()
 			) {
 				continue;
 			}
