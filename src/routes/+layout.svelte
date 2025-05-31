@@ -1,7 +1,8 @@
 <script lang="ts">
 	import '../app.css';
+	import '$lib/i18n/i18n';
+
 	import { bluetoothState } from '$lib/bluetooth.store.svelte';
-	import { _ } from 'svelte-i18n';
 	import { isInDemoMode } from '$lib/demo-mode.svelte';
 
 	let serialConnectionStatus = $derived(bluetoothState.serialConnectionStatus);
@@ -31,7 +32,7 @@
 	{/each}
 </div>
 <section class="flex h-full flex-col">
-	<main class="flex grow items-center justify-center overflow-auto">
+	<main class="flex grow flex-col flex-wrap overflow-auto">
 		{@render children()}
 	</main>
 	<footer

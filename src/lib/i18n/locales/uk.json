@@ -1,4 +1,10 @@
 {
   "blueCloneElm327": "Блакитний клон ELM 327",
-  "vgate-icar2-bluetooth-4-0": "Vgate iCar2 Bluetooth 4.0"
+  "vgateIcar2Bluetooth40": "Vgate iCar2 Bluetooth 4.0",
+  "connectToScanner": "З'єднатись зі сканером",
+  "allParameters": "Всі параметри",
+  "battery": "Батарея",
+  "tpms": "TPMS",
+  "exitDemoMode": "Вийти з Демо режиму",
+  "demoMode": "Демо режим"
 }
