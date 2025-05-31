@@ -36,9 +36,6 @@
 	<ButtonLink href="/tpms" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
 		TPMS</ButtonLink
 	>
-	<ButtonLink href="/" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
-		🚧 Витрата</ButtonLink
-	>
 	<hr />
 	<ButtonLink href="/" variant="tertiary" onclick={isInDemoMode ? exitDemoMode : enterDemoMode}>
 		{#if isInDemoMode}
