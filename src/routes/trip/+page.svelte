@@ -119,6 +119,25 @@
 		const energyConsumedKwh = energyConsumed / 1000;
 		return energyConsumedKwh / (distanceTraveledGps / 100);
 	});
+
+	let tripTime = $derived.by(() => {
+		const currentTime = new Date().valueOf();
+		const powerValues = paramsState.values[PARAM_FIELDS.BATTERY_POWER];
+		const speedValues = paramsState.values[PARAM_FIELDS.VEHICLE_SPEED];
+
+		let startTime = currentTime;
+		if (powerValues.length) {
+			startTime = powerValues[0].timestamp;
+		}
+
+		const milliseconds = currentTime - startTime;
+
+		const seconds = Math.round(milliseconds / 1000);
+		const minutes = Math.round(seconds / 60);
+		const hours = Math.round(minutes / 60);
+
+		return `${hours.toFixed().padStart(2, '0')}:${minutes.toFixed().padStart(2, '0')}:${seconds.toFixed().padStart(2, '0')}`;
+	});
 </script>
 
 {#snippet valueCard(name: string, value: string, unit: string)}
@@ -158,5 +177,6 @@
 		{@render valueCard('Пройдена відстань (GPS)', distanceTraveledGps.toFixed(2), 'км')}
 		{@render valueCard('Середня витрата', consumption.toFixed(1), 'кВт·год/100км')}
 		{@render valueCard('Середня витрата (GPS)', consumptionGps.toFixed(1), 'кВт·год/100км')}
+		{@render valueCard('Час поїздки', tripTime, '')}
 	</div>
 </div>
