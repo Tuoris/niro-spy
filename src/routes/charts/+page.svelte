@@ -50,6 +50,24 @@
 	const getConfigForField = (field: FieldType) =>
 		PARAMS_CONFIG.find(({ field: configField }) => configField === field);
 
+	const getCurrentParamValue = (field: FieldType) => {
+		const values = paramsState.values[field];
+		if (values && values.length) {
+			return values[values.length - 1].value;
+		}
+
+		return NaN;
+	};
+
+	const getYAxisNameForField = (field: FieldType) => {
+		const fieldConfig = getConfigForField(field);
+		const fieldValue = getCurrentParamValue(field);
+
+		const formattedValue = fieldConfig?.format ? fieldConfig.format(fieldValue) : fieldValue;
+
+		return `${fieldConfig?.name}: ${formattedValue} ${fieldConfig?.unit}`;
+	};
+
 	// Static configuration
 	const tooltipConfig: EChartsOption['tooltip'] = {
 		trigger: 'axis',
@@ -217,6 +235,21 @@
 			dataZoom: {
 				...(dataZoomExtra as object)
 			},
+			yAxis: chartsToDisplay.map((field, index) => ({
+				gridIndex: index,
+				name: getYAxisNameForField(field),
+				nameTextStyle: { fontWeight: 700, align: 'left' },
+				axisLabel: {
+					inside: true,
+					textBorderColor: '#111',
+					textBorderWidth: 3,
+					align: 'right',
+					margin: 20,
+					fontSize: 9,
+					showMinLabel: false,
+					showMaxLabel: false
+				}
+			})),
 			xAxis: Array.from({ length: numberOfCharts }).map((_, index) => ({
 				startValue: xAxisStartValue,
 				type: 'time',
