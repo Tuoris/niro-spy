@@ -7,6 +7,8 @@ import {
 	type FieldType
 } from './common/constants/common-params.constants';
 import { paramsState } from './params.svelte';
+import { pollGeolocation, stopPollingGeolocation } from './pollGeolocation.svelte';
+import { isGeolocationAllowed } from './settings.store.svelte';
 
 export const bluetoothState = $state({
 	serialConnectionStatus: 'idle',
@@ -64,6 +66,8 @@ export async function startDataReading() {
 	let stop = false;
 	let start = new Date().valueOf();
 
+	pollGeolocation();
+
 	while (!stop) {
 		for (const command of [
 			COMMANDS.HKMC_BMS_INFO01,
@@ -120,12 +124,26 @@ export async function startDataReading() {
 			});
 		}
 	}
+
+	if (stop) {
+		stopPollingGeolocation();
+	}
 }
 
 export async function mockStartDataReading() {
 	let start = new Date().valueOf();
+
+	pollGeolocation();
+
 	setInterval(() => {
 		for (const field of Object.values(PARAM_FIELDS)) {
+			if (
+				([PARAM_FIELDS.SPEED_GPS, PARAM_FIELDS.ALTITUDE_GPS] as string[]).includes(field) &&
+				isGeolocationAllowed()
+			) {
+				continue;
+			}
+
 			if (field === PARAM_FIELDS.IS_BATTERY_CHARGING) {
 				const batteryPowerValue = paramsState.values[PARAM_FIELDS.BATTERY_POWER];
 				let previousBatteryPowerValue = batteryPowerValue[batteryPowerValue.length - 1]?.value || 0;

@@ -41,7 +41,15 @@
 </script>
 
 <div class="flex shrink justify-between font-bold text-neutral-400">
-	<div class="w-30"></div>
+	<div class="ms-1 mt-1 flex w-30 items-center">
+		<a
+			class="flex rounded-xs border border-transparent p-1"
+			href="/settings"
+			aria-label="Перейти до налаштувань"
+		>
+			<span class="icon-[mdi--settings-outline]"></span>
+		</a>
+	</div>
 	<div class="py-1">Niro Spy <span class="fi fi-ua"></span></div>
 	<div class="flex w-30 items-center gap-2">
 		{#each localesConfig as localeConfig}

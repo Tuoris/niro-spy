@@ -25,7 +25,9 @@ export const PARAM_FIELDS = {
 	INVERTER_TEMPERATURE: 'inverterTemperature',
 	...CELL_VOLTAGE_NAMES,
 	...TPMS_FIELD_NAMES,
-	...AIRCON_FIELD_NAMES
+	...AIRCON_FIELD_NAMES,
+	ALTITUDE_GPS: 'altitudeGps',
+	SPEED_GPS: 'speedGps'
 } as const;
 
 export type FieldType = ObjectValues<typeof PARAM_FIELDS>;
@@ -204,5 +206,21 @@ export const PARAMS_CONFIG = [
 	},
 	...TPMS_PARAMS_CONFIG,
 	...AIRCON_PARAMS_CONFIG,
-	...CELL_VOLTAGE_PARAMS_CONFIG
+	...CELL_VOLTAGE_PARAMS_CONFIG,
+	{
+		name: 'Швидкість (GPS)',
+		field: PARAM_FIELDS.SPEED_GPS,
+		exampleValue: 45,
+		range: [0, 255],
+		unit: 'км/год',
+		format: (value: number) => value.toFixed(1)
+	},
+	{
+		name: 'Висота над рівнем моря (GPS)',
+		field: PARAM_FIELDS.ALTITUDE_GPS,
+		exampleValue: 500,
+		range: [0, 8000],
+		unit: 'м',
+		format: (value: number) => value.toFixed(1)
+	}
 ];
