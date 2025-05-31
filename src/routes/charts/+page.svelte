@@ -238,9 +238,10 @@
 			yAxis: chartsToDisplay.map((field, index) => ({
 				gridIndex: index,
 				name: getYAxisNameForField(field),
-				nameTextStyle: { fontWeight: 700, align: 'left' },
+				nameTextStyle: { fontWeight: 700, align: 'left', color: '#f5f5f5' },
 				axisLabel: {
 					inside: true,
+					color: '#f5f5f5',
 					textBorderColor: '#111',
 					textBorderWidth: 3,
 					align: 'right',
@@ -255,7 +256,8 @@
 				type: 'time',
 				gridIndex: index,
 				axisLabel: {
-					hideOverlap: true
+					hideOverlap: true,
+					color: '#f5f5f5'
 				}
 			})),
 			series: seriesData
