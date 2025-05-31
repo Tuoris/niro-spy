@@ -75,6 +75,9 @@
 		<ButtonLink href="/tpms" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
 			{i18n.t('tpms')}</ButtonLink
 		>
+		<ButtonLink href="/trip" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
+			Поїздка</ButtonLink
+		>
 		<hr />
 		<ButtonLink href="/" variant="tertiary" onclick={isInDemoMode ? exitDemoMode : enterDemoMode}>
 			{#if isInDemoMode}

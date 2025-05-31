@@ -1,6 +1,6 @@
 import { PARAM_FIELDS, type FieldType } from './common/constants/common-params.constants';
 
-type ParamValue = {
+export type ParamValue = {
 	timestamp: number;
 	value: number;
 };
