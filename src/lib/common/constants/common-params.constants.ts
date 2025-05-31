@@ -19,6 +19,8 @@ export const PARAM_FIELDS = {
 	AUX_BATTERY_SOC: 'auxBatterySoc',
 	AUX_BATTERY_POWER: 'auxBatteryPower',
 	IS_AUX_BATTERY_CHARGING: 'isAuxBatteryCharging',
+	EWP_SPEED: 'ewpSpeed',
+	EWP_TARGET_SPEED: 'ewpTargetSpeed',
 	MOTOR_TEMPERATURE: 'motorTemperature',
 	INVERTER_TEMPERATURE: 'inverterTemperature',
 	...CELL_VOLTAGE_NAMES,
@@ -159,6 +161,23 @@ export const PARAMS_CONFIG = [
 		unit: '',
 		format: (value: number) => (value ? 'так' : 'ні')
 	},
+	// Not valid
+	// {
+	// 	name: '[TEST] EWP_SPEED',
+	// 	field: PARAM_FIELDS.EWP_SPEED,
+	// 	exampleValue: 1000,
+	// 	range: [0, 2560],
+	// 	unit: 'об/хв',
+	// 	format: (value: number) => value.toFixed()
+	// },
+	// {
+	// 	name: '[TEST] EWP_TARGET_SPEED',
+	// 	field: PARAM_FIELDS.EWP_TARGET_SPEED,
+	// 	exampleValue: 1000,
+	// 	range: [0, 2560],
+	// 	unit: 'об/хв',
+	// 	format: (value: number) => value.toFixed()
+	// },
 	{
 		name: 'Температура мотора',
 		field: PARAM_FIELDS.MOTOR_TEMPERATURE,

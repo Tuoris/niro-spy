@@ -565,12 +565,18 @@ export function parseHkmcEvVmcuInfo02(value: string) {
 	const auxBatteryPower = auxBatteryCurrent * auxBatteryVoltage;
 	const isAuxBatteryCharging = auxBatteryPower < 0;
 
+	// Not valid
+	const ewpSpeed = unsignedIntFromBytes(separatePacketBytes[1][2]);
+	const ewpTargetSpeed = unsignedIntFromBytes(separatePacketBytes[1][3]);
+
 	return {
 		auxBatteryVoltage,
 		auxBatteryCurrent,
 		auxBatterySoc,
 		auxBatteryPower,
-		isAuxBatteryCharging
+		isAuxBatteryCharging,
+		ewpSpeed,
+		ewpTargetSpeed
 	};
 }
 
