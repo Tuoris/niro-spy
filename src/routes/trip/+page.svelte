@@ -38,8 +38,32 @@
 		return averageByTime(speedValues);
 	});
 
+	let averageGpsSpeedByTime = $derived.by(() => {
+		const speedValues = paramsState.values[PARAM_FIELDS.SPEED_GPS];
+
+		return averageByTime(speedValues);
+	});
+
 	let distanceTraveled = $derived.by(() => {
 		const speedValues = paramsState.values[PARAM_FIELDS.VEHICLE_SPEED];
+
+		const numberOfValues = speedValues.length;
+
+		if (numberOfValues < 2) {
+			return 0;
+		}
+
+		const firstValue = speedValues[0];
+		const lastValue = speedValues[numberOfValues - 1];
+
+		const timePassedMs = lastValue.timestamp - firstValue.timestamp;
+		const timePassedHours = timePassedMs / 1000 / 60 / 60;
+
+		return averageSpeedByTime * timePassedHours;
+	});
+
+	let distanceTraveledGps = $derived.by(() => {
+		const speedValues = paramsState.values[PARAM_FIELDS.SPEED_GPS];
 
 		const numberOfValues = speedValues.length;
 
@@ -81,11 +105,19 @@
 	});
 
 	let consumption = $derived.by(() => {
-		if (energyConsumed === 0 && distanceTraveled === 0) {
+		if (energyConsumed === 0 || distanceTraveled === 0) {
 			return 0;
 		}
 		const energyConsumedKwh = energyConsumed / 1000;
 		return energyConsumedKwh / (distanceTraveled / 100);
+	});
+
+	let consumptionGps = $derived.by(() => {
+		if (energyConsumed === 0 || distanceTraveledGps === 0) {
+			return 0;
+		}
+		const energyConsumedKwh = energyConsumed / 1000;
+		return energyConsumedKwh / (distanceTraveledGps / 100);
 	});
 </script>
 
@@ -121,10 +153,10 @@
 			energyConsumed > 1000 ? 'кВт·год' : 'Вт·год'
 		)}
 		{@render valueCard('Середня швидкість', averageSpeedByTime.toFixed(), 'км/год')}
-		{@render valueCard('Середня швидкість (GPS)', '-', 'км/год')}
+		{@render valueCard('Середня швидкість (GPS)', averageGpsSpeedByTime.toFixed(), 'км/год')}
 		{@render valueCard('Пройдена відстань', distanceTraveled.toFixed(2), 'км')}
-		{@render valueCard('Пройдена відстань (GPS)', '-', 'км')}
+		{@render valueCard('Пройдена відстань (GPS)', distanceTraveledGps.toFixed(2), 'км')}
 		{@render valueCard('Середня витрата', consumption.toFixed(1), 'кВт·год/100км')}
-		{@render valueCard('Середня витрата (GPS)', '-', 'кВт·год/100км')}
+		{@render valueCard('Середня витрата (GPS)', consumptionGps.toFixed(1), 'кВт·год/100км')}
 	</div>
 </div>
