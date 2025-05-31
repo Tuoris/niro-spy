@@ -5,6 +5,7 @@
 	import { bluetoothState } from '$lib/bluetooth.store.svelte';
 	import { isInDemoMode } from '$lib/demo-mode.svelte';
 	import { i18n } from '$lib/i18n/i18n';
+	import NoSleep from 'nosleep.js';
 
 	let serialConnectionStatus = $derived(bluetoothState.serialConnectionStatus);
 	let elmDeviceStatus = $derived(bluetoothState.elmDeviceStatus);
@@ -15,6 +16,23 @@
 	let { children } = $props();
 
 	let notifications: string[] = $derived.by(() => (bluetoothError ? [bluetoothError] : []));
+
+	const noSleep = new NoSleep();
+
+	const toggleFullscreen = () => {
+		const appContainer = document.querySelector('#app');
+		if (!appContainer) return;
+
+		const isInFullScreen = document.fullscreenElement;
+
+		if (isInFullScreen) {
+			document.exitFullscreen();
+			noSleep.disable();
+		} else {
+			appContainer.requestFullscreen();
+			noSleep.enable();
+		}
+	};
 </script>
 
 {#if i18n.isInitialized}
@@ -45,6 +63,15 @@
 					: ''
 			]}
 		>
+			<div class="flex items-center">
+				<button
+					class="flex items-center rounded-sm p-2 hover:bg-neutral-600"
+					onclick={toggleFullscreen}
+					aria-label="Повноекранний режим"
+				>
+					<span class="icon-[mdi--fullscreen]"></span>
+				</button>
+			</div>
 			<div class="flex flex-wrap items-center gap-2">
 				<span class="icon-[mdi--bluetooth-transfer]"></span>
 				<div>

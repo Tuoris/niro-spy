@@ -43,7 +43,7 @@
 <div class="flex shrink justify-between font-bold text-neutral-400">
 	<div class="ms-1 mt-1 flex w-30 items-center">
 		<a
-			class="flex rounded-xs border border-transparent p-1"
+			class="flex rounded-sm border border-transparent p-1 hover:bg-neutral-600"
 			href="/settings"
 			aria-label="Перейти до налаштувань"
 		>
