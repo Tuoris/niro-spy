@@ -223,7 +223,7 @@
 		>
 			<span class="icon-[mdi--file-upload-outline]"></span>
 		</Button>
-		<input type="file" bind:files bind:this={fileInput} hidden />
+		<input type="file" bind:files bind:this={fileInput} accept=".json" hidden />
 	</div>
 
 	<div class="mx-auto mt-4 mb-4 grid max-w-2xl grid-cols-2 gap-4">
