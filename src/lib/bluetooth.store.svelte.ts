@@ -6,7 +6,7 @@ import {
 	PARAMS_CONFIG,
 	type FieldType
 } from './common/constants/common-params.constants';
-import { paramsState } from './params.svelte';
+import { INITIAL_PARAM_VALUES, paramsState } from './params.svelte';
 import { pollGeolocation, stopPollingGeolocation } from './geolocation.svelte';
 import { getGeolocationSettingEnabled } from './settings.store.svelte';
 
@@ -65,6 +65,8 @@ export async function mockConnect() {
 
 export async function startDataReading() {
 	bluetoothState.stopPollingCommand = false;
+	paramsState.values = INITIAL_PARAM_VALUES;
+	paramsState.recording = false;
 
 	let start = new Date().valueOf();
 
@@ -138,6 +140,9 @@ export async function startDataReading() {
 
 export async function mockStartDataReading() {
 	bluetoothState.stopPollingCommand = false;
+	paramsState.values = INITIAL_PARAM_VALUES;
+	paramsState.recording = false;
+
 	let start = new Date().valueOf();
 
 	pollGeolocation();

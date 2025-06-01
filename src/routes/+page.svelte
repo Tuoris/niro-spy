@@ -12,6 +12,7 @@
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { i18n, LOCALES } from '$lib/i18n/i18n';
+	import { paramsState } from '$lib/params.svelte';
 
 	const connect = isInDemoMode ? mockConnect : realConnect;
 	const startDataReading = isInDemoMode ? mockStartDataReading : realStartDataReading;
@@ -38,6 +39,8 @@
 			icon: 'fi-kr'
 		}
 	];
+
+	const routesEnabled = $derived.by(() => paramsState.recording || elmDeviceStatus === 'ready');
 </script>
 
 <div class="flex shrink justify-between font-bold text-neutral-400">
@@ -74,18 +77,16 @@
 			>{i18n.t('connectToScanner')}</Button
 		>
 		<hr />
-		<ButtonLink href="all-parameters" variant="secondary" disabled={elmDeviceStatus !== 'ready'}
+		<ButtonLink href="all-parameters" variant="secondary" disabled={!routesEnabled}
 			>{i18n.t('allParameters')}</ButtonLink
 		>
-		<ButtonLink href="/battery" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
+		<ButtonLink href="/battery" variant="secondary" disabled={!routesEnabled}>
 			{i18n.t('battery')}</ButtonLink
 		>
-		<ButtonLink href="/tpms" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
+		<ButtonLink href="/tpms" variant="secondary" disabled={!routesEnabled}>
 			{i18n.t('tpms')}</ButtonLink
 		>
-		<ButtonLink href="/trip" variant="secondary" disabled={elmDeviceStatus !== 'ready'}>
-			Поїздка</ButtonLink
-		>
+		<ButtonLink href="/trip" variant="secondary">Поїздка</ButtonLink>
 		<hr />
 		<ButtonLink href="/" variant="tertiary" onclick={isInDemoMode ? exitDemoMode : enterDemoMode}>
 			{#if isInDemoMode}

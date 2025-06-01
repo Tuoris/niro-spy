@@ -129,11 +129,17 @@
 		const speedValues = paramsState.values[PARAM_FIELDS.VEHICLE_SPEED];
 
 		let startTime = currentTime;
+		let endTime = currentTime;
+
 		if (powerValues.length) {
 			startTime = powerValues[0].timestamp;
 		}
 
-		const milliseconds = currentTime - startTime;
+		if (powerValues.length > 1 && paramsState.recording) {
+			endTime = powerValues[powerValues.length - 1].timestamp;
+		}
+
+		const milliseconds = endTime - startTime;
 
 		const seconds = Math.round(milliseconds / 1000);
 		const minutes = Math.round(seconds / 60);
@@ -181,6 +187,7 @@
 					const fileContent = JSON.parse(event.target?.result as string);
 					if ('values' in fileContent) {
 						paramsState.values = fileContent.values;
+						paramsState.recording = true;
 					}
 				} catch {}
 			};
