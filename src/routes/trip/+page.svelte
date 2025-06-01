@@ -77,7 +77,7 @@
 		const timePassedMs = lastValue.timestamp - firstValue.timestamp;
 		const timePassedHours = timePassedMs / 1000 / 60 / 60;
 
-		return averageSpeedByTime * timePassedHours;
+		return averageGpsSpeedByTime * timePassedHours;
 	});
 
 	let averagePowerByTime = $derived.by(() => {
@@ -136,7 +136,23 @@
 		const minutes = Math.round(seconds / 60);
 		const hours = Math.round(minutes / 60);
 
-		return `${hours.toFixed().padStart(2, '0')}:${minutes.toFixed().padStart(2, '0')}:${seconds.toFixed().padStart(2, '0')}`;
+		return `${(hours % 24).toFixed().padStart(2, '0')}:${(minutes % 60).toFixed().padStart(2, '0')}:${(seconds % 60).toFixed().padStart(2, '0')}`;
+	});
+
+	let altitudeChange = $derived.by(() => {
+		const altitudeGpsValues = paramsState.values[PARAM_FIELDS.ALTITUDE_GPS];
+
+		const numberOfValues = altitudeGpsValues.length;
+		if (numberOfValues <= 1) {
+			return '0';
+		}
+
+		const firstValue = altitudeGpsValues[0];
+		const lastValue = altitudeGpsValues[numberOfValues - 1];
+
+		const altitudeChange = lastValue.value - firstValue.value;
+		const sign = altitudeChange > 0 ? '+' : '-';
+		return `${sign}${Math.abs(altitudeChange).toFixed()}`;
 	});
 </script>
 
@@ -178,5 +194,6 @@
 		{@render valueCard('Середня витрата', consumption.toFixed(1), 'кВт·год/100км')}
 		{@render valueCard('Середня витрата (GPS)', consumptionGps.toFixed(1), 'кВт·год/100км')}
 		{@render valueCard('Час поїздки', tripTime, '')}
+		{@render valueCard('Зміна висот', altitudeChange, 'м')}
 	</div>
 </div>

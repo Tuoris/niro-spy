@@ -39,7 +39,7 @@ const positionCallback: PositionCallback = (pos) => {
 	}
 
 	if (speedMetersPerSecond) {
-		if (accuracy && accuracy > 5) {
+		if (accuracy && accuracy > settingsStore.geolocationAccuracyThreshold) {
 			return;
 		}
 

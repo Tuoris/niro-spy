@@ -1,6 +1,10 @@
 <script lang="ts">
 	import ButtonLink from '$lib/components/button-link.svelte';
-	import { changeGeolocationEnabled, settingsStore } from '$lib/settings.store.svelte';
+	import {
+		changeGeolocationAccuracyThreshold,
+		changeGeolocationEnabled,
+		settingsStore
+	} from '$lib/settings.store.svelte';
 
 	let geolocationEnabled = $derived(settingsStore.geolocationEnabled);
 
@@ -64,6 +68,18 @@
 					checked={geolocationEnabled}
 					onclick={tryChangeGeolocationSetting}
 					disabled={currentGeolocationPermission === 'denied'}
+				/>
+			</div>
+		</div>
+		<div class="flex items-center justify-between gap-2 border-b-1 border-neutral-600 p-2">
+			<div>Максимальна похибка геолокації</div>
+			<div class="basis-10 border-l-1 border-neutral-600 pt-1 pl-2">
+				<input
+					type="text"
+					class="h-4 w-4"
+					value={settingsStore.geolocationAccuracyThreshold}
+					onchange={(event) =>
+						changeGeolocationAccuracyThreshold(parseInt(event.currentTarget.value))}
 				/>
 			</div>
 		</div>
