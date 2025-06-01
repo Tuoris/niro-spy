@@ -15,7 +15,8 @@ export const bluetoothState = $state({
 	bluetoothError: '',
 	elmDeviceStatus: 'idle',
 	heartbeat: 0,
-	lastCommandTime: 0
+	lastCommandTime: 0,
+	stopPollingCommand: false
 });
 
 const webBluetoothSerialDevice = new WebBluetoothSerial();
@@ -63,12 +64,13 @@ export async function mockConnect() {
 }
 
 export async function startDataReading() {
-	let stop = false;
+	bluetoothState.stopPollingCommand = false;
+
 	let start = new Date().valueOf();
 
 	pollGeolocation();
 
-	while (!stop) {
+	while (!bluetoothState.stopPollingCommand) {
 		for (const command of [
 			COMMANDS.HKMC_BMS_INFO01,
 			COMMANDS.HKMC_EV_ECU_7D4_INFO01,
@@ -85,6 +87,10 @@ export async function startDataReading() {
 			COMMANDS.HKMC_EV_AIRCON_ECU_INFO00,
 			COMMANDS.HKMC_EV_MCU_INFO02
 		]) {
+			if (bluetoothState.stopPollingCommand) {
+				break;
+			}
+
 			try {
 				const response = await elmDevice.sendCommand(command);
 				const now = new Date().valueOf();
@@ -125,18 +131,24 @@ export async function startDataReading() {
 		}
 	}
 
-	if (stop) {
+	if (bluetoothState.stopPollingCommand) {
 		stopPollingGeolocation();
 	}
 }
 
 export async function mockStartDataReading() {
+	bluetoothState.stopPollingCommand = false;
 	let start = new Date().valueOf();
 
 	pollGeolocation();
 
-	setInterval(() => {
+	const pollingIntervalId = setInterval(() => {
 		for (const field of Object.values(PARAM_FIELDS)) {
+			if (bluetoothState.stopPollingCommand) {
+				clearInterval(pollingIntervalId);
+				return;
+			}
+
 			if (
 				([PARAM_FIELDS.SPEED_GPS, PARAM_FIELDS.ALTITUDE_GPS] as string[]).includes(field) &&
 				getGeolocationSettingEnabled()

@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { bluetoothState } from '$lib/bluetooth.store.svelte';
 	import { PARAM_FIELDS } from '$lib/common/constants/common-params.constants';
 	import ButtonLink from '$lib/components/button-link.svelte';
+	import Button from '$lib/components/button.svelte';
 	import { paramsState, type ParamValue } from '$lib/params.svelte';
+	import { downloadJsonFile } from '$lib/trip-data';
 
 	const averageByTime = (values: ParamValue[]) => {
 		const numberOfValues = values.length;
@@ -154,6 +157,36 @@
 		const sign = altitudeChange > 0 ? '+' : '-';
 		return `${sign}${Math.abs(altitudeChange).toFixed()}`;
 	});
+
+	const downloadData = () => downloadJsonFile({ values: paramsState.values });
+
+	let fileInput: HTMLInputElement;
+	let files: FileList | null = $state(null);
+	const loadData = () => {
+		bluetoothState.stopPollingCommand = true;
+		fileInput.click();
+	};
+
+	$effect(() => {
+		if (!files) {
+			return;
+		}
+
+		try {
+			const jsonFile = files[0];
+
+			const reader = new FileReader();
+			reader.onload = function (event) {
+				try {
+					const fileContent = JSON.parse(event.target?.result as string);
+					if ('values' in fileContent) {
+						paramsState.values = fileContent.values;
+					}
+				} catch {}
+			};
+			reader.readAsText(jsonFile);
+		} catch {}
+	});
 </script>
 
 {#snippet valueCard(name: string, value: string, unit: string)}
@@ -174,6 +207,23 @@
 			<span class="icon-[mdi--arrow-back]"></span>
 		</ButtonLink>
 		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">Поїздка</h2>
+		<Button
+			variant="tertiary"
+			size="compact"
+			aria-label="Завантажити дані про поїздку"
+			onclick={downloadData}
+		>
+			<span class="icon-[mdi--file-download-outline]"></span>
+		</Button>
+		<Button
+			variant="tertiary"
+			size="compact"
+			aria-label="Відкрити дані про поїздку"
+			onclick={loadData}
+		>
+			<span class="icon-[mdi--file-upload-outline]"></span>
+		</Button>
+		<input type="file" bind:files bind:this={fileInput} hidden />
 	</div>
 
 	<div class="mx-auto mt-4 mb-4 grid max-w-2xl grid-cols-2 gap-4">

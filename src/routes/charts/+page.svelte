@@ -17,6 +17,7 @@
 	import { LineChart, type LineSeriesOption } from 'echarts/charts';
 	import { UniversalTransition } from 'echarts/features';
 	import { CanvasRenderer } from 'echarts/renderers';
+	import { downloadJsonFile } from '$lib/trip-data';
 
 	echarts.use([
 		GridComponent,
@@ -274,21 +275,7 @@
 		});
 	});
 
-	function downloadData() {
-		const text = JSON.stringify({ values }, null, 4);
-		const now = new Date();
-		const filename = `elm_js_scanner_${now.toISOString().replaceAll(':', '_').replace('Z', '')}.json`;
-		var element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-		element.setAttribute('download', filename);
-
-		element.style.display = 'none';
-		document.body.appendChild(element);
-
-		element.click();
-
-		document.body.removeChild(element);
-	}
+	const downloadData = () => downloadJsonFile({ values });
 </script>
 
 <div class="flex h-full w-full flex-col px-2">
@@ -320,7 +307,7 @@
 			<Button
 				variant="tertiary"
 				size="compact"
-				aria-label="Перейти до графіків"
+				aria-label="Завантажити дані"
 				onclick={downloadData}
 			>
 				<span class="icon-[mdi--file-download-outline]"></span>
