@@ -6,6 +6,7 @@
 	import { isInDemoMode } from '$lib/demo-mode.svelte';
 	import { i18n } from '$lib/i18n/i18n';
 	import NoSleep from 'nosleep.js';
+	import { onMount } from 'svelte';
 
 	let serialConnectionStatus = $derived(bluetoothState.serialConnectionStatus);
 	let elmDeviceStatus = $derived(bluetoothState.elmDeviceStatus);
@@ -19,11 +20,13 @@
 
 	const noSleep = new NoSleep();
 
+	let isFullscreenActive = $state(false);
+
 	const toggleFullscreen = () => {
 		const appContainer = document.querySelector('#app');
 		if (!appContainer) return;
 
-		const isInFullScreen = document.fullscreenElement;
+		const isInFullScreen = Boolean(document.fullscreenElement);
 
 		if (isInFullScreen) {
 			document.exitFullscreen();
@@ -33,6 +36,12 @@
 			noSleep.enable();
 		}
 	};
+
+	onMount(() => {
+		document.onfullscreenchange = (event) => {
+			isFullscreenActive = Boolean(document.fullscreenElement);
+		};
+	});
 </script>
 
 {#if i18n.isInitialized}
@@ -69,7 +78,11 @@
 					onclick={toggleFullscreen}
 					aria-label="Повноекранний режим"
 				>
-					<span class="icon-[mdi--fullscreen]"></span>
+					{#if isFullscreenActive}
+						<span class="icon-[mdi--fullscreen-exit]"></span>
+					{:else}
+						<span class="icon-[mdi--fullscreen]"></span>
+					{/if}
 				</button>
 			</div>
 			<div class="flex flex-wrap items-center gap-2">
