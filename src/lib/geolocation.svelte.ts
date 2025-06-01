@@ -18,7 +18,7 @@ const options = {
 	maximumAge: 0
 };
 
-const CALIBRATION_TIME = 7500;
+const CALIBRATION_TIME = 15000;
 let isCalibrating = false;
 let calibrationTimeout: number;
 
@@ -45,7 +45,7 @@ const positionCallback: PositionCallback = (pos) => {
 	const { altitude, speed: speedMetersPerSecond, accuracy } = coords;
 
 	// accuracy in meters
-	if ((accuracy ?? +Infinity) < 10) {
+	if ((accuracy ?? +Infinity) < 5) {
 		stopGpsCalibration();
 	}
 
