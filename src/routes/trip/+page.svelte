@@ -141,9 +141,9 @@
 
 		const milliseconds = endTime - startTime;
 
-		const seconds = Math.round(milliseconds / 1000);
-		const minutes = Math.round(seconds / 60);
-		const hours = Math.round(minutes / 60);
+		const seconds = Math.floor(milliseconds / 1000);
+		const minutes = Math.floor(seconds / 60);
+		const hours = Math.floor(minutes / 60);
 
 		return `${(hours % 24).toFixed().padStart(2, '0')}:${(minutes % 60).toFixed().padStart(2, '0')}:${(seconds % 60).toFixed().padStart(2, '0')}`;
 	});
