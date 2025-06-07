@@ -126,12 +126,13 @@
 	let tripTime = $derived.by(() => {
 		const currentTime = new Date().valueOf();
 		const powerValues = paramsState.values[PARAM_FIELDS.BATTERY_POWER];
-		const speedValues = paramsState.values[PARAM_FIELDS.VEHICLE_SPEED];
+		const speedValues = paramsState.values[PARAM_FIELDS.ODOMETER_KM];
+		const motorTemperatureValues = paramsState.values[PARAM_FIELDS.MOTOR_TEMPERATURE];
 
 		let startTime = currentTime;
 		let endTime = currentTime;
 
-		if (powerValues.length) {
+		if (powerValues.length && speedValues.length && motorTemperatureValues.length) {
 			startTime = powerValues[0].timestamp;
 		}
 
