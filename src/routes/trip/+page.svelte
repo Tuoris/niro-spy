@@ -4,7 +4,7 @@
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { paramsState, type ParamValue } from '$lib/params.svelte';
-	import { downloadJsonFile } from '$lib/trip-data';
+	import { downloadTripDataFile } from '$lib/trip-data';
 
 	const averageByTime = (values: ParamValue[]) => {
 		const numberOfValues = values.length;
@@ -164,7 +164,7 @@
 		return `${sign}${Math.abs(altitudeChange).toFixed()}`;
 	});
 
-	const downloadData = () => downloadJsonFile({ values: paramsState.values });
+	const downloadData = () => downloadTripDataFile({ values: paramsState.values });
 
 	let fileInput: HTMLInputElement;
 	let files: FileList | null = $state(null);

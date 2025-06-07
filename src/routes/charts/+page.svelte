@@ -17,7 +17,7 @@
 	import { LineChart, type LineSeriesOption } from 'echarts/charts';
 	import { UniversalTransition } from 'echarts/features';
 	import { CanvasRenderer } from 'echarts/renderers';
-	import { downloadJsonFile } from '$lib/trip-data';
+	import { downloadTripDataFile } from '$lib/trip-data';
 
 	echarts.use([
 		GridComponent,
@@ -275,7 +275,7 @@
 		});
 	});
 
-	const downloadData = () => downloadJsonFile({ values });
+	const downloadData = () => downloadTripDataFile({ values });
 </script>
 
 <div class="flex h-full w-full flex-col px-2">

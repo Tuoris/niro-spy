@@ -1,7 +1,6 @@
-export function downloadJsonFile(jsonObject: any) {
+export function downloadJsonFile(jsonObject: any, filename: string) {
 	const text = JSON.stringify(jsonObject, null, 4);
-	const now = new Date();
-	const filename = `elm_js_scanner_${now.toISOString().replaceAll(':', '_').replace('Z', '')}.json`;
+
 	var element = document.createElement('a');
 	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
 	element.setAttribute('download', filename);
@@ -12,4 +11,11 @@ export function downloadJsonFile(jsonObject: any) {
 	element.click();
 
 	document.body.removeChild(element);
+}
+
+export function downloadTripDataFile(jsonObject: any) {
+	const now = new Date();
+	const filename = `niro_spy_${now.toISOString().replaceAll(':', '_').replace('Z', '')}.json`;
+
+	downloadJsonFile(jsonObject, filename);
 }
