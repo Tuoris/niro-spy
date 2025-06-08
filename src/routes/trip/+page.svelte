@@ -6,6 +6,65 @@
 	import { paramsState, type ParamValue } from '$lib/params.svelte';
 	import { downloadTripDataFile } from '$lib/trip-data';
 
+	let recordingSliderStart = $state(0);
+	let recordingSliderEnd = $state(100);
+
+	const tripFullTimeRange = $derived.by(() => {
+		const currentTime = new Date().valueOf();
+		const powerValues = paramsState.values[PARAM_FIELDS.BATTERY_POWER];
+		const speedValues = paramsState.values[PARAM_FIELDS.ODOMETER_KM];
+		const motorTemperatureValues = paramsState.values[PARAM_FIELDS.MOTOR_TEMPERATURE];
+
+		let startTime = currentTime;
+		let endTime = currentTime;
+
+		if (powerValues.length && speedValues.length && motorTemperatureValues.length) {
+			startTime = powerValues[0].timestamp;
+		}
+
+		if (
+			powerValues.length > 1 &&
+			speedValues.length > 1 &&
+			motorTemperatureValues.length > 1 &&
+			paramsState.recording
+		) {
+			endTime = Math.max(
+				powerValues[powerValues.length - 1].timestamp,
+				speedValues[speedValues.length - 1].timestamp,
+				motorTemperatureValues[motorTemperatureValues.length - 1].timestamp
+			);
+		}
+
+		return { startTime, endTime };
+	});
+
+	const recordingTimeRange = $derived.by(() => {
+		const { startTime, endTime } = tripFullTimeRange;
+
+		if (!paramsState.recording) {
+			return tripFullTimeRange;
+		}
+
+		const recordingStartTime = startTime + (recordingSliderStart / 100) * (endTime - startTime);
+		const recordingEndTime = startTime + (recordingSliderEnd / 100) * (endTime - startTime);
+
+		return { startTime: recordingStartTime, endTime: recordingEndTime };
+	});
+
+	const filterValuesWithSlider = (values: ParamValue[]) => {
+		if (!paramsState.recording) {
+			return values;
+		}
+
+		if (recordingSliderStart === 0 && recordingSliderEnd === 100) {
+			return values;
+		}
+
+		const { startTime, endTime } = recordingTimeRange;
+
+		return values.filter(({ timestamp }) => timestamp >= startTime && timestamp <= endTime);
+	};
+
 	const averageByTime = (values: ParamValue[]) => {
 		const numberOfValues = values.length;
 
@@ -38,17 +97,18 @@
 	let averageSpeedByTime = $derived.by(() => {
 		const speedValues = paramsState.values[PARAM_FIELDS.VEHICLE_SPEED];
 
-		return averageByTime(speedValues);
+		return averageByTime(filterValuesWithSlider(speedValues));
 	});
 
 	let averageGpsSpeedByTime = $derived.by(() => {
 		const speedValues = paramsState.values[PARAM_FIELDS.SPEED_GPS];
 
-		return averageByTime(speedValues);
+		return averageByTime(filterValuesWithSlider(speedValues));
 	});
 
 	let distanceTraveled = $derived.by(() => {
-		const speedValues = paramsState.values[PARAM_FIELDS.VEHICLE_SPEED];
+		let speedValues = paramsState.values[PARAM_FIELDS.VEHICLE_SPEED];
+		speedValues = filterValuesWithSlider(speedValues);
 
 		const numberOfValues = speedValues.length;
 
@@ -66,7 +126,8 @@
 	});
 
 	let distanceTraveledGps = $derived.by(() => {
-		const speedValues = paramsState.values[PARAM_FIELDS.SPEED_GPS];
+		let speedValues = paramsState.values[PARAM_FIELDS.SPEED_GPS];
+		speedValues = filterValuesWithSlider(speedValues);
 
 		const numberOfValues = speedValues.length;
 
@@ -86,11 +147,12 @@
 	let averagePowerByTime = $derived.by(() => {
 		const powerValues = paramsState.values[PARAM_FIELDS.BATTERY_POWER];
 
-		return averageByTime(powerValues);
+		return averageByTime(filterValuesWithSlider(powerValues));
 	});
 
 	let energyConsumed = $derived.by(() => {
-		const powerValues = paramsState.values[PARAM_FIELDS.VEHICLE_SPEED];
+		let powerValues = paramsState.values[PARAM_FIELDS.VEHICLE_SPEED];
+		powerValues = filterValuesWithSlider(powerValues);
 
 		const numberOfValues = powerValues.length;
 
@@ -124,21 +186,7 @@
 	});
 
 	let tripTime = $derived.by(() => {
-		const currentTime = new Date().valueOf();
-		const powerValues = paramsState.values[PARAM_FIELDS.BATTERY_POWER];
-		const speedValues = paramsState.values[PARAM_FIELDS.ODOMETER_KM];
-		const motorTemperatureValues = paramsState.values[PARAM_FIELDS.MOTOR_TEMPERATURE];
-
-		let startTime = currentTime;
-		let endTime = currentTime;
-
-		if (powerValues.length && speedValues.length && motorTemperatureValues.length) {
-			startTime = powerValues[0].timestamp;
-		}
-
-		if (powerValues.length > 1 && paramsState.recording) {
-			endTime = powerValues[powerValues.length - 1].timestamp;
-		}
+		const { startTime, endTime } = recordingTimeRange;
 
 		const milliseconds = endTime - startTime;
 
@@ -150,7 +198,8 @@
 	});
 
 	let altitudeChange = $derived.by(() => {
-		const altitudeGpsValues = paramsState.values[PARAM_FIELDS.ALTITUDE_GPS];
+		let altitudeGpsValues = paramsState.values[PARAM_FIELDS.ALTITUDE_GPS];
+		altitudeGpsValues = filterValuesWithSlider(altitudeGpsValues);
 
 		const numberOfValues = altitudeGpsValues.length;
 		if (numberOfValues <= 1) {
@@ -254,4 +303,43 @@
 		{@render valueCard('Час поїздки', tripTime, '')}
 		{@render valueCard('Зміна висот', altitudeChange, 'м')}
 	</div>
+
+	{#if paramsState.recording}
+		<div class="mx-auto max-w-[80ch] px-4">
+			<div class="text-center">Діапазон запису</div>
+			<div>
+				<label class="flex flex-col">
+					<!-- <span class="text-xs">% початку</span> -->
+					<input
+						type="range"
+						max="99"
+						bind:value={recordingSliderStart}
+						oninput={(event) => {
+							const newRecordingStart = parseInt(event.currentTarget.value);
+							if (newRecordingStart >= recordingSliderEnd) {
+								recordingSliderEnd = Math.min(newRecordingStart + 1, 100);
+							}
+						}}
+					/>
+				</label>
+				<label class="flex flex-col">
+					<!-- <span class="text-xs">% кінець</span> -->
+					<input
+						min="1"
+						type="range"
+						bind:value={recordingSliderEnd}
+						oninput={(event) => {
+							const newRecordingEnd = parseInt(event.currentTarget.value);
+							if (newRecordingEnd <= recordingSliderStart) {
+								recordingSliderStart = Math.max(newRecordingEnd - 1, 0);
+							}
+						}}
+					/>
+				</label>
+				<div class="text-center">
+					{recordingSliderStart} % : {recordingSliderEnd} %
+				</div>
+			</div>
+		</div>
+	{/if}
 </div>
