@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { bluetoothState } from '$lib/bluetooth.store.svelte';
 	import { PARAM_FIELDS } from '$lib/common/constants/common-params.constants';
+	import { HKMC_GEARS } from '$lib/common/constants/vmcu.constants';
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { paramsState, type ParamValue } from '$lib/params.svelte';
 	import { settingsStore } from '$lib/settings.store.svelte';
 	import { downloadTripDataFile } from '$lib/trip-data';
+	import { time } from 'echarts';
 	import { RangeSlider } from 'svelte-range-slider-pips';
 
 	let recordingSliderValues = $state([0, 100]);
@@ -147,10 +149,58 @@
 		return averageGpsSpeedByTime * timePassedHours;
 	});
 
+	let parkingIntervals = $derived.by(() => {
+		const currentGearValues = paramsState.values[PARAM_FIELDS.GEAR];
+		const intervalsWhenOnParking = [];
+		let onParkingStartTimestamp = null;
+		let onParkingEndTimestamp = null;
+		for (const gearValue of currentGearValues) {
+			if (gearValue.value === HKMC_GEARS.PARKING) {
+				if (!onParkingStartTimestamp) {
+					onParkingStartTimestamp = gearValue.timestamp;
+				} else {
+					onParkingEndTimestamp = gearValue.timestamp;
+				}
+			} else {
+				if (onParkingStartTimestamp) {
+					intervalsWhenOnParking.push([
+						onParkingStartTimestamp,
+						onParkingEndTimestamp ? onParkingEndTimestamp : onParkingStartTimestamp
+					]);
+				}
+				onParkingStartTimestamp = null;
+				onParkingEndTimestamp = null;
+			}
+		}
+
+		if (onParkingStartTimestamp) {
+			intervalsWhenOnParking.push([
+				onParkingStartTimestamp,
+				onParkingEndTimestamp ? onParkingEndTimestamp : onParkingStartTimestamp
+			]);
+		}
+
+		return intervalsWhenOnParking;
+	});
+
 	let averagePowerByTime = $derived.by(() => {
 		const powerValues = paramsState.values[PARAM_FIELDS.BATTERY_POWER];
+		const filteredPowerValues = filterValuesWithSlider(powerValues);
+		const powerValuesWhenNotOnCharing = filteredPowerValues.filter(({ timestamp, value }) => {
+			if (value > 0) {
+				return true;
+			}
 
-		return averageByTime(filterValuesWithSlider(powerValues));
+			for (const parkingInterval of parkingIntervals) {
+				if (timestamp >= parkingInterval[0] && timestamp <= parkingInterval[1]) {
+					return false;
+				}
+			}
+
+			return true;
+		});
+
+		return averageByTime(powerValuesWhenNotOnCharing);
 	});
 
 	let energyConsumed = $derived.by(() => {
@@ -228,6 +278,10 @@
 	});
 
 	let pricePerKm = $derived.by(() => {
+		if (distanceTraveled === 0) {
+			return 0;
+		}
+
 		const pricePerKm = tripPrice / distanceTraveled;
 		return pricePerKm;
 	});
@@ -266,8 +320,8 @@
 
 {#snippet valueCard(name: string, value: string, unit: string)}
 	<div class="rounded-xs border border-neutral-800 p-2 py-4">
-		<div class=" min-h-[3em] dark:text-neutral-300">{name}</div>
-		<div class="text-end text-3xl">
+		<div class="min-h-[3em] text-sm dark:text-neutral-300">{name}</div>
+		<div class="text-end text-2xl">
 			{value}
 			<span class="text-sm">
 				{unit}
@@ -330,7 +384,7 @@
 		)}
 		{@render valueCard(
 			'Спожито',
-			(energyConsumed > 1000 ? energyConsumed / 1000 : energyConsumed).toFixed(),
+			energyConsumed > 1000 ? (energyConsumed / 1000).toFixed(2) : energyConsumed.toFixed(),
 			energyConsumed > 1000 ? 'кВт·год' : 'Вт·год'
 		)}
 		{@render valueCard('Середня швидкість', averageSpeedByTime.toFixed(), 'км/год')}
