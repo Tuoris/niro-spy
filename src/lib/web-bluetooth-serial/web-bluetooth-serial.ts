@@ -9,6 +9,7 @@ function consoleLoggerHandler(string: string, level: string = 'info') {
 export class WebBluetoothSerial {
 	isConnected = false;
 	bluetoothDevice: BluetoothDevice | null = null;
+	readCharacteristic: BluetoothRemoteGATTCharacteristic | null = null;
 	writeCharacteristic: BluetoothRemoteGATTCharacteristic | null = null;
 	currentCommand = '';
 
@@ -67,35 +68,40 @@ export class WebBluetoothSerial {
 		this.log('Отримання сервісу пристрою...');
 
 		let service;
-		let serviceIndex;
-		for (const [index, config] of CONFIGS.entries()) {
+		let validConfig;
+		for (const config of CONFIGS.values()) {
 			try {
 				service = await server.getPrimaryService(config.serviceUuid);
-				serviceIndex = index;
+				validConfig = config;
 				this.log('Сервіс знайдено, отримання характеристики (джерела даних)...');
 			} catch {
 				this.log(`Сервіс ${config.serviceUuid} не підтримується...`);
 			}
 		}
 
-		if (!service || !serviceIndex) {
+		if (!service || !validConfig) {
 			this.log('Пристрій не підтримує жодного з профілів комунікації.', 'error');
 			return this.isConnected;
 		}
 
-		const characteristicUUID = CONFIGS[serviceIndex].characteristicUuid;
-		const characteristic = await service.getCharacteristic(characteristicUUID);
+		this.readCharacteristic = await service.getCharacteristic(validConfig.characteristicUuid);
+		if (validConfig.writeCharacteristicUuid) {
+			this.writeCharacteristic = await service.getCharacteristic(
+				validConfig.writeCharacteristicUuid
+			);
+		} else {
+			this.writeCharacteristic = this.readCharacteristic;
+		}
 
-		this.log(`Знайдено характеристику: ${characteristicUUID}`);
-		this.writeCharacteristic = characteristic;
+		this.log(`Знайдено Read Характеристику: ${this.readCharacteristic.uuid}`);
+		this.log(`Знайдено Write Характеристику: ${this.writeCharacteristic.uuid}`);
 
-		await this.writeCharacteristic.startNotifications();
 		this.log('Створення підписки на отримання відповідей.');
-		this.writeCharacteristic.addEventListener('characteristicvaluechanged', (event) => {
-			const eventTarget = event?.currentTarget as BluetoothRemoteGATTCharacteristic;
-			const rawValue = eventTarget?.value || EMPTY_DATA_VIEW;
+		this.readCharacteristic.addEventListener('characteristicvaluechanged', () => {
+			const rawValue = this.readCharacteristic?.value || EMPTY_DATA_VIEW;
 			this.receiveValue(rawValue);
 		});
+		await this.readCharacteristic.startNotifications();
 
 		this.log('Підписку створено - готовий до роботи.');
 

@@ -1,8 +1,9 @@
 export const CONFIGS = [
 	{
-		name: 'blueCloneElm327',
+		name: 'Viecar or Blue ELM 327 cline',
 		serviceUuid: '0000fff0-0000-1000-8000-00805f9b34fb',
-		characteristicUuid: 0xfff1
+		characteristicUuid: '0000fff1-0000-1000-8000-00805f9b34fb',
+		writeCharacteristicUuid: '0000fff2-0000-1000-8000-00805f9b34fb'
 	},
 	{
 		name: 'vgate-icar2-bluetooth-4-0',
