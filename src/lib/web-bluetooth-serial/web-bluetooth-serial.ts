@@ -3,7 +3,7 @@
 import { CONFIGS, EMPTY_DATA_VIEW } from './web-bluetooth-serial.constants';
 
 function consoleLoggerHandler(string: string, level: string = 'info') {
-	console.log(`${new Date().toISOString()}: ${string}`);
+	// console.log(`${new Date().toISOString()}: ${string}`);
 }
 
 export class WebBluetoothSerial {

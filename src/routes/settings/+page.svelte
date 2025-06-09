@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { bluetoothState } from '$lib/bluetooth.store.svelte';
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import { changeGeolocationEnabled, settingsStore } from '$lib/settings.store.svelte';
 
@@ -67,5 +68,12 @@
 				/>
 			</div>
 		</div>
+	</div>
+	<div class="mt-8 flex items-center justify-center">
+		<ButtonLink
+			href="/debugger"
+			onclick={() => (bluetoothState.isElmDebuggerEnabled = true)}
+			variant="secondary">Налагоджувач</ButtonLink
+		>
 	</div>
 </div>

@@ -9,6 +9,13 @@ import {
 import { INITIAL_PARAM_VALUES, paramsState } from './params.svelte';
 import { pollGeolocation, stopPollingGeolocation } from './geolocation.svelte';
 import { getGeolocationSettingEnabled } from './settings.store.svelte';
+import type { ElmResponseLoggerArgs } from './elm-device/elm-device.types';
+import { PARSING_ERROR_RESPONSE } from './elm-device/parsers/hkmc.parsers';
+import { MOCK_ELM_RESPONSES } from './common/constants/mock-elm-responses.constants';
+import { getCommandDebugKey } from './common/helpers/command.helpers';
+
+let initialElmResponses: typeof MOCK_ELM_RESPONSES = MOCK_ELM_RESPONSES;
+initialElmResponses = {};
 
 export const bluetoothState = $state({
 	serialConnectionStatus: 'idle',
@@ -16,11 +23,37 @@ export const bluetoothState = $state({
 	elmDeviceStatus: 'idle',
 	heartbeat: 0,
 	lastCommandTime: 0,
-	stopPollingCommand: false
+	stopPollingCommand: false,
+	elmResponses: initialElmResponses,
+	isElmDebuggerEnabled: false
 });
 
+const appendElmResponse: ElmResponseLoggerArgs = (command, response) => {
+	if (!bluetoothState.isElmDebuggerEnabled) {
+		return;
+	}
+
+	const key = getCommandDebugKey(command);
+
+	if (!bluetoothState.elmResponses[`${key}`]) {
+		bluetoothState.elmResponses[`${key}`] = {
+			values: [],
+			command
+		};
+	}
+
+	const existingResponses = bluetoothState.elmResponses[`${key}`];
+
+	bluetoothState.elmResponses[`${key}`].values = existingResponses.values.concat([
+		{
+			timestamp: new Date().valueOf(),
+			value: response
+		}
+	]);
+};
+
 const webBluetoothSerialDevice = new WebBluetoothSerial();
-const elmDevice = new ElmDevice(webBluetoothSerialDevice);
+const elmDevice = new ElmDevice(webBluetoothSerialDevice, appendElmResponse);
 
 export async function connect() {
 	bluetoothState.bluetoothError = '';
@@ -87,6 +120,7 @@ export async function startDataReading() {
 			COMMANDS.HKMC_EV_VMCU_INFO02,
 			COMMANDS.HKMC_EV_TPMS_ECU_INFO02,
 			COMMANDS.HKMC_EV_AIRCON_ECU_INFO00,
+			...(bluetoothState?.isElmDebuggerEnabled ? [COMMANDS.HKMC_EV_AIRCON_ECU_INFO02] : []),
 			COMMANDS.HKMC_EV_MCU_INFO02
 		]) {
 			if (bluetoothState.stopPollingCommand) {
@@ -95,6 +129,11 @@ export async function startDataReading() {
 
 			try {
 				const response = await elmDevice.sendCommand(command);
+
+				if (response === PARSING_ERROR_RESPONSE) {
+					continue;
+				}
+
 				const now = new Date().valueOf();
 				for (const [field, value] of Object.entries(response)) {
 					if (!paramsState.values[field as FieldType]) {

@@ -1,13 +1,16 @@
 import type { WebBluetoothSerial } from '$lib/web-bluetooth-serial';
-import type { Command } from './elm-device.types';
+import type { Command, ElmResponseLoggerArgs } from './elm-device.types';
 import { adaptValueFromObd2CommandResponse } from './parsers/obd2.parsers';
 
 export class ElmDevice {
 	bluetoothDevice: WebBluetoothSerial;
 	currentHeader: string;
-	constructor(bluetoothDevice: WebBluetoothSerial) {
+	responseLogger?: ElmResponseLoggerArgs;
+
+	constructor(bluetoothDevice: WebBluetoothSerial, responseLogger?: ElmResponseLoggerArgs) {
 		this.bluetoothDevice = bluetoothDevice;
 		this.currentHeader = '';
+		this.responseLogger = responseLogger;
 	}
 
 	async sendCommand(command: Command) {
@@ -18,10 +21,14 @@ export class ElmDevice {
 		}
 
 		let response = await this.bluetoothDevice.sendData(command.payload);
-		await this.waitBetweenCommands();
+		await this.waitBetweenCommands(command?.waitAfterCommand);
 
 		if (command.payload.startsWith('01') || command.payload.startsWith('09')) {
 			response = adaptValueFromObd2CommandResponse(response || '', command.payload);
+		}
+
+		if (this.responseLogger) {
+			this.responseLogger(command, response || '');
 		}
 
 		try {
@@ -33,7 +40,7 @@ export class ElmDevice {
 		}
 	}
 
-	async waitBetweenCommands() {
-		await new Promise((resolve) => setTimeout(() => resolve(true), 60));
+	async waitBetweenCommands(milliseconds = 70) {
+		await new Promise((resolve) => setTimeout(() => resolve(true), milliseconds));
 	}
 }

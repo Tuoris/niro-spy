@@ -104,7 +104,6 @@
 					const confirmed = confirm(
 						"Ви дійсно хочете переглянути таку кількість графіків (більше 30)? Це може уповільнити ваш телефон чи комп'ютер."
 					);
-					console.log(confirmed);
 					if (!confirmed) {
 						event.preventDefault();
 						return;
@@ -125,7 +124,7 @@
 			<tbody>
 				{#each filteredParams as param}
 					<tr
-						class="border-b border-gray-200 nth-last-1:border-none dark:border-gray-800 dark:text-neutral-200"
+						class="cursor-pointer border-b border-gray-200 hover:bg-neutral-700 nth-last-1:border-none dark:border-gray-800 dark:text-neutral-200"
 					>
 						<td class="w-10 px-2">
 							<input

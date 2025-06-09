@@ -1,6 +1,8 @@
 import { HKMC_GEARS } from '$lib/common/constants/vmcu.constants';
 import { signedIntFromBytes, unsignedIntFromBytes } from './elm-parser.utils';
 
+export const PARSING_ERROR_RESPONSE = { error: true } as const;
+
 export function parseUdsInfoBuffer(buffer: string) {
 	const joinedBuffer = buffer.replaceAll('\n', '').replaceAll('\r', '');
 
@@ -18,6 +20,11 @@ export const sampleBmsInfo01 =
 
 export function parseHkmcEvBmsInfo01(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 9;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
 
 	const socBms = unsignedIntFromBytes(separatePacketBytes[1][1]) / 2;
 	const maxRegenerationPower = unsignedIntFromBytes(separatePacketBytes[1].slice(2, 4)) / 100;
@@ -129,6 +136,11 @@ export const sampleParseHkmcEvBmsInfo02 = `7F 22 12
 export function parseHkmcEvBmsInfo02(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
 
+	const expectedResponseLines = 6;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
 	const cellVoltages = [];
 
 	for (let rowIndex = 1; rowIndex <= 5; rowIndex++) {
@@ -226,6 +238,11 @@ export const sampleParseHkmcEvBmsInfo03 = `7F 22 12
 
 export function parseHkmcEvBmsInfo03(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 6;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
 
 	const cellVoltages = [];
 
@@ -325,6 +342,11 @@ export const sampleParseHkmcEvBmsInfo04 = `7F 22 12
 export function parseHkmcEvBmsInfo04(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
 
+	const expectedResponseLines = 6;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
 	const cellVoltages = [];
 
 	for (let rowIndex = 1; rowIndex <= 5; rowIndex++) {
@@ -414,6 +436,11 @@ export const sampleBmsInfo05 =
 export function parseHkmcEvBmsInfo05(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
 
+	const expectedResponseLines = 7;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
 	const unknownTempA = signedIntFromBytes(separatePacketBytes[2][2]);
 	const cellVoltageDifference = unsignedIntFromBytes(separatePacketBytes[3][3]) / 50;
 
@@ -455,6 +482,11 @@ export function parseHkmcEvBmsInfo05(value: string) {
 export function parseHkmcEvBmsInfo06(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
 
+	const expectedResponseLines = 6;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
 	const coolingWaterTemp = signedIntFromBytes(separatePacketBytes[1][1]);
 	const unknownTempC = signedIntFromBytes(separatePacketBytes[1][3]);
 	const bmsMode = unsignedIntFromBytes(separatePacketBytes[2][4]).toString(2);
@@ -477,6 +509,11 @@ export const sampleParseHkmcEvClusterInfo02 = `00F
 export function parseHkmcEvClusterInfo02(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
 
+	const expectedResponseLines = 3;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
 	const odometerKm = unsignedIntFromBytes(separatePacketBytes[1].slice(3, 6));
 
 	return {
@@ -496,6 +533,11 @@ export const sampleHkmcEvAbsInfo01 = `02A
 
 export function parseHkmcEvAbsInfo01(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 7;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
 
 	const steeringWheelAngle =
 		(unsignedIntFromBytes(separatePacketBytes[4].slice(2, 4)) - 2 ** 15) / 10;
@@ -520,6 +562,11 @@ export const sampleHkmcEvVmcuInfo01 = `018
 
 export function parseHkmcEvVmcuInfo01(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 4;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
 
 	const acceleratorPedalPositionRelative = unsignedIntFromBytes(separatePacketBytes[2][1]) / 2;
 
@@ -553,6 +600,11 @@ export const sampleHkmcEvVmcuInfo02 = `027
 
 export function parseHkmcEvVmcuInfo02(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 6;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
 
 	const auxBatteryVoltage =
 		unsignedIntFromBytes(separatePacketBytes[3].slice(1, 3).reverse()) / 1000;
@@ -588,6 +640,11 @@ export const sampleHkmcEcu7D4Info01 = `012
 
 export function parseHkmcEcu7D4Info01(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 3;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
 
 	const vehicleSpeed =
 		unsignedIntFromBytes([separatePacketBytes[1][6], separatePacketBytes[2][0]]) / 10;
@@ -637,6 +694,11 @@ export const TPMS_LIVE_DATA_FLAG = {
 
 export function parseHkmcEvTpmsInfo02(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 4;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
 
 	const barToPsi = 14.5;
 
@@ -691,8 +753,9 @@ export const invalidAirconInfo00 = `
 export function parseHkmcEvAirconInfo00(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
 
-	if (separatePacketBytes.length < 5) {
-		return {};
+	const expectedResponseLines = 6;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
 	}
 
 	const interiorTemperature = unsignedIntFromBytes(separatePacketBytes[1][2]) / 2 - 40;
@@ -718,6 +781,11 @@ export function parseHkmcEvAirconInfo02(value: string) {
 	// Values does not look valid
 	const separatePacketBytes = parseUdsInfoBuffer(value);
 
+	const expectedResponseLines = 3;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
 	const coolantTemperature01 = unsignedIntFromBytes(separatePacketBytes[1][1]) / 2 - 40;
 	const coolantTemperature02 = unsignedIntFromBytes(separatePacketBytes[1][2]) / 2 - 40;
 	const absoluteAirPressure = unsignedIntFromBytes(separatePacketBytes[2][2]) * 20;
@@ -741,6 +809,11 @@ export const sampleHkmcEvMcuInfo02 = `0: 3A 61 02 07 FF FF FF
 
 export function parseHkmcEvMcuInfo02(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 9;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
 
 	const motorTemperature = signedIntFromBytes(separatePacketBytes[2][1]) * 2;
 	const inverterTemperature = signedIntFromBytes(separatePacketBytes[2][2]) * 2;
