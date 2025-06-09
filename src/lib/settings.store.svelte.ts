@@ -2,7 +2,8 @@ import { getGeolocationPermission } from './geolocation.svelte';
 
 export const settingsStore = $state({
 	geoLocationPermission: 'not available',
-	geolocationEnabled: false
+	geolocationEnabled: false,
+	priceOfKwh: 17.0
 });
 
 setTimeout(() => {

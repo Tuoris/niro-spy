@@ -51,6 +51,7 @@
 		"i18next": "^25.2.1",
 		"luxon": "^3.6.1",
 		"nosleep.js": "^0.12.0",
+		"svelte-range-slider-pips": "^4.0.0",
 		"tailwind-variants": "^1.0.0"
 	}
 }

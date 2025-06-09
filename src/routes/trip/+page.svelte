@@ -4,10 +4,13 @@
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { paramsState, type ParamValue } from '$lib/params.svelte';
+	import { settingsStore } from '$lib/settings.store.svelte';
 	import { downloadTripDataFile } from '$lib/trip-data';
+	import { RangeSlider } from 'svelte-range-slider-pips';
 
-	let recordingSliderStart = $state(0);
-	let recordingSliderEnd = $state(100);
+	let recordingSliderValues = $state([0, 100]);
+	let recordingSliderStart = $derived(recordingSliderValues[0]);
+	let recordingSliderEnd = $derived(recordingSliderValues[1]);
 
 	const tripFullTimeRange = $derived.by(() => {
 		const currentTime = new Date().valueOf();
@@ -214,6 +217,21 @@
 		return `${sign}${Math.abs(altitudeChange).toFixed()}`;
 	});
 
+	let tripPrice = $derived.by(() => {
+		const energyConsumedKwh = energyConsumed / 1000;
+		if (energyConsumedKwh < 0) {
+			return 0;
+		}
+
+		const tripPrice = energyConsumedKwh * settingsStore.priceOfKwh;
+		return tripPrice;
+	});
+
+	let pricePerKm = $derived.by(() => {
+		const pricePerKm = tripPrice / distanceTraveled;
+		return pricePerKm;
+	});
+
 	const downloadData = () => downloadTripDataFile({ values: paramsState.values });
 
 	let fileInput: HTMLInputElement;
@@ -283,7 +301,28 @@
 		<input type="file" bind:files bind:this={fileInput} accept=".json" hidden />
 	</div>
 
-	<div class="mx-auto mt-4 mb-4 grid max-w-2xl grid-cols-2 gap-4">
+	{#if paramsState.recording}
+		<div>
+			<RangeSlider
+				bind:values={recordingSliderValues}
+				pips
+				rangeGapMin={1}
+				range={true}
+				pushy={true}
+				draggy={true}
+				spring={false}
+			/>
+		</div>
+		<div class="text-center text-sm">
+			{new Date(recordingTimeRange.startTime).toLocaleDateString()}
+			{new Date(recordingTimeRange.startTime).toLocaleTimeString()} - {new Date(
+				recordingTimeRange.endTime
+			).toLocaleDateString()}
+			{new Date(recordingTimeRange.endTime).toLocaleTimeString()}
+		</div>
+	{/if}
+
+	<div class="mx-auto mt-4 grid max-w-2xl grid-cols-2 gap-4 pb-4">
 		{@render valueCard(
 			'Середня потужність',
 			(averagePowerByTime > 1000 ? averagePowerByTime / 1000 : averagePowerByTime).toFixed(1),
@@ -302,44 +341,7 @@
 		{@render valueCard('Середня витрата (GPS)', consumptionGps.toFixed(1), 'кВт·год/100км')}
 		{@render valueCard('Час поїздки', tripTime, '')}
 		{@render valueCard('Зміна висот', altitudeChange, 'м')}
+		{@render valueCard('Вартість поїздки', tripPrice.toFixed(2), 'грн')}
+		{@render valueCard('Вартість 1 км', pricePerKm.toFixed(2), 'грн')}
 	</div>
-
-	{#if paramsState.recording}
-		<div class="mx-auto max-w-[80ch] px-4">
-			<div class="text-center">Діапазон запису</div>
-			<div>
-				<label class="flex flex-col">
-					<!-- <span class="text-xs">% початку</span> -->
-					<input
-						type="range"
-						max="99"
-						bind:value={recordingSliderStart}
-						oninput={(event) => {
-							const newRecordingStart = parseInt(event.currentTarget.value);
-							if (newRecordingStart >= recordingSliderEnd) {
-								recordingSliderEnd = Math.min(newRecordingStart + 1, 100);
-							}
-						}}
-					/>
-				</label>
-				<label class="flex flex-col">
-					<!-- <span class="text-xs">% кінець</span> -->
-					<input
-						min="1"
-						type="range"
-						bind:value={recordingSliderEnd}
-						oninput={(event) => {
-							const newRecordingEnd = parseInt(event.currentTarget.value);
-							if (newRecordingEnd <= recordingSliderStart) {
-								recordingSliderStart = Math.max(newRecordingEnd - 1, 0);
-							}
-						}}
-					/>
-				</label>
-				<div class="text-center">
-					{recordingSliderStart} % : {recordingSliderEnd} %
-				</div>
-			</div>
-		</div>
-	{/if}
 </div>
