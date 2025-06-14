@@ -86,6 +86,7 @@
 		<ButtonLink href="/tpms" variant="secondary" disabled={!routesEnabled}>
 			{i18n.t('tpms')}</ButtonLink
 		>
+		<ButtonLink href="/vin" variant="secondary" disabled={!routesEnabled}>VIN</ButtonLink>
 		<ButtonLink href="/trip" variant="secondary">Поїздка</ButtonLink>
 		<hr />
 		<ButtonLink href="/" variant="tertiary" onclick={isInDemoMode ? exitDemoMode : enterDemoMode}>

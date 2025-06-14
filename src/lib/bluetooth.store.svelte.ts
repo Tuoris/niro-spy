@@ -25,8 +25,13 @@ export const bluetoothState = $state({
 	lastCommandTime: 0,
 	stopPollingCommand: false,
 	elmResponses: initialElmResponses,
-	isElmDebuggerEnabled: false
+	isElmDebuggerEnabled: false,
+
+	isCommandModeEnabled: false,
+	isCommandModeReady: false
 });
+
+const checkCommandModeReady = () => bluetoothState.isCommandModeEnabled;
 
 const appendElmResponse: ElmResponseLoggerArgs = (command, response) => {
 	if (!bluetoothState.isElmDebuggerEnabled) {
@@ -53,7 +58,7 @@ const appendElmResponse: ElmResponseLoggerArgs = (command, response) => {
 };
 
 const webBluetoothSerialDevice = new WebBluetoothSerial();
-const elmDevice = new ElmDevice(webBluetoothSerialDevice, appendElmResponse);
+export const elmDevice = new ElmDevice(webBluetoothSerialDevice, appendElmResponse);
 
 export async function connect() {
 	bluetoothState.bluetoothError = '';
@@ -124,6 +129,13 @@ export async function startDataReading() {
 			COMMANDS.HKMC_EV_MCU_INFO02
 		]) {
 			if (bluetoothState.stopPollingCommand) {
+				break;
+			}
+
+			if (bluetoothState.isCommandModeEnabled) {
+				// busy loop
+				await new Promise((resolve) => setTimeout(() => resolve(true), 60));
+				bluetoothState.isCommandModeReady = true;
 				break;
 			}
 
@@ -277,4 +289,24 @@ export async function mockStartDataReading() {
 		bluetoothState.lastCommandTime = end - start;
 		start = end;
 	}, 700);
+}
+
+export async function enterCommandMode() {
+	bluetoothState.isCommandModeEnabled = true;
+
+	const promise = new Promise((resolve) => {
+		const interval = setInterval(() => {
+			if (checkCommandModeReady()) {
+				clearInterval(interval);
+				resolve(true);
+			}
+		}, 60);
+	});
+
+	return promise;
+}
+
+export async function exitCommandMode() {
+	bluetoothState.isCommandModeReady = false;
+	bluetoothState.isCommandModeEnabled = false;
 }

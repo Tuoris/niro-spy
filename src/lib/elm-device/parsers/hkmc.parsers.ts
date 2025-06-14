@@ -7,7 +7,7 @@ export function parseUdsInfoBuffer(buffer: string) {
 	const joinedBuffer = buffer.replaceAll('\n', '').replaceAll('\r', '');
 
 	const numberedPackets = Array.from(
-		joinedBuffer.matchAll(/\d\:(\s[0-9A-F][0-9A-F]){6,7}/gm).map((match) => match[0])
+		joinedBuffer.matchAll(/[0-9A-F]\:(\s[0-9A-F][0-9A-F]){6,7}/gm).map((match) => match[0])
 	);
 
 	const packets = numberedPackets.map((packet) => packet.split(':')[1].trim().split(' '));
@@ -629,6 +629,48 @@ export function parseHkmcEvVmcuInfo02(value: string) {
 		isAuxBatteryCharging,
 		ewpSpeed,
 		ewpTargetSpeed
+	};
+}
+
+export const sampleHkmcEvVmcuVinInfo = `
+0: 63 5A 80 20 20 20 20
+1: 20 20 20 20 20 20 1E
+2: 09 0D 14 4B 4E 41 43
+3: 43 38 31 47 46 4D 35
+4: 30 39 38 30 30 31 33
+5: 36 36 30 31 2D 30 45
+6: 32 39 30 20 20 20 20
+7: 20 20 20 20 20 20 20
+8: 1E 09 0D 14 44 45 56
+9: 4C 44 43 35 30 45 44
+A: 45 45 4A 35 4D 2D 4E
+B: 52 30 2D 44 30 30 30
+C: 44 45 35 38 30 38 31
+D: 30 00 00 00 00 00 00
+E: 00 00 00 00 00 00 00
+`;
+
+export function parseHkmcEvVmcuVinInfo(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	console.table(separatePacketBytes);
+
+	const expectedResponseLines = 15;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
+	const vinBytes = [
+		...separatePacketBytes[2].slice(3, 7),
+		...separatePacketBytes[3],
+		...separatePacketBytes[4].slice(0, 6)
+	];
+
+	return {
+		vin: vinBytes
+			.map(unsignedIntFromBytes)
+			.map((i) => String.fromCharCode(i))
+			.join('')
 	};
 }
 

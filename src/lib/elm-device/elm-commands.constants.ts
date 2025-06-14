@@ -126,6 +126,11 @@ export const COMMANDS = {
 		header: HKMC_HEADERS.VMCU,
 		responseParser: hkmcParsers.parseHkmcEvVmcuInfo02
 	},
+	HKMC_EV_VMCU_VIN_INFO: {
+		payload: '1A80',
+		header: HKMC_HEADERS.VMCU,
+		responseParser: hkmcParsers.parseHkmcEvVmcuVinInfo
+	},
 	HKMC_EV_ECU_7D4_INFO01: {
 		payload: '220101',
 		header: HKMC_HEADERS.ECU_7D4,
