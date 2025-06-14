@@ -103,8 +103,6 @@
 			}))
 		};
 
-		console.log(newSeries);
-
 		chart.setOption(newSeries);
 	});
 </script>

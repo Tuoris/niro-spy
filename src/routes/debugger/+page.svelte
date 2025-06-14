@@ -87,6 +87,13 @@
 		return [firstPageBytesTable, secondPageBytesTable];
 	});
 
+	let buttonRefs = $derived.by(() => {
+		return [
+			Array.from({ length: 32 }).map(() => Array.from({ length: 32 })),
+			Array.from({ length: 32 }).map(() => Array.from({ length: 32 }))
+		];
+	});
+
 	const downloadData = () => {
 		const now = new Date();
 		const filename = `niro_spy_commands_${now.toISOString().replaceAll(':', '_').replace('Z', '')}.json`;
@@ -255,6 +262,13 @@
 
 		return byteAValue > byteBValue ? 'bg-green-700' : 'bg-red-700';
 	};
+
+	const clickOnNextButton = (nextButton: HTMLButtonElement) => {
+		setTimeout(() => {
+			nextButton.focus();
+			nextButton.click();
+		}, 32);
+	};
 </script>
 
 {#snippet bytesTable(data: string[][], dataToCompare?: string[][])}
@@ -266,11 +280,49 @@
 				</div>
 				{#each row as value, columnIndex}
 					<button
+						bind:this={buttonRefs[dataToCompare ? 1 : 0][rowIndex][columnIndex]}
 						class={[
 							'flex h-8 w-8 items-center justify-center rounded border',
 							dataToCompare ? getCompareClass(value, dataToCompare[rowIndex][columnIndex]) : '',
 							getCellClass(rowIndex, columnIndex)
 						]}
+						onkeydown={(event) => {
+							const refs = buttonRefs[dataToCompare ? 1 : 0];
+							if (event.code === 'ArrowRight') {
+								if (columnIndex + 1 < row.length) {
+									const next = refs[rowIndex][columnIndex + 1];
+									clickOnNextButton(next as HTMLButtonElement);
+								} else if (rowIndex + 1 < data.length) {
+									const next = refs[rowIndex + 1][0];
+									clickOnNextButton(next as HTMLButtonElement);
+								}
+								event.preventDefault();
+							}
+							if (event.code === 'ArrowLeft') {
+								if (columnIndex > 0) {
+									const next = refs[rowIndex][columnIndex - 1];
+									clickOnNextButton(next as HTMLButtonElement);
+								} else if (rowIndex > 0) {
+									const next = refs[rowIndex - 1][data[rowIndex - 1].length - 1];
+									clickOnNextButton(next as HTMLButtonElement);
+								}
+								event.preventDefault();
+							}
+							if (event.code === 'ArrowUp') {
+								if (rowIndex > 0) {
+									const next = refs[rowIndex - 1][columnIndex];
+									clickOnNextButton(next as HTMLButtonElement);
+								}
+								event.preventDefault();
+							}
+							if (event.code === 'ArrowDown') {
+								if (rowIndex + 1 < data.length) {
+									const next = refs[rowIndex + 1][columnIndex];
+									clickOnNextButton(next as HTMLButtonElement);
+								}
+								event.preventDefault();
+							}
+						}}
 						onclick={(event) => {
 							if (event.shiftKey && selectedIndexes) {
 								selectedIndexes = [
