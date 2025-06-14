@@ -194,6 +194,22 @@
 			return unsignedIntFromBytes(bytes as string[]);
 		};
 
+		const getBytesFromTable = (table: string[][], selectedIndexes: SelectedIndexes) => {
+			if (!selectedIndexes) {
+				return null;
+			}
+
+			const bytes = selectedIndexes.map(([displayPage, row, column]) =>
+				row in table ? table[row][column] : null
+			);
+
+			if (bytes.includes(null)) {
+				return null;
+			}
+
+			return bytes as string[];
+		};
+
 		let values = responsesForCommand.values
 			.map(({ timestamp, value }) => ({
 				timestamp,
@@ -207,7 +223,11 @@
 			})
 			.map(
 				({ timestamp, table }) =>
-					[timestamp, getValuesFromTable(table, selectedIndexes)] as [number, number | null]
+					[
+						timestamp,
+						getValuesFromTable(table, selectedIndexes),
+						getBytesFromTable(table, selectedIndexes)
+					] as [number, number | null, string[] | null]
 			);
 
 		return values;
@@ -364,6 +384,13 @@
 					<div>Символ</div>
 					<div class="text-right font-mono font-bold">
 						{String.fromCharCode(unsignedIntFromBytes(selectedValue))}
+					</div>
+
+					<div>Біти</div>
+					<div class="text-right font-mono font-bold">
+						{#each selectedValue as byte}
+							{unsignedIntFromBytes(byte).toString(2).padStart(8, '0')}
+						{/each}
 					</div>
 				</div>
 			</div>

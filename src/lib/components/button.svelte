@@ -12,11 +12,13 @@
 
 	let { variant = 'secondary', size = 'normal', disabled, children, ...rest }: Props = $props();
 
-	const buttonClass = buttonVariants({
-		variants: variant,
-		size: size,
-		disabled: Boolean(disabled)
-	});
+	const buttonClass = $derived.by(() =>
+		buttonVariants({
+			variants: variant,
+			size: size,
+			disabled: Boolean(disabled)
+		})
+	);
 </script>
 
 <button class={buttonClass} {...rest}>

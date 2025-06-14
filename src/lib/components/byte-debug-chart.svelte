@@ -6,35 +6,8 @@
 	import { UniversalTransition } from 'echarts/features';
 	import { CanvasRenderer } from 'echarts/renderers';
 	import { onMount } from 'svelte';
-	import Button from './button.svelte';
-	import { signedIntFromBytes } from '$lib/elm-device/parsers/elm-parser.utils';
-	import ByteDebugChart from './byte-debug-chart.svelte';
 
-	const {
-		selectedValueTimeline
-	}: { selectedValueTimeline: [number, number | null, string[] | null][] } = $props();
-
-	const byteValuesTimeline = $derived.by(() =>
-		selectedValueTimeline.map(([timestamp, _, bytes]) => [timestamp, bytes] as const)
-	);
-
-	let selectedByteIndex = $state(0);
-
-	const selectedByteTimeline = $derived.by(() =>
-		byteValuesTimeline.map(([timestamp, bytes]) => [
-			timestamp,
-			bytes ? parseInt(bytes[selectedByteIndex], 16) : bytes
-		])
-	);
-
-	const sampleBytes = $derived.by(() => {
-		if (!byteValuesTimeline?.length) {
-			return [];
-		}
-
-		const firstBytesValues = byteValuesTimeline[0][1];
-		return firstBytesValues ? firstBytesValues : [];
-	});
+	const { selectedByteTimeline }: { selectedByteTimeline: [number, number | null][] } = $props();
 
 	let chartsElement: HTMLDivElement;
 	let chart: echarts.ECharts;
@@ -49,6 +22,8 @@
 	]);
 
 	type EChartsOption = echarts.ComposeOption<GridComponentOption | LineSeriesOption>;
+
+	const VALUE_MULTIPLIER_FOR_CHART = 2;
 
 	const staticOptions: EChartsOption = {
 		animationDurationUpdate: 100,
@@ -75,9 +50,11 @@
 				fontSize: 10
 			},
 			formatter: (params) => {
-				const seriesParams = params[0];
-				const [timestamp, value, bytes] = seriesParams.data;
-				return `<strong>${new Date(timestamp).toLocaleString()}</strong><br/>${value}<br/>${signedIntFromBytes(bytes)}<br/>${bytes}`;
+				const a = params.map((param) => {
+					const value = param.value[1] - param.seriesIndex * VALUE_MULTIPLIER_FOR_CHART;
+					return `${param.marker} Біт ${param.seriesIndex}: <strong>${value}</strong>`;
+				});
+				return a.join('<br/>');
 			}
 		},
 
@@ -111,39 +88,29 @@
 	});
 
 	$effect(() => {
-		const byteValues = selectedValueTimeline.map(([_, value]) => value);
+		const bitSeries = (index: number) =>
+			selectedByteTimeline.map(([timestamp, byteValue]) => [
+				timestamp,
+				(((byteValue || 0) & (1 << index)) > 0 ? 1 : 0) + index * VALUE_MULTIPLIER_FOR_CHART
+			]);
 
-		chart.setOption({
-			series: {
+		const newSeries = {
+			series: Array.from({ length: 8 }).map((_, index) => ({
 				type: 'line',
 				step: 'middle',
 				symbol: 'none',
-				data: selectedValueTimeline
-			},
-			yAxis: {
-				min: Math.max(0, Math.min(...(byteValues as number[])) - 3),
-				max: Math.max(...(byteValues as number[])) + 3
-			}
-		});
+				data: bitSeries(index)
+			}))
+		};
+
+		console.log(newSeries);
+
+		chart.setOption(newSeries);
 	});
 </script>
 
 <div>
 	<div class="w-full">
-		<div bind:this={chartsElement} style={`height: 220px`}></div>
-	</div>
-
-	<div class="m-4">
-		<div class="flex gap-4">
-			{#each sampleBytes as byte, byteIndex}
-				<Button
-					variant={byteIndex === selectedByteIndex ? 'secondary' : 'tertiary'}
-					onclick={() => {
-						selectedByteIndex = byteIndex;
-					}}>Байт {byteIndex + 1}: {byte}</Button
-				>
-			{/each}
-		</div>
-		<ByteDebugChart {selectedByteTimeline} />
+		<div bind:this={chartsElement} style={`height: 440px`}></div>
 	</div>
 </div>
