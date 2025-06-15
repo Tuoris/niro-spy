@@ -140,7 +140,8 @@
 					variant={byteIndex === selectedByteIndex ? 'secondary' : 'tertiary'}
 					onclick={() => {
 						selectedByteIndex = byteIndex;
-					}}>Байт {byteIndex + 1}: {byte}</Button
+					}}
+					size="compact">Байт {byteIndex + 1}: {byte}</Button
 				>
 			{/each}
 		</div>

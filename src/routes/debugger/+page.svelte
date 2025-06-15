@@ -421,33 +421,41 @@
 			Немає даних
 		{/if}
 		{#if selectedValue}
-			<div class="px-4">
-				Вибрано:
-				<div class="grid grid-cols-2">
-					<div>Шістнадцяткове число</div>
-					<div class="text-right font-mono font-bold">{selectedValue}</div>
+			<div class="grid grid-cols-2">
+				<!-- <div>
+					<div>Нотатки</div>
+					<textarea
+						class="w-full border-2 border-r-4 border-b-4 border-neutral-900 p-2 dark:border-neutral-800 dark:bg-neutral-700 dark:text-neutral-100 dark:active:bg-neutral-700"
+					></textarea>
+				</div> -->
+				<div class="col-span-2 px-4 text-sm md:text-base">
+					Вибрано:
+					<div class="grid grid-cols-2">
+						<div>Шістнадцяткове число</div>
+						<div class="text-right font-mono font-bold">{selectedValue}</div>
 
-					<div>Десяткове число</div>
-					<div class="text-right font-mono font-bold">{unsignedIntFromBytes(selectedValue)}</div>
+						<div>Десяткове число</div>
+						<div class="text-right font-mono font-bold">{unsignedIntFromBytes(selectedValue)}</div>
 
-					<div>Десяткове число зі знаком</div>
-					<div class="text-right font-mono font-bold">{signedIntFromBytes(selectedValue)}</div>
+						<div>Десяткове число зі знаком</div>
+						<div class="text-right font-mono font-bold">{signedIntFromBytes(selectedValue)}</div>
 
-					<div>Температура (XX / 2 - 40)</div>
-					<div class="text-right font-mono font-bold">
-						{unsignedIntFromBytes(selectedValue) / 2 - 40}°C
-					</div>
+						<div>Температура (XX / 2 - 40)</div>
+						<div class="text-right font-mono font-bold">
+							{unsignedIntFromBytes(selectedValue) / 2 - 40}°C
+						</div>
 
-					<div>Символ</div>
-					<div class="text-right font-mono font-bold">
-						{String.fromCharCode(unsignedIntFromBytes(selectedValue))}
-					</div>
+						<div>Символ</div>
+						<div class="text-right font-mono font-bold">
+							{String.fromCharCode(unsignedIntFromBytes(selectedValue))}
+						</div>
 
-					<div>Біти</div>
-					<div class="text-right font-mono font-bold">
-						{#each selectedValue as byte}
-							{unsignedIntFromBytes(byte).toString(2).padStart(8, '0')}
-						{/each}
+						<div>Біти</div>
+						<div class="text-right font-mono font-bold">
+							{#each selectedValue as byte}
+								{unsignedIntFromBytes(byte).toString(2).padStart(8, '0')}
+							{/each}
+						</div>
 					</div>
 				</div>
 			</div>
