@@ -865,3 +865,50 @@ export function parseHkmcEvMcuInfo02(value: string) {
 		inverterTemperature
 	};
 }
+
+export const sampleHkmcEcBcmInfo0C = `00B 
+0: 62 B0 0C 3F 00 00
+1: 00 30 00 00 00 AA AA
+>`;
+
+export function parseHkmcEcBcmInfo0C(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 2;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
+	const heatedWheelByteValue = unsignedIntFromBytes(separatePacketBytes[1][1]);
+
+	const heatedWheelIndicator = heatedWheelByteValue & (1 << 4) ? 1 : 0;
+
+	return {
+		heatedWheelIndicator
+	};
+}
+
+export const sampleHkmcEcBcmInfo0E = `00B 
+0: 62 B0 0E 08 00 00
+1: 00 10 00 00 00 AA AA`;
+
+export function parseHkmcEcBcmInfo0E(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 2;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
+	const charingLidByteValue = unsignedIntFromBytes(separatePacketBytes[1][1]);
+
+	const charingLidOpen = charingLidByteValue & (1 << 4) ? 1 : 0;
+
+	return {
+		charingLidOpen
+	};
+}
+
+export function defaultParser(value: string) {
+	return {};
+}
