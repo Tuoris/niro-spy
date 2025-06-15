@@ -274,7 +274,7 @@
 {#snippet bytesTable(data: string[][], dataToCompare?: string[][])}
 	<div>
 		{#each data as row, rowIndex}
-			<div class="flex gap-1 font-mono">
+			<div class="flex gap-1 font-mono text-sm md:text-base">
 				<div class="flex h-8 w-8 items-center justify-center rounded text-neutral-500">
 					{rowIndex === 0 ? '10' : `2${rowIndex}`}
 				</div>
@@ -432,6 +432,11 @@
 
 					<div>Десяткове число зі знаком</div>
 					<div class="text-right font-mono font-bold">{signedIntFromBytes(selectedValue)}</div>
+
+					<div>Температура (XX / 2 - 40)</div>
+					<div class="text-right font-mono font-bold">
+						{unsignedIntFromBytes(selectedValue) / 2 - 40}°C
+					</div>
 
 					<div>Символ</div>
 					<div class="text-right font-mono font-bold">

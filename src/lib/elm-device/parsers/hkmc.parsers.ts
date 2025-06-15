@@ -885,6 +885,7 @@ export function parseHkmcEcBcmInfo0C(value: string) {
 
 	return {
 		heatedWheelIndicator
+		// TODO: Seems like b6 - corresponds to heated seats
 	};
 }
 
@@ -908,6 +909,83 @@ export function parseHkmcEcBcmInfo0E(value: string) {
 		charingLidOpen
 	};
 }
+
+export const sampleHkmcEvObcInfo01 = `03A 
+0: 61 01 FF FE 57 FC
+1: 00 00 00 00 00 00 00
+2: 00 00 84 00 37 01 BD
+3: 05 9C 41 00 00 00 00
+4: 00 00 00 00 60 00 00
+5: 00 00 01 F3 00 00 00
+6: 00 00 00 84 00 00 00
+7: 05 90 0C 0E 54 00 00
+8: 00 00 00 00 00 00 00>
+`;
+
+export function parseHkmcEvObcInfo01(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 9;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
+	const obcTemperature = unsignedIntFromBytes(separatePacketBytes[6][3]) / 2 - 40;
+
+	return { obcTemperature };
+}
+
+export const sampleHkmcEvObcInfo02 = `022 \r
+0: 61 02 00 00 00 00 \r
+1: 75 4D 79 2B 75 AC 79
+2: 2C 6D A9 79 21 70 5E
+3: 79 25 74 0E 79 14 71
+4: A4 79 1C 74 85 79 0F>
+`;
+
+export function parseHkmcEvObcInfo02(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 5;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
+	return {};
+}
+
+export const sampleHkmcEvObcInfo03 = `031 \r
+0: 61 03 FF FF FF C0 \r
+1: 00 00 28 03 97 03 7E
+2: 00 00 0D 19 01 00 22
+3: 00 00 01 00 00 70 0F
+4: 00 02 00 02 00 03 00
+5: 02 00 02 00 02 01 23
+6: 01 23 00 00 00 00 00
+7: 00 00 00 00 00 00 00>`;
+
+export function parseHkmcEvObcInfo03(value: string) {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	const expectedResponseLines = 8;
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
+	const acChargingCurrent = unsignedIntFromBytes(separatePacketBytes[1].slice(0, 2)) / 100;
+
+	return { acChargingCurrent };
+}
+
+export const validateResponseLines = (expectedResponseLines: number) => (value: string) => {
+	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	if (separatePacketBytes.length !== expectedResponseLines) {
+		return PARSING_ERROR_RESPONSE;
+	}
+
+	return {};
+};
 
 export function defaultParser(value: string) {
 	return {};

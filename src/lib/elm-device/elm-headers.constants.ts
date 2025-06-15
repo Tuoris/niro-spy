@@ -9,7 +9,7 @@ export const HKMC_HEADERS = {
 	MCU: '7E3',
 	BCM: '7A0',
 	OBC: '7E5',
-	AEB: '7D0',
+	AEB: '7D0', // No response
 	IGMP: '770'
 } as const;
 

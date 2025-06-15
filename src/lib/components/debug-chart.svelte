@@ -77,7 +77,7 @@
 			formatter: (params) => {
 				const seriesParams = params[0];
 				const [timestamp, value, bytes] = seriesParams.data;
-				return `<strong>${new Date(timestamp).toLocaleString()}</strong><br/>${value}<br/>${signedIntFromBytes(bytes)}<br/>${bytes}`;
+				return `<strong>${new Date(timestamp).toLocaleString()}</strong><br/>Десяткове число: ${value}<br/>Десяткове число зі знаком: ${signedIntFromBytes(bytes)}<br/>Температура: ${value / 2 - 40}°C<br/>Шістнадцяткове число: ${bytes}`;
 			}
 		},
 

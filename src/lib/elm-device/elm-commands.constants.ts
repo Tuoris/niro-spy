@@ -171,66 +171,66 @@ export const COMMANDS = {
 	HKMC_EC_BCM_INFO01: {
 		payload: '22B001',
 		header: HKMC_HEADERS.BCM,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.validateResponseLines(4)
 	},
 	HKMC_EC_BCM_INFO02: {
 		payload: '22B002',
 		header: HKMC_HEADERS.BCM,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.validateResponseLines(2)
 	},
 	HKMC_EC_BCM_INFO03: {
 		payload: '22B003',
 		header: HKMC_HEADERS.BCM,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.validateResponseLines(4)
 	},
 	HKMC_EC_BCM_INFO08: {
 		payload: '22B008',
 		header: HKMC_HEADERS.BCM,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.validateResponseLines(2)
 	},
 	HKMC_EV_OBC_INFO01: {
 		payload: '2101',
 		header: HKMC_HEADERS.OBC,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.parseHkmcEvObcInfo01
 	},
 	HKMC_EV_OBC_INFO02: {
 		payload: '2102',
 		header: HKMC_HEADERS.OBC,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.parseHkmcEvObcInfo02
 	},
 	HKMC_EV_OBC_INFO03: {
 		payload: '2103',
 		header: HKMC_HEADERS.OBC,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.parseHkmcEvObcInfo03
 	},
-	HKMC_EV_AEB_INFO02: {
-		payload: '2202',
-		header: HKMC_HEADERS.AEB,
-		responseParser: hkmcParsers.defaultParser
-	},
+	// HKMC_EV_AEB_INFO02: {
+	// 	payload: '2202',
+	// 	header: HKMC_HEADERS.AEB,
+	// 	responseParser: hkmcParsers.defaultParser
+	// },
 	HKMC_EV_IGMP_INFO03: {
 		payload: '22BC03',
 		header: HKMC_HEADERS.IGMP,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.validateResponseLines(2)
 	},
 	HKMC_EV_IGMP_INFO04: {
 		payload: '22BC04',
 		header: HKMC_HEADERS.IGMP,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.validateResponseLines(2)
 	},
 	HKMC_EV_IGMP_INFO05: {
 		payload: '22BC05',
 		header: HKMC_HEADERS.IGMP,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.validateResponseLines(2)
 	},
 	HKMC_EV_IGMP_INFO06: {
 		payload: '22BC06',
 		header: HKMC_HEADERS.IGMP,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.validateResponseLines(2)
 	},
 	HKMC_EV_IGMP_INFO07: {
 		payload: '22BC07',
 		header: HKMC_HEADERS.IGMP,
-		responseParser: hkmcParsers.defaultParser
+		responseParser: hkmcParsers.validateResponseLines(2)
 	}
 } as const;
