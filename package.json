@@ -1,7 +1,7 @@
 {
 	"name": "elm327-scanner",
 	"private": true,
-	"version": "0.0.1",
+	"version": "0.9.0",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -13,7 +13,10 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
 		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run"
+		"test": "npm run test:unit -- --run",
+		"bump:major": "npm version major --no-git-tag-version",
+		"bump:minor": "npm version minor --no-git-tag-version",
+		"bump:patch": "npm version patch --no-git-tag-version"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
