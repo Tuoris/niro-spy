@@ -776,17 +776,13 @@ export function parseHkmcEvTpmsInfo02(value: string) {
 	};
 }
 
-export const sampleAirconInfo00 = `
-22 01 00
-026 
+export const sampleAirconInfo00 = `026 \r
 0: 62 01 00 7E 50 27
-1: C8 FF 7F 64 63 03 EF
-2: 8D FF FF 8D FF 10 FF
-3: FF FF FF FF FF C0 FF
-4: FF 48 D7 8B 8A 00 FF
-5: FF 01 FF FF 00 00 00
->
-`;
+1: C8 FF 81 86 62 04 10
+2: 10 FF FF 10 FF 10 FF
+3: FF FF FF FF FF 0F FF
+4: FF 2F F4 68 75 00 FF
+5: FF 01 FF FF 00 00 00>`;
 
 export const invalidAirconInfo00 = `
 026 \r0: 62 01 00 7E 50 273: FF FF FF FF FF 69 FF4: FF 22 EF 67 68 00 FF5: FF 01 FF FF 00 00 00>
@@ -800,12 +796,14 @@ export function parseHkmcEvAirconInfo00(value: string) {
 		return PARSING_ERROR_RESPONSE;
 	}
 
-	const interiorTemperature = unsignedIntFromBytes(separatePacketBytes[1][2]) / 2 - 40;
+	const interiorTemperature = unsignedIntFromBytes(separatePacketBytes[4][4]) / 2 - 40;
+	const airVentTemperature = unsignedIntFromBytes(separatePacketBytes[4][3]) / 2 - 40;
 	const ambientTemperature = unsignedIntFromBytes(separatePacketBytes[1][3]) / 2 - 40;
 	const evaporatorTemperature = unsignedIntFromBytes(separatePacketBytes[1][4]) / 2 - 40;
 
 	return {
 		interiorTemperature,
+		airVentTemperature,
 		ambientTemperature,
 		evaporatorTemperature
 	};
