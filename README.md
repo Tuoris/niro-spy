@@ -1,22 +1,62 @@
-# sv
+# Niro Spy
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Companion app for the Kia e-Niro and Huyndai Kona.
 
-## Creating a project
+Allows to monitor live data and charts, exporting and importing trip recording.
 
-If you're seeing this, you've probably already done this step. Congrats!
+Works with BLE (Bluetooth 4+) OBD2 adapters and browsers supporting Web Bluetooth API.
 
-```bash
-# create a new project in the current directory
-npx sv create
+English and Korean version is WIP.
 
-# create a new project in my-app
-npx sv create my-app
-```
+## Screenshots
+
+### Main screen
+
+![Main screen](screenshots/screenshot_0000.png)
+
+### All OBD2 parameters
+
+![All OBD2 parameters](screenshots/screenshot_0001.png)
+
+### Charts for OBD2 parameters
+
+![Charts for OBD2 parameters](screenshots/screenshot_0002.png)
+
+### Chart tooltips
+
+![Chart tooltips](screenshots/screenshot_0003.png)
+
+### Battery info page
+
+![Battery info page](screenshots/screenshot_0004.png)
+
+### Battery cells section
+
+![Battery cells section](screenshots/screenshot_0005.png)
+
+### TPMS (tire temperature and pressure monitoring)
+
+![TPMS (tire temperature and pressure monitoring)](screenshots/screenshot_0006.png)
+
+### VIN
+
+![VIN](screenshots/screenshot_0007.png)
+
+### Trip info page
+
+![Trip info page](screenshots/screenshot_0008.png)
+
+### Debugger (CAN message explorer)
+
+![Debugger (CAN message explorer)](screenshots/screenshot_0009.png)
+
+![Debugger (CAN message explorer) screenshot 2](screenshots/screenshot_0010.png)
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Install dependencies with `npm install` (or `pnpm install` or `yarn`).
+
+Start a development server:
 
 ```bash
 npm run dev
@@ -34,5 +74,3 @@ npm run build
 ```
 
 You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
