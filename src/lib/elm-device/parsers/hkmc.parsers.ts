@@ -15,8 +15,16 @@ export function parseUdsInfoBuffer(buffer: string) {
 	return packets;
 }
 
-export const sampleBmsInfo01 =
-	'7F 22 12 \r7F 22 12 \r03E \r0: 62 01 01 FF F7 E7 \r7F 22 121: FF 88 35 93 3E 1C 83 \r2: 00 28 0E D4 05 04 043: 04 04 04 00 00 03 C14: 03 C1 36 00 00 92 005: 06 C0 E4 00 06 A2 CE6: 00 02 8E 5C 00 02 717: 1F 01 35 B3 3E 0D 018: 7C 00 00 00 00 03 E8>';
+export const sampleBmsInfo01 = `03E \r
+	0: 62 01 01 FF F7 E7
+	1: FF 68 42 68 42 68 03
+	2: 00 1A 0E 26 1B 18 1A
+	3: 19 18 1A 00 00 1C B8
+	4: 07 B8 36 00 00 92 00
+	5: 07 36 B0 00 07 19 1C
+	6: 00 02 BA 2A 00 02 9B \r
+	7: 78 01 46 59 12 0D 01
+	8: 6A 00 00 00 00 03 E8>`;
 
 export function parseHkmcEvBmsInfo01(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
@@ -51,18 +59,19 @@ export function parseHkmcEvBmsInfo01(value: string) {
 	const auxBatteryVoltageBms = unsignedIntFromBytes(separatePacketBytes[4][5]) / 10;
 
 	const cumulativeCapacityCharged =
-		unsignedIntFromBytes([separatePacketBytes[4][6], ...separatePacketBytes[5].slice(0, 3)]) / 100;
+		unsignedIntFromBytes([separatePacketBytes[4][6], ...separatePacketBytes[5].slice(0, 3)]) / 10;
 
 	const cumulativeCapacityDischarged =
-		unsignedIntFromBytes(separatePacketBytes[5].slice(3, 7)) / 100;
+		unsignedIntFromBytes(separatePacketBytes[5].slice(3, 7)) / 10;
 
 	const cumulativeEnergyCharged = unsignedIntFromBytes(separatePacketBytes[6].slice(0, 4)) / 10;
 	const cumulativeEnergyDischarged =
 		unsignedIntFromBytes([...separatePacketBytes[6].slice(4, 7), separatePacketBytes[7][0]]) / 10;
 
-	const averageCellVoltageWhileCharge = cumulativeEnergyCharged / cumulativeCapacityCharged;
-	const averageCellVoltageWhileDischarge =
-		cumulativeEnergyDischarged / cumulativeCapacityDischarged;
+	const averageBatteryVoltageWhileCharge =
+		(cumulativeEnergyCharged / cumulativeCapacityCharged) * 1000;
+	const averageBatteryVoltageWhileDischarge =
+		(cumulativeEnergyDischarged / cumulativeCapacityDischarged) * 1000;
 
 	const operationalTimeSeconds = unsignedIntFromBytes(separatePacketBytes[7].slice(1, 5));
 	const operationalTimeHours = operationalTimeSeconds / 60;
@@ -108,8 +117,8 @@ export function parseHkmcEvBmsInfo01(value: string) {
 		cumulativeCapacityDischarged,
 		cumulativeEnergyCharged,
 		cumulativeEnergyDischarged,
-		averageCellVoltageWhileCharge,
-		averageCellVoltageWhileDischarge,
+		averageCellVoltageWhileCharge: averageBatteryVoltageWhileCharge,
+		averageCellVoltageWhileDischarge: averageBatteryVoltageWhileDischarge,
 		operationalTimeSeconds,
 		operationalTimeHours,
 		bmsIgnition,
@@ -120,6 +129,8 @@ export function parseHkmcEvBmsInfo01(value: string) {
 		isBatteryCharging
 	};
 }
+
+console.log(parseHkmcEvBmsInfo01(sampleBmsInfo01));
 
 export const sampleParseHkmcEvBmsInfo02 = `7F 22 12 
 7F 22 12 
