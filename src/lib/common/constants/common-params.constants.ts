@@ -56,7 +56,7 @@ export const PARAMS_CONFIG = [
 		exampleValue: 9000,
 		range: [0, Infinity],
 		unit: 'А·год',
-		format: (value: number) => value.toFixed()
+		format: (value: number) => value.toFixed(1)
 	},
 	{
 		name: 'Сукупна розряджена ємність',
@@ -64,7 +64,7 @@ export const PARAMS_CONFIG = [
 		exampleValue: 9450,
 		range: [0, Infinity],
 		unit: 'А·год',
-		format: (value: number) => value.toFixed()
+		format: (value: number) => value.toFixed(1)
 	},
 	{
 		name: 'Сукупна заряджена енергія',
@@ -72,7 +72,7 @@ export const PARAMS_CONFIG = [
 		exampleValue: 9000,
 		range: [0, Infinity],
 		unit: 'кВт·год',
-		format: (value: number) => value.toFixed()
+		format: (value: number) => value.toFixed(1)
 	},
 	{
 		name: 'Сукупна розряджена енергія',
@@ -80,7 +80,7 @@ export const PARAMS_CONFIG = [
 		exampleValue: 9450,
 		range: [0, Infinity],
 		unit: 'кВт·год',
-		format: (value: number) => value.toFixed()
+		format: (value: number) => value.toFixed(1)
 	},
 	{
 		name: 'Швидкість',
