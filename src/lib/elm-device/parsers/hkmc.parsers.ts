@@ -931,6 +931,17 @@ export const sampleHkmcEvObcInfo01 = `03A
 8: 00 00 00 00 00 00 00>
 `;
 
+export const sample02HkmcEvObcInfo01 = `03A \r
+0: 61 01 FF FE 57 FC
+1: 00 93 78 91 96 56 95
+2: 02 6B A5 02 4B 01 36
+3: 05 C8 43 10 76 00 FA
+4: 04 6D 00 C7 76 00 00
+5: 00 00 01 F3 00 00 77 \r
+6: 21 00 00 A6 32 03 E8
+7: 05 C8 03 0E 8F 07 0E
+8: C9 02 6B 00 00 00 00>`;
+
 export function parseHkmcEvObcInfo01(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
 
@@ -939,10 +950,30 @@ export function parseHkmcEvObcInfo01(value: string) {
 		return PARSING_ERROR_RESPONSE;
 	}
 
-	const obcTemperature = unsignedIntFromBytes(separatePacketBytes[6][3]) / 2 - 40;
+	const auxBatteryVoltageObc = unsignedIntFromBytes(separatePacketBytes[3].slice(0, 2)) / 100;
 
-	return { obcTemperature };
+	const obcTemperatureA = unsignedIntFromBytes(separatePacketBytes[2][2]) / 2 - 40;
+	const obcTemperatureB = unsignedIntFromBytes(separatePacketBytes[6][3]) / 2 - 40;
+
+	const acVoltage = unsignedIntFromBytes(separatePacketBytes[6][6]);
+
+	const dcOutputVoltageObc = unsignedIntFromBytes(separatePacketBytes[1].slice(3, 5)) / 100;
+	const dcOutputCurrentObc = unsignedIntFromBytes(separatePacketBytes[8].slice(1, 3)) / 100;
+
+	const batteryVoltageObc = unsignedIntFromBytes(separatePacketBytes[7].slice(3, 5)) / 10;
+
+	return {
+		auxBatteryVoltageObc,
+		obcTemperatureA,
+		obcTemperatureB,
+		acVoltage,
+		dcOutputVoltageObc,
+		dcOutputCurrentObc,
+		batteryVoltageObc
+	};
 }
+
+// console.log(parseHkmcEvObcInfo01(sample02HkmcEvObcInfo01));
 
 export const sampleHkmcEvObcInfo02 = `022 \r
 0: 61 02 00 00 00 00 \r
@@ -964,14 +995,14 @@ export function parseHkmcEvObcInfo02(value: string) {
 }
 
 export const sampleHkmcEvObcInfo03 = `031 \r
-0: 61 03 FF FF FF C0 \r
-1: 00 00 28 03 97 03 7E
-2: 00 00 0D 19 01 00 22
-3: 00 00 01 00 00 70 0F
-4: 00 02 00 02 00 03 00
-5: 02 00 02 00 02 01 23
-6: 01 23 00 00 00 00 00
-7: 00 00 00 00 00 00 00>`;
+0: 61 03 FF FF FF C0
+1: 04 AA 14 03 9A 03 81
+2: 00 00 0D 23 00 00 4A
+3: 09 00 0C 0B 40 70 0F
+4: 00 7B 01 0B 01 59 00
+5: 4B 00 34 00 64 00 9E
+6: 00 9B 00 2B 00 2B 00
+7: 10 00 00 00 00 00 00>`;
 
 export function parseHkmcEvObcInfo03(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
@@ -981,10 +1012,20 @@ export function parseHkmcEvObcInfo03(value: string) {
 		return PARSING_ERROR_RESPONSE;
 	}
 
+	const numberOfCharges = unsignedIntFromBytes(separatePacketBytes[1].slice(3, 5));
+
+	const numberOfAcCharges = unsignedIntFromBytes(separatePacketBytes[1].slice(5, 7));
+
 	const acChargingCurrent = unsignedIntFromBytes(separatePacketBytes[1].slice(0, 2)) / 100;
 
-	return { acChargingCurrent };
+	return {
+		numberOfCharges,
+		numberOfAcCharges,
+		acChargingCurrent
+	};
 }
+
+// console.log(parseHkmcEvObcInfo03(sampleHkmcEvObcInfo03));
 
 export const validateResponseLines = (expectedResponseLines: number) => (value: string) => {
 	const separatePacketBytes = parseUdsInfoBuffer(value);

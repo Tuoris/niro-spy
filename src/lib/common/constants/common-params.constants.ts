@@ -2,8 +2,9 @@ import type { ObjectValues } from '../types/common.types';
 import { AIRCON_FIELD_NAMES, AIRCON_PARAMS_CONFIG } from './aircon.constants';
 import { BMS_FIELD_NAMES, BMS_PARAMS_CONFIG } from './bms-params.constants';
 import { CELL_VOLTAGE_NAMES, CELL_VOLTAGE_PARAMS_CONFIG } from './cell-voltage.constants';
+import { OBC_FIELD_NAMES, OBC_PARAMS_CONFIG } from './obc.constants';
 import { TPMS_FIELD_NAMES, TPMS_PARAMS_CONFIG } from './tpms.constant';
-import { HKMC_GEARS, HKMC_GEARS_TO_DISPLAY } from './vmcu.constants';
+import { HKMC_GEARS_TO_DISPLAY } from './vmcu.constants';
 
 export const PARAM_FIELDS = {
 	...BMS_FIELD_NAMES,
@@ -26,6 +27,7 @@ export const PARAM_FIELDS = {
 	...CELL_VOLTAGE_NAMES,
 	...TPMS_FIELD_NAMES,
 	...AIRCON_FIELD_NAMES,
+	...OBC_FIELD_NAMES,
 	ALTITUDE_GPS: 'altitudeGps',
 	SPEED_GPS: 'speedGps'
 } as const;
@@ -132,7 +134,7 @@ export const PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed(3)
 	},
 	{
-		name: 'Cтрум 12 В батареї',
+		name: 'Струм 12 В батареї',
 		field: PARAM_FIELDS.AUX_BATTERY_CURRENT,
 		exampleValue: 10,
 		range: [-163.84, 163.84],
@@ -206,6 +208,7 @@ export const PARAMS_CONFIG = [
 	},
 	...TPMS_PARAMS_CONFIG,
 	...AIRCON_PARAMS_CONFIG,
+	...OBC_PARAMS_CONFIG,
 	...CELL_VOLTAGE_PARAMS_CONFIG,
 	{
 		name: 'Швидкість (GPS)',

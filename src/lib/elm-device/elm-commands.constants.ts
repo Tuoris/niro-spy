@@ -203,11 +203,6 @@ export const COMMANDS = {
 		header: HKMC_HEADERS.OBC,
 		responseParser: hkmcParsers.parseHkmcEvObcInfo03
 	},
-	// HKMC_EV_AEB_INFO02: {
-	// 	payload: '2202',
-	// 	header: HKMC_HEADERS.AEB,
-	// 	responseParser: hkmcParsers.defaultParser
-	// },
 	HKMC_EV_IGMP_INFO03: {
 		payload: '22BC03',
 		header: HKMC_HEADERS.IGMP,
