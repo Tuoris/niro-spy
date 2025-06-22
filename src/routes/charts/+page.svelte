@@ -194,11 +194,11 @@
 					},
 					{
 						offset: Math.min(1, middlePointOffset * 1.01),
-						color: 'rgba(187, 244, 81, 1)'
+						color: 'rgba(244, 234, 81, 1)'
 					},
 					{
 						offset: 1,
-						color: 'rgba(187, 244, 81, 1)'
+						color: 'rgba(244, 234, 81, 1)'
 					}
 				]),
 				areaStyle: {
@@ -218,11 +218,11 @@
 						},
 						{
 							offset: Math.min(1, middlePointOffset + 0.005),
-							color: 'rgba(187, 244, 81, 0.05)'
+							color: 'rgba(244, 234, 81, 0.05)'
 						},
 						{
 							offset: 1,
-							color: 'rgba(187, 244, 81, 0.5)'
+							color: 'rgba(244, 234, 81, 0.5)'
 						}
 					])
 				},
