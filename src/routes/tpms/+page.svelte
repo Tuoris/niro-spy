@@ -3,6 +3,7 @@
 	import { TPMS_FIELD_NAMES, TPMS_PARAMS_CONFIG } from '$lib/common/constants/tpms.constant';
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import { TPMS_LIVE_DATA_FLAG } from '$lib/elm-device/parsers/hkmc.parsers';
+	import { i18n } from '$lib/i18n/i18n';
 	import { paramsState } from '$lib/params.svelte';
 
 	let liveValues = $state(paramsState.values);
@@ -48,7 +49,8 @@
 		<div class=" min-h-[3em] dark:text-neutral-300">{name}</div>
 		<div class="text-end text-2xl">
 			{TPMS_PARAMS_CONFIG.find((config) => config.field == pressureField)?.format(
-				tpmsValues[pressureField]
+				tpmsValues[pressureField],
+				i18n
 			)}
 			<span class="text-sm">
 				{TPMS_PARAMS_CONFIG.find((config) => config.field == pressureField)?.unit}
@@ -57,7 +59,8 @@
 			/
 
 			{TPMS_PARAMS_CONFIG.find((config) => config.field == temperatureField)?.format(
-				tpmsValues[temperatureField]
+				tpmsValues[temperatureField],
+				i18n
 			)}
 			<span class="text-sm">
 				{TPMS_PARAMS_CONFIG.find((config) => config.field == temperatureField)?.unit}

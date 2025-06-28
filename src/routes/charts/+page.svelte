@@ -18,6 +18,7 @@
 	import { UniversalTransition } from 'echarts/features';
 	import { CanvasRenderer } from 'echarts/renderers';
 	import { downloadTripDataFile } from '$lib/trip-data';
+	import { i18n } from '$lib/i18n/i18n';
 
 	echarts.use([
 		GridComponent,
@@ -64,9 +65,9 @@
 		const fieldConfig = getConfigForField(field);
 		const fieldValue = getCurrentParamValue(field);
 
-		const formattedValue = fieldConfig?.format ? fieldConfig.format(fieldValue) : fieldValue;
+		const formattedValue = fieldConfig?.format ? fieldConfig.format(fieldValue, i18n) : fieldValue;
 
-		return `${fieldConfig?.name}: ${formattedValue} ${fieldConfig?.unit}`;
+		return `${fieldConfig?.name ? i18n.t(fieldConfig.name, 'nameParams' in fieldConfig ? fieldConfig.nameParams : undefined) : ''}: ${formattedValue} ${fieldConfig?.unit ? i18n.t(fieldConfig.unit) : ''}`;
 	};
 
 	// Static configuration
@@ -75,9 +76,11 @@
 		formatter: (formatterParams: { seriesName: any; data: any; axisValueLabel: any }[]) => {
 			const { seriesName, data, axisValueLabel } = formatterParams[0];
 			const fieldConfig = getConfigForField(seriesName);
-			const name = fieldConfig?.name;
-			const value = fieldConfig?.format(data[1]) ?? data[1];
-			return `<strong>${name}</strong><br />${value} ${fieldConfig?.unit}<br />${axisValueLabel}`;
+			const name = fieldConfig?.name
+				? i18n.t(fieldConfig.name, 'nameParams' in fieldConfig ? fieldConfig.nameParams : undefined)
+				: '';
+			const value = fieldConfig?.format(data[1], i18n) ?? data[1];
+			return `<strong>${name}</strong><br />${value} ${fieldConfig?.unit ? i18n.t(fieldConfig.unit) : ''}<br />${axisValueLabel}`;
 		},
 		confine: true,
 		textStyle: {

@@ -1,3 +1,5 @@
+import { UNIT_LABELS } from './unit-labels.constants';
+
 export const OBC_FIELD_NAMES = {
 	AUX_BATTERY_VOLTAGE_OBC: 'auxBatteryVoltageObc',
 	OBC_TEMPERATURE_A: 'obcTemperatureA',
@@ -13,63 +15,63 @@ export const OBC_FIELD_NAMES = {
 
 export const OBC_PARAMS_CONFIG = [
 	{
-		name: 'Напруга 12 В батареї (OBC)',
+		name: 'auxBatteryVoltageObc',
 		field: OBC_FIELD_NAMES.AUX_BATTERY_VOLTAGE_OBC,
 		exampleValue: 14.78,
 		range: [0, 100],
-		unit: 'В',
+		unit: UNIT_LABELS.VOLT,
 		format: (value: number) => value.toFixed(2)
 	},
 	{
-		name: 'Температура зарядного пристрою 1',
+		name: 'obcTemperatureA',
 		field: OBC_FIELD_NAMES.OBC_TEMPERATURE_A,
 		exampleValue: 78.0001,
 		range: [-40, 87.5],
-		unit: '°C',
+		unit: UNIT_LABELS.CELSIUS,
 		format: (value: number) => value.toFixed(1)
 	},
 	{
-		name: 'Температура зарядного пристрою 2',
+		name: 'obcTemperatureB',
 		field: OBC_FIELD_NAMES.OBC_TEMPERATURE_B,
 		exampleValue: 78.0001,
 		range: [-40, 87.5],
-		unit: '°C',
+		unit: UNIT_LABELS.CELSIUS,
 		format: (value: number) => value.toFixed(1)
 	},
 	{
-		name: 'Напруга змінного струму зарядного пристрою',
+		name: 'acVoltage',
 		field: OBC_FIELD_NAMES.AC_VOLTAGE,
 		exampleValue: 230,
 		range: [0, 255],
-		unit: 'В',
+		unit: UNIT_LABELS.VOLT,
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'Вихідна напруга зарядного пристрою',
+		name: 'dcOutputVoltageObc',
 		field: OBC_FIELD_NAMES.DC_OUTPUT_VOLTAGE_OBC,
 		exampleValue: 372,
 		range: [0, 400],
-		unit: 'В',
+		unit: UNIT_LABELS.VOLT,
 		format: (value: number) => value.toFixed(2)
 	},
 	{
-		name: 'Вихідний струм зарядного пристрою',
+		name: 'dcOutputCurrentObc',
 		field: OBC_FIELD_NAMES.DC_OUTPUT_CURRENT_OBC,
 		exampleValue: 78.0001,
 		range: [0, 300],
-		unit: 'А',
+		unit: UNIT_LABELS.AMPERE,
 		format: (value: number) => value.toFixed(2)
 	},
 	{
-		name: 'Напруга батареї (OBC)',
+		name: 'batteryVoltageObc',
 		field: OBC_FIELD_NAMES.BATTERY_VOLTAGE_OBC,
 		exampleValue: 372,
 		range: [0, 400],
-		unit: 'В',
+		unit: UNIT_LABELS.VOLT,
 		format: (value: number) => value.toFixed(1)
 	},
 	{
-		name: '[TEST] Кількість зарядних сесій змінного струму',
+		name: 'numberOfAcChargingSessions',
 		field: OBC_FIELD_NAMES.NUMBER_OF_AC_CHARGING_SESSIONS,
 		exampleValue: 78.0001,
 		range: [0, 100],
@@ -77,7 +79,7 @@ export const OBC_PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: '[TEST] Кількість успішних зарядних сесій змінного струму',
+		name: 'numberOfSuccessfulAcChargingSessions',
 		field: OBC_FIELD_NAMES.NUMBER_OF_SUCCESSFUL_AC_CHARGING_SESSIONS,
 		exampleValue: 78.0001,
 		range: [0, 100],
@@ -85,11 +87,11 @@ export const OBC_PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'Споживаний струм зарядного пристрою',
+		name: 'acChargingCurrent',
 		field: OBC_FIELD_NAMES.AC_CHARGING_CURRENT,
 		exampleValue: 12,
 		range: [0, 100],
-		unit: 'А',
+		unit: UNIT_LABELS.AMPERE,
 		format: (value: number) => value.toFixed(2)
 	}
 ];

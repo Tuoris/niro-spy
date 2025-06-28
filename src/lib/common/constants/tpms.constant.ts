@@ -1,4 +1,6 @@
 import { TPMS_LIVE_DATA_FLAG } from '$lib/elm-device/parsers/hkmc.parsers';
+import type { ReactiveI18Next } from '$lib/i18n/i18n';
+import { UNIT_LABELS } from './unit-labels.constants';
 
 export const TPMS_FIELD_NAMES = {
 	FRONT_LEFT_TIRE_LIVE_DATA: 'frontLeftTireLiveData',
@@ -15,105 +17,108 @@ export const TPMS_FIELD_NAMES = {
 	REAR_LEFT_TIRE_TEMPERATURE: 'rearLeftTireTemperature'
 } as const;
 
+const formatTpmsLiveDataFlag = (value: number, i18n: ReactiveI18Next) =>
+	value == TPMS_LIVE_DATA_FLAG.YES
+		? i18n.t('yes')
+		: value === TPMS_LIVE_DATA_FLAG.NO
+			? i18n.t('no')
+			: '-';
+
 export const TPMS_PARAMS_CONFIG = [
 	{
-		name: 'Тиск у передній лівій шині',
+		name: 'frontLeftTirePressure',
 		field: TPMS_FIELD_NAMES.FRONT_LEFT_TIRE_PRESSURE,
 		exampleValue: 2.31,
 		range: [0, 10],
-		unit: 'бар',
+		unit: UNIT_LABELS.BAR,
 		format: (value: number) => value.toFixed(2)
 	},
 	{
-		name: 'Тиск у передній правій шині',
+		name: 'frontRightTirePressure',
 		field: TPMS_FIELD_NAMES.FRONT_RIGHT_TIRE_PRESSURE,
 		exampleValue: 2.23,
 		range: [0, 10],
-		unit: 'бар',
+		unit: UNIT_LABELS.BAR,
 		format: (value: number) => value.toFixed(2)
 	},
 	{
-		name: 'Тиск у задній правій шині',
+		name: 'rearRightTirePressure',
 		field: TPMS_FIELD_NAMES.REAR_RIGHT_TIRE_PRESSURE,
 		exampleValue: 2.23,
 		range: [0, 10],
-		unit: 'бар',
+		unit: UNIT_LABELS.BAR,
 		format: (value: number) => value.toFixed(2)
 	},
 	{
-		name: 'Тиск у задній лівій шині',
+		name: 'rearLeftTirePressure',
 		field: TPMS_FIELD_NAMES.REAR_LEFT_TIRE_PRESSURE,
 		exampleValue: 2.23,
 		range: [0, 10],
-		unit: 'бар',
+		unit: UNIT_LABELS.BAR,
 		format: (value: number) => value.toFixed(2)
 	},
 	{
-		name: 'Температура передньої лівої шини',
+		name: 'frontLeftTireTemperature',
 		field: TPMS_FIELD_NAMES.FRONT_LEFT_TIRE_TEMPERATURE,
 		exampleValue: 11,
 		range: [-50, 78],
-		unit: '°C',
+		unit: UNIT_LABELS.CELSIUS,
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'Температура передньої правої шини',
+		name: 'frontRightTireTemperature',
 		field: TPMS_FIELD_NAMES.FRONT_RIGHT_TIRE_TEMPERATURE,
 		exampleValue: 11,
 		range: [-50, 78],
-		unit: '°C',
+		unit: UNIT_LABELS.CELSIUS,
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'Температура задньої правої шини',
+		name: 'rearRightTireTemperature',
 		field: TPMS_FIELD_NAMES.REAR_RIGHT_TIRE_TEMPERATURE,
 		exampleValue: 11,
 		range: [-50, 78],
-		unit: '°C',
+		unit: UNIT_LABELS.CELSIUS,
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'Температура задньої лівої шини',
+		name: 'rearLeftTireTemperature',
 		field: TPMS_FIELD_NAMES.REAR_LEFT_TIRE_TEMPERATURE,
 		exampleValue: 11,
 		range: [-50, 78],
-		unit: '°C',
+		unit: UNIT_LABELS.CELSIUS,
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'Читання даних сенсора у передній лівій шині',
+		name: 'frontLeftTireLiveData',
 		field: TPMS_FIELD_NAMES.FRONT_LEFT_TIRE_LIVE_DATA,
 		exampleValue: 1,
 		range: [0, 2],
 		unit: '',
-		format: (value: number) =>
-			value == TPMS_LIVE_DATA_FLAG.YES ? 'так' : value === TPMS_LIVE_DATA_FLAG.NO ? 'ні' : '-'
+		format: formatTpmsLiveDataFlag
 	},
 	{
-		name: 'Читання даних сенсора у передній правій шині',
+		name: 'frontRightTireLiveData',
 		field: TPMS_FIELD_NAMES.FRONT_RIGHT_TIRE_LIVE_DATA,
 		exampleValue: 1,
 		range: [0, 2],
 		unit: '',
-		format: (value: number) =>
-			value == TPMS_LIVE_DATA_FLAG.YES ? 'так' : value === TPMS_LIVE_DATA_FLAG.NO ? 'ні' : '-'
+		format: formatTpmsLiveDataFlag
 	},
 	{
-		name: 'Читання даних сенсора у задній правій шині',
+		name: 'rearRightTireLiveData',
 		field: TPMS_FIELD_NAMES.REAR_RIGHT_TIRE_LIVE_DATA,
 		exampleValue: 1,
 		range: [0, 2],
 		unit: '',
-		format: (value: number) =>
-			value == TPMS_LIVE_DATA_FLAG.YES ? 'так' : value === TPMS_LIVE_DATA_FLAG.NO ? 'ні' : '-'
+		format: formatTpmsLiveDataFlag
 	},
 	{
-		name: 'Читання даних сенсора у задній лівій шині',
+		name: 'rearLeftTireLiveData',
 		field: TPMS_FIELD_NAMES.REAR_LEFT_TIRE_LIVE_DATA,
 		exampleValue: 1,
 		range: [0, 2],
 		unit: '',
-		format: (value: number) =>
-			value == TPMS_LIVE_DATA_FLAG.YES ? 'так' : value === TPMS_LIVE_DATA_FLAG.NO ? 'ні' : '-'
+		format: formatTpmsLiveDataFlag
 	}
 ] as const;

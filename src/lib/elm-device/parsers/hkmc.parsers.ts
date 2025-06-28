@@ -130,7 +130,7 @@ export function parseHkmcEvBmsInfo01(value: string) {
 	};
 }
 
-console.log(parseHkmcEvBmsInfo01(sampleBmsInfo01));
+// console.log(parseHkmcEvBmsInfo01(sampleBmsInfo01));
 
 export const sampleParseHkmcEvBmsInfo02 = `7F 22 12 
 7F 22 12 

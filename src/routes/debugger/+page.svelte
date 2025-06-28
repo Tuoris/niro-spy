@@ -543,7 +543,7 @@
 			</div>
 
 			{#if pageDisplayMode === 'heatmap' && pageHeatmap !== null}
-				<div class="grid grid-cols-2 justify-items-center">
+				<div class="grid grid-cols-1 justify-items-center md:grid-cols-2">
 					<div>
 						<div class="text-center text-xs">Пакет #{pagesToCompare.length}</div>
 						{@render heatmapTable(pageHeatmap)}
@@ -597,8 +597,6 @@
 					</div>
 				</div>
 			{/if}
-		{:else}
-			Немає даних
 		{/if}
 		{#if selectedValue && pageDisplayMode !== 'heatmap'}
 			<div class="grid grid-cols-2">

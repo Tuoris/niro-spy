@@ -2,6 +2,7 @@
 	import { PARAMS_CONFIG, type FieldType } from '$lib/common/constants/common-params.constants';
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
+	import { i18n } from '$lib/i18n/i18n';
 	import { paramsState } from '$lib/params.svelte';
 
 	let search = $state('');
@@ -11,8 +12,10 @@
 		PARAMS_CONFIG.filter((config) => {
 			const searchValue = search.trim().toLowerCase();
 			return (
-				config.name.toLowerCase().includes(searchValue) ||
-				config.unit.toLocaleLowerCase().includes(searchValue)
+				`${i18n.t(config.name, 'nameParams' in config ? config?.nameParams : undefined)}`
+					.toLowerCase()
+					.includes(searchValue) ||
+				(config.unit ? i18n.t(config.unit) : config.unit).toLocaleLowerCase().includes(searchValue)
 			);
 		})
 	);
@@ -101,9 +104,7 @@
 			size="compact"
 			onclick={(event) => {
 				if (currentlySelectedParams.length === 0 || currentlySelectedParams.length > 30) {
-					const confirmed = confirm(
-						"Ви дійсно хочете переглянути таку кількість графіків (більше 30)? Це може уповільнити ваш телефон чи комп'ютер."
-					);
+					const confirmed = confirm(i18n.t('areYouSureChartsCount'));
 					if (!confirmed) {
 						event.preventDefault();
 						return;
@@ -117,7 +118,7 @@
 	</div>
 	<div class="flex items-center gap-2 px-2 text-sm dark:border-gray-800 dark:text-neutral-400">
 		<span class="icon-[mdi--information-outline]"></span>
-		<span> Виберіть один або декілька параметрів для відображення графіків </span>
+		<span> {i18n.t('selectOneOrMoreParams')} </span>
 	</div>
 	<div class="w-full flex-grow overflow-auto">
 		<table class="w-full table-fixed">
@@ -134,11 +135,17 @@
 								checked={currentlySelectedParams.includes(param.field)}
 							/>
 						</td>
-						<td class="py-1" onclick={() => toggleParam(param.field)}>{param.name}</td>
+						<td class="py-1" onclick={() => toggleParam(param.field)}
+							>{i18n.t(param.name, 'nameParams' in param ? param?.nameParams : undefined)}</td
+						>
 						<td class="w-28 px-2 py-1 text-end font-bold">
-							{@render formattedValue(getCurrentParamValue(param.field), param?.format)}
+							{@render formattedValue(getCurrentParamValue(param.field), (value: number) =>
+								param?.format(value, i18n)
+							)}
 						</td>
-						<td class="w-12 py-2 text-xs break-words">{param.unit}</td>
+						<td class="w-12 py-2 text-xs break-words"
+							>{param.unit ? i18n.t(param.unit) : param.unit}</td
+						>
 					</tr>
 				{/each}
 			</tbody>

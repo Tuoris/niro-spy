@@ -1,0 +1,20 @@
+export const UNIT_LABELS = {
+	PERCENT: 'percent',
+	WATT: 'watt',
+	KILOWATT: 'kilowatt',
+	AMPERE: 'ampere',
+	VOLT: 'volt',
+	CELSIUS: 'celsius',
+	RPM: 'rpm',
+	SECOND: 'second',
+	HOUR: 'hour',
+	KILOOHM: 'kiloohm',
+	DEGREE: 'degree',
+	KILOMETER: 'kilometer',
+	METER: 'meter',
+	AMPERE_HOUR: 'ampereHour',
+	KILOWATT_HOUR: 'kilowattHour',
+	KILOMETERS_PER_HOUR: 'kilometersPerHour',
+	KILOWATT_HOUR_PER_100_KILOMETERS: 'kilowattHourPer_100Kilometers',
+	BAR: 'bar'
+} as const;

@@ -72,7 +72,7 @@
 	</div>
 </div>
 <div class="flex grow items-center justify-center">
-	<div class="flex flex-col gap-2">
+	<div class="flex min-w-48 flex-col items-stretch gap-2">
 		<Button variant="primary" onclick={connectAndStartDataReading}
 			>{i18n.t('connectToScanner')}</Button
 		>
@@ -87,7 +87,7 @@
 			{i18n.t('tpms')}</ButtonLink
 		>
 		<ButtonLink href="/vin" variant="secondary" disabled={!routesEnabled}>VIN</ButtonLink>
-		<ButtonLink href="/trip" variant="secondary">Поїздка</ButtonLink>
+		<ButtonLink href="/trip" variant="secondary">{i18n.t('trip')}</ButtonLink>
 		<hr />
 		<ButtonLink href="/" variant="tertiary" onclick={isInDemoMode ? exitDemoMode : enterDemoMode}>
 			{#if isInDemoMode}

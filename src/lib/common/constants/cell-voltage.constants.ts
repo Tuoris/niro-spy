@@ -1,3 +1,5 @@
+import { UNIT_LABELS } from './unit-labels.constants';
+
 export const CELL_VOLTAGE_NAMES = {
 	CELL_VOLTAGE_01: 'cellVoltage01',
 	CELL_VOLTAGE_02: 'cellVoltage02',
@@ -101,11 +103,12 @@ export const CELL_VOLTAGE_NAMES = {
 
 export const CELL_VOLTAGE_PARAMS_CONFIG = [
 	...Object.values(CELL_VOLTAGE_NAMES).map((cellVoltageName, index) => ({
-		name: `Напруга елементу батареї ${index + 1}`,
+		name: 'cellVoltageWithIndex',
+		nameParams: { index: index + 1 } as any,
 		field: cellVoltageName,
 		exampleValue: 3.7,
 		range: [2.4, 4.2],
-		unit: 'В',
+		unit: UNIT_LABELS.VOLT,
 		format: (value: number) => value.toFixed(2)
 	}))
 ];
