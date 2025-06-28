@@ -183,10 +183,8 @@
 		return intervalsWhenOnParking;
 	});
 
-	let averagePowerByTime = $derived.by(() => {
-		const powerValues = paramsState.values[PARAM_FIELDS.BATTERY_POWER];
-		const filteredPowerValues = filterValuesWithSlider(powerValues);
-		const powerValuesWhenNotOnCharing = filteredPowerValues.filter(({ timestamp, value }) => {
+	const filterValuesWhenNotOnCharging = (values: ParamValue[]) => {
+		const valuesWhenNotOnCharing = values.filter(({ timestamp, value }) => {
 			if (value > 0) {
 				return true;
 			}
@@ -199,6 +197,14 @@
 
 			return true;
 		});
+
+		return valuesWhenNotOnCharing;
+	};
+
+	let averagePowerByTime = $derived.by(() => {
+		const powerValues = paramsState.values[PARAM_FIELDS.BATTERY_POWER];
+		const filteredPowerValues = filterValuesWithSlider(powerValues);
+		const powerValuesWhenNotOnCharing = filterValuesWhenNotOnCharging(filteredPowerValues);
 
 		return averageByTime(powerValuesWhenNotOnCharing);
 	});
@@ -231,7 +237,7 @@
 	});
 
 	let consumptionGps = $derived.by(() => {
-		if (energyConsumed === 0 || distanceTraveledGps === 0) {
+		if (energyConsumed <= 0 || distanceTraveledGps === 0) {
 			return 0;
 		}
 		const energyConsumedKwh = energyConsumed / 1000;
@@ -285,6 +291,41 @@
 		const pricePerKm = tripPrice / distanceTraveled;
 		return pricePerKm;
 	});
+
+	let energyDischargedPerTrip = $derived.by(() => {
+		let cumulativeEnergyDischarged = paramsState.values[PARAM_FIELDS.CUMULATIVE_ENERGY_DISCHARGED];
+		cumulativeEnergyDischarged = filterValuesWithSlider(cumulativeEnergyDischarged);
+		cumulativeEnergyDischarged = filterValuesWhenNotOnCharging(cumulativeEnergyDischarged);
+
+		if (cumulativeEnergyDischarged.length < 2) {
+			return null;
+		}
+
+		const energyDischargedPerTrip =
+			cumulativeEnergyDischarged[cumulativeEnergyDischarged.length - 1].value -
+			cumulativeEnergyDischarged[0].value;
+
+		return energyDischargedPerTrip;
+	});
+
+	let energyChargedPerTrip = $derived.by(() => {
+		let cumulativeEnergyCharged = paramsState.values[PARAM_FIELDS.CUMULATIVE_ENERGY_CHARGED];
+		cumulativeEnergyCharged = filterValuesWithSlider(cumulativeEnergyCharged);
+		cumulativeEnergyCharged = filterValuesWhenNotOnCharging(cumulativeEnergyCharged);
+
+		if (cumulativeEnergyCharged.length < 2) {
+			return null;
+		}
+
+		const energyChargedPerTrip =
+			cumulativeEnergyCharged[cumulativeEnergyCharged.length - 1].value -
+			cumulativeEnergyCharged[0].value;
+
+		return energyChargedPerTrip;
+	});
+
+	$inspect(energyChargedPerTrip);
+	$inspect(energyDischargedPerTrip);
 
 	const downloadData = () => downloadTripDataFile({ values: paramsState.values });
 
@@ -376,16 +417,21 @@
 		</div>
 	{/if}
 
-	<div class="mx-auto mt-4 grid max-w-2xl grid-cols-2 gap-4 pb-4">
+	<div class="mx-auto mt-4 grid max-w-2xl grid-cols-2 gap-4 pb-4 lg:max-w-4xl lg:grid-cols-4">
 		{@render valueCard(
 			'Середня потужність',
-			(averagePowerByTime > 1000 ? averagePowerByTime / 1000 : averagePowerByTime).toFixed(1),
-			averagePowerByTime > 1000 ? 'кВт' : 'Вт'
+			(Math.abs(averagePowerByTime) > 1000
+				? averagePowerByTime / 1000
+				: averagePowerByTime
+			).toFixed(1),
+			Math.abs(averagePowerByTime) > 1000 ? 'кВт' : 'Вт'
 		)}
 		{@render valueCard(
 			'Спожито',
-			energyConsumed > 1000 ? (energyConsumed / 1000).toFixed(2) : energyConsumed.toFixed(),
-			energyConsumed > 1000 ? 'кВт·год' : 'Вт·год'
+			Math.abs(energyConsumed) > 1000
+				? (energyConsumed / 1000).toFixed(2)
+				: energyConsumed.toFixed(),
+			Math.abs(energyConsumed) > 1000 ? 'кВт·год' : 'Вт·год'
 		)}
 		{@render valueCard('Середня швидкість', averageSpeedByTime.toFixed(), 'км/год')}
 		{@render valueCard('Середня швидкість (GPS)', averageGpsSpeedByTime.toFixed(), 'км/год')}
@@ -397,5 +443,21 @@
 		{@render valueCard('Зміна висот', altitudeChange, 'м')}
 		{@render valueCard('Вартість поїздки', tripPrice.toFixed(2), 'грн')}
 		{@render valueCard('Вартість 1 км', pricePerKm.toFixed(2), 'грн')}
+		{@render valueCard(
+			'Всього спожито з батареї',
+			energyDischargedPerTrip !== null && energyChargedPerTrip !== null
+				? energyDischargedPerTrip.toFixed(1)
+				: '-',
+			'кВт·год'
+		)}
+		{@render valueCard(
+			'Повернуто в батарею рекуперацією',
+			energyDischargedPerTrip !== null &&
+				energyChargedPerTrip !== null &&
+				energyDischargedPerTrip !== 0
+				? ((energyChargedPerTrip / energyDischargedPerTrip) * 100).toFixed()
+				: '-',
+			'%'
+		)}
 	</div>
 </div>

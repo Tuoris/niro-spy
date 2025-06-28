@@ -47,14 +47,16 @@
 {#if i18n.isInitialized}
 	<div
 		class={[
-			'pointer-events-none absolute inset-0 flex flex-col justify-end gap-2 pb-12',
-			notifications.length ? 'px-2 py-2' : ''
+			'fixed right-0 bottom-0 z-10 flex flex-col gap-4 border-0',
+			notifications.length ? 'px-4 py-4' : ''
 		]}
 	>
 		{#each notifications as notification, index}
-			<div class="red pointer-events-auto flex rounded-sm border-2 bg-red-400 px-2 py-2">
-				<div></div>
-				<div class="grow">
+			<div
+				class="red pointer-events-auto flex rounded-sm border-2 border-l-8 border-red-600 bg-red-950 px-8 py-4 pl-4 font-bold"
+			>
+				<div class="flex items-center gap-4">
+					<span class="icon-[mdi--error-outline] text-2xl text-red-400"></span>
 					{notification}
 				</div>
 			</div>

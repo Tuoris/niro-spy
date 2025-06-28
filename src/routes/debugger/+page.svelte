@@ -13,6 +13,8 @@
 	import { parseUdsInfoBuffer, PARSING_ERROR_RESPONSE } from '$lib/elm-device/parsers/hkmc.parsers';
 	import { downloadJsonFile } from '$lib/utils/file.utils';
 
+	let pageDisplayMode = $state('heatmap');
+
 	const responses = $derived.by(() => bluetoothState.elmResponses);
 
 	const allCommands = $derived.by(() =>
@@ -87,6 +89,54 @@
 		return [firstPageBytesTable, secondPageBytesTable];
 	});
 
+	const pageHeatmap = $derived.by(() => {
+		if (responsesForCommand.values.length === 0) {
+			return null;
+		}
+
+		if (responsesForCommand.values.length === 1) {
+			const firstPage = responsesForCommand.values[0];
+			const firstPageBytesTable = parseUdsInfoBuffer(firstPage.value);
+
+			const heatmapForFirstPage = firstPageBytesTable.map((row) =>
+				row.map((column) => [column, 0] as const)
+			);
+
+			return heatmapForFirstPage;
+		}
+
+		const currentPage = responsesForCommand.values.length - 1;
+
+		const currentBytesTable = parseUdsInfoBuffer(responsesForCommand.values[currentPage].value);
+
+		const previousByteTables = responsesForCommand.values
+			.slice(0, currentPage)
+			.map(({ value }) => parseUdsInfoBuffer(value));
+
+		const heatmapForCurrentPage = currentBytesTable.map((row, rowIndex) =>
+			row.map((column, columnIndex) => {
+				const values = previousByteTables
+					.map((table) => table[rowIndex][columnIndex])
+					.concat(column);
+
+				let changed = 0;
+				let lastValue = values[0];
+				for (const value of values.slice(1)) {
+					if (lastValue !== value) {
+						changed += 1;
+						lastValue = value;
+					}
+				}
+
+				const changeRating = changed > 10 ? 1 : Math.pow(changed / 10, 1 / 4);
+
+				return [column, changeRating] as const;
+			})
+		);
+
+		return heatmapForCurrentPage;
+	});
+
 	let buttonRefs = $derived.by(() => {
 		return [
 			Array.from({ length: 32 }).map(() => Array.from({ length: 32 })),
@@ -153,6 +203,9 @@
 		}
 
 		try {
+			if (pageDisplayMode === 'heatmap' && pageHeatmap) {
+				return selectedIndexes.map(([displayPage, row, column]) => pageHeatmap[row][column][0]);
+			}
 			return selectedIndexes.map(
 				([displayPage, row, column]) => pagesToCompare[displayPage][row][column]
 			);
@@ -342,6 +395,74 @@
 	</div>
 {/snippet}
 
+{#snippet heatmapTable(data: (readonly [string, number])[][])}
+	<div class="flex flex-col gap-1">
+		{#each data as row, rowIndex}
+			<div class="flex gap-1 font-mono text-sm md:text-base">
+				<div class="flex h-8 w-8 items-center justify-center rounded text-neutral-500">
+					{rowIndex === 0 ? '10' : `2${rowIndex}`}
+				</div>
+				{#each row as value, columnIndex}
+					<button
+						bind:this={buttonRefs[0][rowIndex][columnIndex]}
+						class={[
+							'flex h-8 w-8 items-center justify-center rounded border',
+							getCellClass(rowIndex, columnIndex)
+						]}
+						style={`background-color: rgba(10,10,${Math.round(255 * value[1])},${(value[1] * 0.7).toFixed(2)})`}
+						onkeydown={(event) => {
+							const refs = buttonRefs[0];
+							if (event.code === 'ArrowRight') {
+								if (columnIndex + 1 < row.length) {
+									const next = refs[rowIndex][columnIndex + 1];
+									clickOnNextButton(next as HTMLButtonElement);
+								} else if (rowIndex + 1 < data.length) {
+									const next = refs[rowIndex + 1][0];
+									clickOnNextButton(next as HTMLButtonElement);
+								}
+								event.preventDefault();
+							}
+							if (event.code === 'ArrowLeft') {
+								if (columnIndex > 0) {
+									const next = refs[rowIndex][columnIndex - 1];
+									clickOnNextButton(next as HTMLButtonElement);
+								} else if (rowIndex > 0) {
+									const next = refs[rowIndex - 1][data[rowIndex - 1].length - 1];
+									clickOnNextButton(next as HTMLButtonElement);
+								}
+								event.preventDefault();
+							}
+							if (event.code === 'ArrowUp') {
+								if (rowIndex > 0) {
+									const next = refs[rowIndex - 1][columnIndex];
+									clickOnNextButton(next as HTMLButtonElement);
+								}
+								event.preventDefault();
+							}
+							if (event.code === 'ArrowDown') {
+								if (rowIndex + 1 < data.length) {
+									const next = refs[rowIndex + 1][columnIndex];
+									clickOnNextButton(next as HTMLButtonElement);
+								}
+								event.preventDefault();
+							}
+						}}
+						onclick={(event) => {
+							if (event.shiftKey && selectedIndexes) {
+								selectedIndexes = [...selectedIndexes, [0, rowIndex, columnIndex]];
+							} else {
+								selectedIndexes = [[0, rowIndex, columnIndex]];
+							}
+						}}
+					>
+						{value[0]}
+					</button>
+				{/each}
+			</div>
+		{/each}
+	</div>
+{/snippet}
+
 <div class="h-full w-full p-2 dark:text-neutral-100">
 	<div class="flex items-start gap-2 py-2">
 		<ButtonLink href="/" aria-label="Назад" variant="tertiary" size="compact">
@@ -368,12 +489,24 @@
 	</div>
 	<div class="flex items-center justify-around px-12">
 		<div class="flex gap-2">
-			<Button variant="tertiary" size="compact" aria-label="Перша сторінка" onclick={goToFirstPage}>
-				<span class="icon-[mdi--skip-backward-outline]"></span>
-			</Button>
-			<Button variant="tertiary" size="compact" aria-label="Попередня сторінка" onclick={prevPage}>
-				<span class="icon-[mdi--navigate-before]"></span>
-			</Button>
+			{#if pageDisplayMode !== 'heatmap'}
+				<Button
+					variant="tertiary"
+					size="compact"
+					aria-label="Перша сторінка"
+					onclick={goToFirstPage}
+				>
+					<span class="icon-[mdi--skip-backward-outline]"></span>
+				</Button>
+				<Button
+					variant="tertiary"
+					size="compact"
+					aria-label="Попередня сторінка"
+					onclick={prevPage}
+				>
+					<span class="icon-[mdi--navigate-before]"></span>
+				</Button>
+			{/if}
 		</div>
 		{#if allCommands.length}
 			<select bind:value={selectedCommand} class="p-2">
@@ -387,47 +520,88 @@
 			<div class="p-2">Немає даних</div>
 		{/if}
 		<div class="flex gap-2">
-			<Button variant="tertiary" size="compact" aria-label="Наступна сторінка" onclick={nextPage}>
-				<span class="icon-[mdi--navigate-next]"></span>
-			</Button>
-			<Button
-				variant="tertiary"
-				size="compact"
-				aria-label="Остання сторінка"
-				onclick={goToLastPage}
-			>
-				<span class="icon-[mdi--skip-forward-outline]"></span>
-			</Button>
+			{#if pageDisplayMode !== 'heatmap'}
+				<Button variant="tertiary" size="compact" aria-label="Наступна сторінка" onclick={nextPage}>
+					<span class="icon-[mdi--navigate-next]"></span>
+				</Button>
+				<Button
+					variant="tertiary"
+					size="compact"
+					aria-label="Остання сторінка"
+					onclick={goToLastPage}
+				>
+					<span class="icon-[mdi--skip-forward-outline]"></span>
+				</Button>
+			{/if}
 		</div>
 	</div>
 	<div>
-		{#if pagesToCompare}
+		{#if pagesToCompare || (pageDisplayMode === 'heatmap' && pageHeatmap !== null && pagesToCompare)}
 			<div class="text-center text-sm text-neutral-300">
 				Виберіть байт за допомогою лівої кнопки миші або Shift+Ліва кнопка миші для вибору кількох
 				байтів
 			</div>
 
-			<div class="grid grid-cols-2 justify-items-center">
-				<div>
-					<div class="text-center text-xs">Пакет #{page + 1}</div>
-					{@render bytesTable(pagesToCompare[0])}
+			{#if pageDisplayMode === 'heatmap' && pageHeatmap !== null}
+				<div class="grid grid-cols-2 justify-items-center">
+					<div>
+						<div class="text-center text-xs">Пакет #{pagesToCompare.length}</div>
+						{@render heatmapTable(pageHeatmap)}
+					</div>
+					{#if selectedValue}
+						<div class="p-4 text-sm md:text-base">
+							Вибрано:
+							<div class="grid grid-cols-2">
+								<div>Шістнадцяткове число</div>
+								<div class="text-right font-mono font-bold">{selectedValue}</div>
+
+								<div>Десяткове число</div>
+								<div class="text-right font-mono font-bold">
+									{unsignedIntFromBytes(selectedValue)}
+								</div>
+
+								<div>Десяткове число зі знаком</div>
+								<div class="text-right font-mono font-bold">
+									{signedIntFromBytes(selectedValue)}
+								</div>
+
+								<div>Температура (XX / 2 - 40)</div>
+								<div class="text-right font-mono font-bold">
+									{unsignedIntFromBytes(selectedValue) / 2 - 40}°C
+								</div>
+
+								<div>Символ</div>
+								<div class="text-right font-mono font-bold">
+									{String.fromCharCode(unsignedIntFromBytes(selectedValue))}
+								</div>
+
+								<div>Біти</div>
+								<div class="text-right font-mono font-bold">
+									{#each selectedValue as byte}
+										{unsignedIntFromBytes(byte).toString(2).padStart(8, '0')}
+									{/each}
+								</div>
+							</div>
+						</div>
+					{/if}
 				</div>
-				<div>
-					<div class="text-center text-xs">Пакет #{page + 2}</div>
-					{@render bytesTable(pagesToCompare[1], pagesToCompare[0])}
+			{:else}
+				<div class="grid grid-cols-2 justify-items-center">
+					<div>
+						<div class="text-center text-xs">Пакет #{page + 1}</div>
+						{@render bytesTable(pagesToCompare[0])}
+					</div>
+					<div>
+						<div class="text-center text-xs">Пакет #{page + 2}</div>
+						{@render bytesTable(pagesToCompare[1], pagesToCompare[0])}
+					</div>
 				</div>
-			</div>
+			{/if}
 		{:else}
 			Немає даних
 		{/if}
-		{#if selectedValue}
+		{#if selectedValue && pageDisplayMode !== 'heatmap'}
 			<div class="grid grid-cols-2">
-				<!-- <div>
-					<div>Нотатки</div>
-					<textarea
-						class="w-full border-2 border-r-4 border-b-4 border-neutral-900 p-2 dark:border-neutral-800 dark:bg-neutral-700 dark:text-neutral-100 dark:active:bg-neutral-700"
-					></textarea>
-				</div> -->
 				<div class="col-span-2 px-4 text-sm md:text-base">
 					Вибрано:
 					<div class="grid grid-cols-2">

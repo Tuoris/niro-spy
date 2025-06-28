@@ -7,7 +7,10 @@
 	import { CanvasRenderer } from 'echarts/renderers';
 	import { onMount } from 'svelte';
 	import Button from './button.svelte';
-	import { signedIntFromBytes } from '$lib/elm-device/parsers/elm-parser.utils';
+	import {
+		signedIntFromBytes,
+		unsignedIntFromBytes
+	} from '$lib/elm-device/parsers/elm-parser.utils';
 	import ByteDebugChart from './byte-debug-chart.svelte';
 
 	const {
@@ -77,7 +80,7 @@
 			formatter: (params) => {
 				const seriesParams = params[0];
 				const [timestamp, value, bytes] = seriesParams.data;
-				return `<strong>${new Date(timestamp).toLocaleString()}</strong><br/>Десяткове число: ${value}<br/>Десяткове число зі знаком: ${signedIntFromBytes(bytes)}<br/>Температура: ${value / 2 - 40}°C<br/>Шістнадцяткове число: ${bytes}`;
+				return `<strong>${new Date(timestamp).toLocaleString()}</strong><br/>Десяткове число: ${value}<br/>Десяткове число зі знаком: ${signedIntFromBytes(bytes)}<br/>Температура: ${value / 2 - 40}°C<br/>Шістнадцяткове число: ${bytes}<br/>Біти: ${bytes.map((byte) => unsignedIntFromBytes(byte).toString(2).padStart(8, '0')).join('')}`;
 			}
 		},
 

@@ -6,8 +6,8 @@ export const OBC_FIELD_NAMES = {
 	DC_OUTPUT_VOLTAGE_OBC: 'dcOutputVoltageObc',
 	DC_OUTPUT_CURRENT_OBC: 'dcOutputCurrentObc',
 	BATTERY_VOLTAGE_OBC: 'batteryVoltageObc',
-	NUMBER_OF_CHARGES: 'numberOfCharges',
-	NUMBER_OF_AC_CHARGES: 'numberOfAcCharges',
+	NUMBER_OF_AC_CHARGING_SESSIONS: 'numberOfAcChargingSessions',
+	NUMBER_OF_SUCCESSFUL_AC_CHARGING_SESSIONS: 'numberOfSuccessfulAcChargingSessions',
 	AC_CHARGING_CURRENT: 'acChargingCurrent'
 } as const;
 
@@ -69,16 +69,16 @@ export const OBC_PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed(1)
 	},
 	{
-		name: '[TEST] Кількість зарядних сесій',
-		field: OBC_FIELD_NAMES.NUMBER_OF_CHARGES,
+		name: '[TEST] Кількість зарядних сесій змінного струму',
+		field: OBC_FIELD_NAMES.NUMBER_OF_AC_CHARGING_SESSIONS,
 		exampleValue: 78.0001,
 		range: [0, 100],
 		unit: '',
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: '[TEST] Кількість зарядних сесій змінного струму',
-		field: OBC_FIELD_NAMES.NUMBER_OF_AC_CHARGES,
+		name: '[TEST] Кількість успішних зарядних сесій змінного струму',
+		field: OBC_FIELD_NAMES.NUMBER_OF_SUCCESSFUL_AC_CHARGING_SESSIONS,
 		exampleValue: 78.0001,
 		range: [0, 100],
 		unit: '',

@@ -490,6 +490,8 @@ export function parseHkmcEvBmsInfo05(value: string) {
 	};
 }
 
+export const sampleParseHkmcEvBmsInfo06 = `027 \r0: 62 01 06 FF FF FF1: FF 14 00 19 00 0A 002: 00 00 00 00 04 B4 B33: 00 00 00 0C 28 00 004: 00 00 00 00 00 00 005: 00 00 00 00 00 AA AA>`;
+
 export function parseHkmcEvBmsInfo06(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
 
@@ -500,7 +502,7 @@ export function parseHkmcEvBmsInfo06(value: string) {
 
 	const coolingWaterTemp = signedIntFromBytes(separatePacketBytes[1][1]);
 	const unknownTempC = signedIntFromBytes(separatePacketBytes[1][3]);
-	const bmsMode = unsignedIntFromBytes(separatePacketBytes[2][4]).toString(2);
+	const bmsMode = unsignedIntFromBytes(separatePacketBytes[2][4]);
 	const unknownTempD = signedIntFromBytes(separatePacketBytes[3][3]);
 
 	return {
@@ -510,6 +512,8 @@ export function parseHkmcEvBmsInfo06(value: string) {
 		unknownTempD
 	};
 }
+
+// console.log(parseHkmcEvBmsInfo06(sampleParseHkmcEvBmsInfo06));
 
 export const sampleParseHkmcEvClusterInfo02 = `00F 
 0: 62 B0 02 E0 00 00
@@ -1012,15 +1016,17 @@ export function parseHkmcEvObcInfo03(value: string) {
 		return PARSING_ERROR_RESPONSE;
 	}
 
-	const numberOfCharges = unsignedIntFromBytes(separatePacketBytes[1].slice(3, 5));
+	const numberOfAcChargingSessions = unsignedIntFromBytes(separatePacketBytes[1].slice(3, 5));
 
-	const numberOfAcCharges = unsignedIntFromBytes(separatePacketBytes[1].slice(5, 7));
+	const numberOfSuccessfulAcChargingSessions = unsignedIntFromBytes(
+		separatePacketBytes[1].slice(5, 7)
+	);
 
 	const acChargingCurrent = unsignedIntFromBytes(separatePacketBytes[1].slice(0, 2)) / 100;
 
 	return {
-		numberOfCharges,
-		numberOfAcCharges,
+		numberOfAcChargingSessions,
+		numberOfSuccessfulAcChargingSessions,
 		acChargingCurrent
 	};
 }

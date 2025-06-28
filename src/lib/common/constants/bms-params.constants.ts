@@ -1,3 +1,5 @@
+import { BMS_MODES_TO_DISPLAY } from './bms.constants';
+
 export const BMS_FIELD_NAMES = {
 	SOC_BMS: 'socBms',
 	SOH: 'soh',
@@ -42,7 +44,10 @@ export const BMS_FIELD_NAMES = {
 	MIN_DETERIORATION_PERCENTAGE: 'minDeteriorationPercentage',
 	MIN_DETERIORATED_CELL_NO: 'minDeterioratedCellNo',
 	SOC_DISPLAY: 'socDisplay',
-	UNKNOWN_TEMP_B: 'unknownTempB'
+	UNKNOWN_TEMP_B: 'unknownTempB',
+
+	COOLING_WATER_TEMP: 'coolingWaterTemp',
+	BMS_MODE: 'bmsMode'
 } as const;
 
 export const BMS_PARAMS_CONFIG = [
@@ -344,5 +349,22 @@ export const BMS_PARAMS_CONFIG = [
 		range: [-40, 100],
 		unit: '°C',
 		format: (value: number) => value.toFixed()
+	},
+	{
+		name: 'Температура охолоджуючої рідини 2',
+		field: BMS_FIELD_NAMES.COOLING_WATER_TEMP,
+		exampleValue: 25.5,
+		range: [-20, 60],
+		unit: '°C',
+		format: (value: number) => value.toFixed(1)
+	},
+	{
+		name: 'Режим BMS',
+		field: BMS_FIELD_NAMES.BMS_MODE,
+		exampleValue: 25.5,
+		range: [1, 16],
+		unit: '',
+		format: (value: number) =>
+			BMS_MODES_TO_DISPLAY[(value & 0xf) as keyof typeof BMS_MODES_TO_DISPLAY] ?? value.toFixed()
 	}
 ] as const;
