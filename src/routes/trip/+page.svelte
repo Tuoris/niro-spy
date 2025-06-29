@@ -324,8 +324,135 @@
 		return energyChargedPerTrip;
 	});
 
-	$inspect(energyChargedPerTrip);
-	$inspect(energyDischargedPerTrip);
+	let calculatedBatteryCapacity = $derived.by(() => {
+		const powerValues = paramsState.values[PARAM_FIELDS.BATTERY_POWER];
+		const filteredPowerValues = filterValuesWithSlider(powerValues);
+		const powerValuesWhenNotOnCharing = filterValuesWhenNotOnCharging(filteredPowerValues);
+
+		if (!filteredPowerValues.length) {
+			return null;
+		}
+
+		if (filteredPowerValues.length !== powerValuesWhenNotOnCharing.length) {
+			// TODO: Calculate battery capacity on changing
+			return null;
+		}
+
+		let socBms = paramsState.values[PARAM_FIELDS.SOC_BMS];
+		socBms = filterValuesWithSlider(socBms);
+
+		// SOC is not precise - use timestamps when value changes to calculate
+		// battery capacity
+		let filteredSocValues: ParamValue[] = [];
+
+		let chunk: ParamValue[] = [];
+		let isFirstChunk = true;
+		let previousValue = socBms[0];
+
+		for (let socBmsValue of socBms) {
+			const valueChanged = previousValue.value !== socBmsValue.value;
+
+			if (valueChanged) {
+				if (isFirstChunk) {
+					// ignore first chunk
+					isFirstChunk = false;
+				} else {
+					filteredSocValues = filteredSocValues.concat(chunk);
+				}
+
+				chunk = [];
+			} else {
+				chunk.push(socBmsValue);
+			}
+
+			previousValue = socBmsValue;
+		}
+		// ignore last chunk
+
+		if (filteredSocValues.length < 2) {
+			return null;
+		}
+
+		const firstSocValue = filteredSocValues[0];
+		const lastSocValue = filteredSocValues[filteredSocValues.length - 1];
+
+		let cumulativeEnergyDischarged = paramsState.values[PARAM_FIELDS.CUMULATIVE_ENERGY_DISCHARGED];
+		cumulativeEnergyDischarged = filterValuesWithSlider(cumulativeEnergyDischarged);
+
+		let firstCumulativeEnergyDischargedValue = findClosestParamValueByTimestamp(
+			cumulativeEnergyDischarged,
+			firstSocValue.timestamp
+		);
+		let lastCumulativeEnergyDischargedValue = findClosestParamValueByTimestamp(
+			cumulativeEnergyDischarged,
+			lastSocValue.timestamp
+		);
+
+		if (
+			firstCumulativeEnergyDischargedValue.timestamp ===
+			lastCumulativeEnergyDischargedValue.timestamp
+		) {
+			return null;
+		}
+
+		let cumulativeEnergyCharged = paramsState.values[PARAM_FIELDS.CUMULATIVE_ENERGY_CHARGED];
+		cumulativeEnergyCharged = filterValuesWithSlider(cumulativeEnergyCharged);
+
+		let firstCumulativeEnergyChargedValue = findClosestParamValueByTimestamp(
+			cumulativeEnergyCharged,
+			firstSocValue.timestamp
+		);
+		let lastCumulativeEnergyChargedValue = findClosestParamValueByTimestamp(
+			cumulativeEnergyCharged,
+			lastSocValue.timestamp
+		);
+
+		if (
+			firstCumulativeEnergyChargedValue.timestamp === lastCumulativeEnergyChargedValue.timestamp
+		) {
+			return null;
+		}
+
+		const ENERGY_RESOLUTION = 0.1;
+		const SOC_RESOLUTION = 0.5;
+		const ACCEPTABLE_ENERGY_ERROR_KWH = 12.5;
+
+		const socChange = firstSocValue.value - lastSocValue.value;
+		if (Math.abs(socChange) < SOC_RESOLUTION * 4) {
+			return null;
+		}
+
+		const cumulativeEnergyDischargedChange =
+			lastCumulativeEnergyDischargedValue.value - firstCumulativeEnergyDischargedValue.value;
+		const cumulativeEnergyChargedChange =
+			lastCumulativeEnergyChargedValue.value - firstCumulativeEnergyChargedValue.value;
+
+		const energyChange = cumulativeEnergyDischargedChange - cumulativeEnergyChargedChange;
+
+		const capacityMin =
+			(energyChange + 2 * ENERGY_RESOLUTION) / ((socChange - SOC_RESOLUTION) / 100);
+		const capacityMax =
+			(energyChange - 2 * ENERGY_RESOLUTION) / ((socChange + SOC_RESOLUTION) / 100);
+
+		console.log([capacityMin, capacityMax, Math.abs(capacityMax - capacityMin)]);
+
+		if (Math.abs(capacityMax - capacityMin) > ACCEPTABLE_ENERGY_ERROR_KWH) {
+			return null;
+		}
+
+		return energyChange / (socChange / 100);
+	});
+
+	const findClosestParamValueByTimestamp = (values: ParamValue[], timestamp: number) => {
+		let closestValue = values[0];
+		for (const value of values) {
+			if (Math.abs(value.timestamp - timestamp) < Math.abs(closestValue.timestamp - timestamp)) {
+				closestValue = value;
+			}
+		}
+
+		return closestValue;
+	};
 
 	const downloadData = () => downloadTripDataFile({ values: paramsState.values });
 
@@ -444,7 +571,7 @@
 		{@render valueCard('Вартість поїздки', tripPrice.toFixed(2), 'грн')}
 		{@render valueCard('Вартість 1 км', pricePerKm.toFixed(2), 'грн')}
 		{@render valueCard(
-			'Всього спожито з батареї',
+			'Всього використано енергії з батареї',
 			energyDischargedPerTrip !== null && energyChargedPerTrip !== null
 				? energyDischargedPerTrip.toFixed(1)
 				: '-',
@@ -458,6 +585,11 @@
 				? ((energyChargedPerTrip / energyDischargedPerTrip) * 100).toFixed()
 				: '-',
 			'%'
+		)}
+		{@render valueCard(
+			'Розрахункова ємність батареї',
+			calculatedBatteryCapacity !== null ? calculatedBatteryCapacity.toFixed(1) : '-',
+			'кВт·год'
 		)}
 	</div>
 </div>
