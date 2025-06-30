@@ -57,7 +57,7 @@
 			<span class="icon-[mdi--settings-outline]"></span>
 		</a>
 	</div>
-	<div class="py-1">Niro Spy <span class="fi fi-ua"></span> <small>0.10.5</small></div>
+	<div class="py-1">Niro Spy <span class="fi fi-ua"></span> <small>0.10.6</small></div>
 	<div class="flex w-40 items-center gap-2">
 		{#each localesConfig as localeConfig}
 			<button

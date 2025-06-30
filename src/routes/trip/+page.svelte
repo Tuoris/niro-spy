@@ -499,8 +499,8 @@
 		)}
 		{@render valueCard(i18n.t('tripTime'), tripTime, '')}
 		{@render valueCard(i18n.t('altitudeChange'), altitudeChange, i18n.t(UNIT_LABELS.METER))}
-		{@render valueCard(i18n.t('tripPrice'), tripPrice.toFixed(2), i18n.t('uah'))}
-		{@render valueCard(i18n.t('pricePerKm'), pricePerKm.toFixed(2), i18n.t('uah'))}
+		{@render valueCard(i18n.t('tripPrice'), tripPrice.toFixed(2), i18n.t('currency'))}
+		{@render valueCard(i18n.t('pricePerKm'), pricePerKm.toFixed(2), i18n.t('currency'))}
 		{@render valueCard(
 			i18n.t('energyDischargedPerTrip'),
 			energyDischargedPerTrip !== null && energyChargedPerTrip !== null

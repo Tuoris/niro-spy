@@ -126,7 +126,7 @@
   "kilometersPerHour": "км/год",
   "kilowattHourPer_100Kilometers": "кВт·год/100км",
   "bar": "бар",
-  "uah": "грн",
+  "currency": "грн",
   "yes": "так",
   "no": "ні",
   "batteryHeader": "Батарея",
