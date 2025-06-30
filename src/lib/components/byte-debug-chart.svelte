@@ -6,6 +6,7 @@
 	import { UniversalTransition } from 'echarts/features';
 	import { CanvasRenderer } from 'echarts/renderers';
 	import { onMount } from 'svelte';
+	import { i18n } from '$lib/i18n/i18n';
 
 	const { selectedByteTimeline }: { selectedByteTimeline: [number, number | null][] } = $props();
 
@@ -52,7 +53,8 @@
 			formatter: (params) => {
 				const a = params.map((param) => {
 					const value = param.value[1] - param.seriesIndex * VALUE_MULTIPLIER_FOR_CHART;
-					return `${param.marker} Біт ${param.seriesIndex}: <strong>${value}</strong>`;
+
+					return `${param.marker} ${i18n.t('bit')} ${param.seriesIndex}: <strong>${value}</strong>`;
 				});
 				return a.join('<br/>');
 			}

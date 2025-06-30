@@ -75,31 +75,31 @@
 			<span class="icon-[mdi--arrow-back]"></span>
 		</ButtonLink>
 		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">
-			TPMS (Система контролю тиску в шинах)
+			{i18n.t('tpmsHeader')}
 		</h2>
 	</div>
 
 	<div class="mx-auto mt-4 mb-4 grid max-w-2xl grid-cols-2 gap-4">
 		{@render tpmsValueCard(
-			'Ліве переднє колесо',
+			i18n.t('leftFrontTire'),
 			TPMS_FIELD_NAMES.FRONT_LEFT_TIRE_PRESSURE,
 			TPMS_FIELD_NAMES.FRONT_LEFT_TIRE_TEMPERATURE,
 			TPMS_FIELD_NAMES.FRONT_LEFT_TIRE_LIVE_DATA
 		)}
 		{@render tpmsValueCard(
-			'Праве переднє колесо',
+			i18n.t('rightFrontTire'),
 			TPMS_FIELD_NAMES.FRONT_RIGHT_TIRE_PRESSURE,
 			TPMS_FIELD_NAMES.FRONT_RIGHT_TIRE_TEMPERATURE,
 			TPMS_FIELD_NAMES.FRONT_RIGHT_TIRE_LIVE_DATA
 		)}
 		{@render tpmsValueCard(
-			'Ліве заднє колесо',
+			i18n.t('leftRearTire'),
 			TPMS_FIELD_NAMES.REAR_LEFT_TIRE_PRESSURE,
 			TPMS_FIELD_NAMES.REAR_LEFT_TIRE_TEMPERATURE,
 			TPMS_FIELD_NAMES.REAR_LEFT_TIRE_LIVE_DATA
 		)}
 		{@render tpmsValueCard(
-			'Праве заднє колесо',
+			i18n.t('rightRearTire'),
 			TPMS_FIELD_NAMES.REAR_RIGHT_TIRE_PRESSURE,
 			TPMS_FIELD_NAMES.REAR_RIGHT_TIRE_TEMPERATURE,
 			TPMS_FIELD_NAMES.REAR_RIGHT_TIRE_LIVE_DATA

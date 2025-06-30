@@ -2,20 +2,27 @@ import i18next, { type i18n as I18NType } from 'i18next';
 import uk from './locales/uk.json';
 import en from './locales/en.json';
 import ko from './locales/ko.json';
+import sk from './locales/sk.json';
 import type { ObjectValues } from '$lib/common/types/common.types';
 import { createSubscriber } from 'svelte/reactivity';
 
 export const LOCALES = {
 	UK: 'uk',
 	EN: 'en',
-	KO: 'ko'
+	KO: 'ko',
+	SK: 'sk'
 } as const;
 
 export type Locales = ObjectValues<typeof LOCALES>;
 
 export type I18NLabel = keyof typeof uk;
 
-const defaultLocale = window.localStorage.getItem('lang') || LOCALES.UK;
+const queryLocaleRaw = new URL(window.location.href).searchParams.get('lang');
+const queryLocale =
+	queryLocaleRaw && Object.values(LOCALES).includes(queryLocaleRaw as Locales)
+		? queryLocaleRaw
+		: null;
+const defaultLocale = queryLocale || window.localStorage.getItem('lang') || LOCALES.UK;
 
 const i18nextOptions = {
 	lng: defaultLocale,
@@ -29,6 +36,9 @@ const i18nextOptions = {
 		},
 		ko: {
 			translation: ko
+		},
+		sk: {
+			translation: sk
 		}
 	}
 };

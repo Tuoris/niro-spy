@@ -1,46 +1,83 @@
+const MANUFACTURER_LABELS = {
+	HYUNDAI_KIA_USA: 'hyundaiKiaUsa',
+	HYUNDAI_SOUTH_KOREA: 'hyundaiSouthKorea',
+	HYUNDAI_CZECH_REPUBLIC: 'hyundaiCzechRepublic',
+	HYUNDAI_CANADA: 'hyundaiCanada',
+	HYUNDAI_USA: 'hyundaiUsa',
+	HYUNDAI_BRAZIL: 'hyundaiBrazil',
+	BRAZIL_CAOA_HYUNDAI: 'brazilCaoaHyundai',
+	HYUNDAI_CHINA_BEIJING: 'hyundaiChinaBeijing',
+	KIA_SOUTH_KOREA: 'kiaSouthKorea',
+	KIA_MYANMAR: 'kiaMyanmar',
+	KIA_MALAYSIA: 'kiaMalaysia',
+	KIA_SLOVAKIA: 'kiaSlovakia',
+	KIA_MEXICO: 'kiaMexico',
+	KIA_URUGUAY: 'kiaUruguay',
+	KIA_CHINA_JIANGSU_YUEDA: 'kiaChinaJiangsuYueda'
+} as const;
+
+const MARKET_LABELS = {
+	FOR_THE_US_CANADA_AND_MEXICO_MARKET: 'forTheUsCanadaAndMexicoMarket',
+	FOR_THE_EUROPEAN_ASIAN_AND_SOUTH_AMERICAN_MARKET: 'forTheEuropeanAsianAndSouthAmericanMarket'
+} as const;
+
+const MODEL_SPECS_LABELS = {
+	MODEL_39_KWH_80_KW: 'model_39Kwh_80Kw',
+	MODEL_64_KWH_150_KW: 'model_64Kwh_150Kw',
+	MODEL_39_KWH_100_KW: 'model_39Kwh_100Kw'
+} as const;
+
+const PRODUCTION_PLAN_LABELS = {
+	HWASEONG: 'plantHwaseong',
+	GWANGJU: 'plantGwangju',
+	SEOSAN: 'plantSeosan',
+	YANGON: 'plantYangon',
+	ULSAN: 'plantUlsan'
+} as const;
+
 export function vinParse(vin: string) {
 	let manufacturer = '';
+	let market = '';
 
 	if (vin[0] == '5' && vin[1] == 'X') {
-		manufacturer = 'Hyundai/Kia, США';
+		manufacturer = MANUFACTURER_LABELS.HYUNDAI_KIA_USA;
 	} else if (vin[0] == 'K' && vin[1] == 'M' && vin[2] == 'H') {
-		manufacturer = 'Hyundai, Південна Корея';
+		manufacturer = MANUFACTURER_LABELS.HYUNDAI_SOUTH_KOREA;
 	} else if (vin[0] == 'T' && vin[1] == 'M' && vin[2] == 'A') {
-		manufacturer = 'Hyundai, Чехія';
+		manufacturer = MANUFACTURER_LABELS.HYUNDAI_CZECH_REPUBLIC;
 	} else if (vin[0] == '2' && vin[1] == 'H' && vin[2] == 'M') {
-		manufacturer = 'Hyundai, Канада';
+		manufacturer = MANUFACTURER_LABELS.HYUNDAI_CANADA;
 	} else if (vin[0] == '5' && vin[1] == 'N' && vin[2] == 'M') {
-		manufacturer = 'Hyundai, США';
+		manufacturer = MANUFACTURER_LABELS.HYUNDAI_USA;
 	} else if (vin[0] == '5' && vin[1] == 'N' && vin[2] == 'P') {
-		manufacturer = 'Hyundai, США';
+		manufacturer = MANUFACTURER_LABELS.HYUNDAI_USA;
 	} else if (vin[0] == '9' && vin[1] == 'B' && vin[2] == 'H') {
-		manufacturer = 'Hyundai, Бразилія';
+		manufacturer = MANUFACTURER_LABELS.HYUNDAI_BRAZIL;
 	} else if (vin[0] == '9' && vin[1] == '5' && vin[2] == 'P') {
-		manufacturer = 'Бразилія CAOA/Hyundai';
+		manufacturer = MANUFACTURER_LABELS.BRAZIL_CAOA_HYUNDAI;
 	} else if (vin[0] == 'L' && vin[1] == 'B' && vin[2] == 'E') {
-		manufacturer = 'Hyundai, Китай (Пекін)';
+		manufacturer = MANUFACTURER_LABELS.HYUNDAI_CHINA_BEIJING;
 	} else if (vin[0] == 'K' && vin[1] == 'N') {
-		manufacturer = 'Kia, Південна Корея';
+		manufacturer = MANUFACTURER_LABELS.KIA_SOUTH_KOREA;
 
 		if (vin[2] == 'D') {
-			manufacturer += ' (для ринку США, Канади та Мексики)';
+			market = MARKET_LABELS.FOR_THE_US_CANADA_AND_MEXICO_MARKET;
 		} else if (vin[2] == 'A') {
-			manufacturer += ' (для ринку Європи, Азії та Південної Америки)';
+			market = MARKET_LABELS.FOR_THE_EUROPEAN_ASIAN_AND_SOUTH_AMERICAN_MARKET;
 		}
 	} else if (vin[0] == 'M' && vin[1] == 'S' && vin[2] == '0') {
-		manufacturer = "Kia, М'янма";
+		manufacturer = MANUFACTURER_LABELS.KIA_MYANMAR;
 	} else if (vin[0] == 'P' && vin[1] == 'N' && vin[2] == 'A') {
-		manufacturer = 'Kia, Малайзія';
+		manufacturer = MANUFACTURER_LABELS.KIA_MALAYSIA;
 	} else if (vin[0] == 'U' && vin[1] == '5' && vin[2] == 'Y') {
-		manufacturer = 'Kia, Словаччина';
+		manufacturer = MANUFACTURER_LABELS.KIA_SLOVAKIA;
 	} else if (vin[0] == '3' && vin[1] == 'K' && vin[2] == 'P') {
-		manufacturer = 'Kia, Мексика';
+		manufacturer = MANUFACTURER_LABELS.KIA_MEXICO;
 	} else if (vin[0] == '9' && vin[1] == 'U' && vin[2] == 'W') {
-		manufacturer = 'Kia, Уругвай';
+		manufacturer = MANUFACTURER_LABELS.KIA_URUGUAY;
 	} else if (vin[0] == 'L' && vin[1] == 'J' && vin[2] == 'D') {
-		manufacturer = 'Kia, Китай (Jiangsu Yueda)';
+		manufacturer = MANUFACTURER_LABELS.KIA_CHINA_JIANGSU_YUEDA;
 	} else {
-		// manufacturer = 'Невідомо';
 	}
 
 	let model = '';
@@ -51,7 +88,6 @@ export function vinParse(vin: string) {
 	} else if (vin[3] == 'K') {
 		model = 'Kona';
 	} else {
-		// model = 'Невідома';
 	}
 
 	const a: Record<string, number> = {
@@ -83,31 +119,30 @@ export function vinParse(vin: string) {
 	let type = '';
 
 	if (vin[7] == 'E') {
-		type = '39 кВт·год / 80 кВт';
+		type = MODEL_SPECS_LABELS.MODEL_39_KWH_80_KW;
 	} else if (vin[7] == 'G') {
-		type = '64 кВт·год / 150 кВт';
+		type = MODEL_SPECS_LABELS.MODEL_64_KWH_150_KW;
 	} else if (vin[7] == 'H') {
-		type = '39 кВт·год / 100 кВт';
+		type = MODEL_SPECS_LABELS.MODEL_39_KWH_100_KW;
 	}
 
 	let productionPlant = '';
 	if (vin[10] == '5') {
-		productionPlant = 'Хвасон / 화성 (Корея)';
-		// } else if (vin[10] == '6') {
-		// 	productionPlant = 'Soha-ri / 소하리 (Корея)';
+		productionPlant = PRODUCTION_PLAN_LABELS.HWASEONG;
 	} else if (vin[10] == '7') {
-		productionPlant = 'Кванджу / 광주 (Корея)';
+		productionPlant = PRODUCTION_PLAN_LABELS.GWANGJU;
 	} else if (vin[10] == 'T') {
-		productionPlant = 'Сосан / 서산시 (Корея)';
+		productionPlant = PRODUCTION_PLAN_LABELS.SEOSAN;
 	} else if (vin[10] == 'Y') {
-		productionPlant = "Янгон / ရန်ကုန်မြို့ (М'янма)";
+		productionPlant = PRODUCTION_PLAN_LABELS.YANGON;
 	} else if (vin[10] == 'U') {
-		productionPlant = 'Ульсан / 울산 (Корея)';
+		productionPlant = PRODUCTION_PLAN_LABELS.ULSAN;
 	}
 
 	let sequenceNumber = vin.slice(11, 17);
 	return {
 		manufacturer,
+		market,
 		model,
 		year,
 		type,

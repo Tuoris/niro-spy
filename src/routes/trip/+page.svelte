@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { bluetoothState } from '$lib/bluetooth.store.svelte';
 	import { PARAM_FIELDS } from '$lib/common/constants/common-params.constants';
+	import { UNIT_LABELS } from '$lib/common/constants/unit-labels.constants';
 	import { HKMC_GEARS } from '$lib/common/constants/vmcu.constants';
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
+	import { i18n } from '$lib/i18n/i18n';
 	import { paramsState, type ParamValue } from '$lib/params.svelte';
 	import { settingsStore } from '$lib/settings.store.svelte';
 	import { downloadTripDataFile } from '$lib/trip-data';
@@ -406,7 +408,7 @@
 		<ButtonLink href="/" aria-label="Назад" variant="tertiary" size="compact">
 			<span class="icon-[mdi--arrow-back]"></span>
 		</ButtonLink>
-		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">Поїздка</h2>
+		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">{i18n.t('trip')}</h2>
 		<Button
 			variant="tertiary"
 			size="compact"
@@ -449,50 +451,76 @@
 
 	<div class="mx-auto mt-4 grid max-w-2xl grid-cols-2 gap-4 pb-4 lg:max-w-4xl lg:grid-cols-4">
 		{@render valueCard(
-			'Середня потужність',
+			i18n.t('averagePower'),
 			(Math.abs(averagePowerByTime) > 1000
 				? averagePowerByTime / 1000
 				: averagePowerByTime
 			).toFixed(1),
-			Math.abs(averagePowerByTime) > 1000 ? 'кВт' : 'Вт'
+			Math.abs(averagePowerByTime) > 1000 ? i18n.t(UNIT_LABELS.KILOWATT) : i18n.t(UNIT_LABELS.WATT)
 		)}
 		{@render valueCard(
-			'Спожито',
+			i18n.t('energyConsumed'),
 			Math.abs(energyConsumed) > 1000
 				? (energyConsumed / 1000).toFixed(2)
 				: energyConsumed.toFixed(),
-			Math.abs(energyConsumed) > 1000 ? 'кВт·год' : 'Вт·год'
+			Math.abs(energyConsumed) > 1000
+				? i18n.t(UNIT_LABELS.KILOWATT_HOUR)
+				: i18n.t(UNIT_LABELS.WATT_HOUR)
 		)}
-		{@render valueCard('Середня швидкість', averageSpeedByTime.toFixed(), 'км/год')}
-		{@render valueCard('Середня швидкість (GPS)', averageGpsSpeedByTime.toFixed(), 'км/год')}
-		{@render valueCard('Пройдена відстань', distanceTraveled.toFixed(2), 'км')}
-		{@render valueCard('Пройдена відстань (GPS)', distanceTraveledGps.toFixed(2), 'км')}
-		{@render valueCard('Середня витрата', consumption.toFixed(1), 'кВт·год/100км')}
-		{@render valueCard('Середня витрата (GPS)', consumptionGps.toFixed(1), 'кВт·год/100км')}
-		{@render valueCard('Час поїздки', tripTime, '')}
-		{@render valueCard('Зміна висот', altitudeChange, 'м')}
-		{@render valueCard('Вартість поїздки', tripPrice.toFixed(2), 'грн')}
-		{@render valueCard('Вартість 1 км', pricePerKm.toFixed(2), 'грн')}
 		{@render valueCard(
-			'Всього використано енергії з батареї',
+			i18n.t('averageSpeed'),
+			averageSpeedByTime.toFixed(),
+			i18n.t(UNIT_LABELS.KILOMETERS_PER_HOUR)
+		)}
+		{@render valueCard(
+			i18n.t('averageSpeedGps'),
+			averageGpsSpeedByTime.toFixed(),
+			i18n.t(UNIT_LABELS.KILOMETERS_PER_HOUR)
+		)}
+		{@render valueCard(
+			i18n.t('distanceTraveled'),
+			distanceTraveled.toFixed(2),
+			i18n.t(UNIT_LABELS.KILOMETER)
+		)}
+		{@render valueCard(
+			i18n.t('distanceTraveledGps'),
+			distanceTraveledGps.toFixed(2),
+			i18n.t(UNIT_LABELS.KILOMETER)
+		)}
+		{@render valueCard(
+			i18n.t('averageConsumption'),
+			consumption.toFixed(1),
+			i18n.t(UNIT_LABELS.KILOWATT_HOUR_PER_100_KILOMETERS)
+		)}
+		{@render valueCard(
+			i18n.t('averageConsumptionGps'),
+			consumptionGps.toFixed(1),
+			i18n.t(UNIT_LABELS.KILOWATT_HOUR_PER_100_KILOMETERS)
+		)}
+		{@render valueCard(i18n.t('tripTime'), tripTime, '')}
+		{@render valueCard(i18n.t('altitudeChange'), altitudeChange, i18n.t(UNIT_LABELS.METER))}
+		{@render valueCard(i18n.t('tripPrice'), tripPrice.toFixed(2), i18n.t('uah'))}
+		{@render valueCard(i18n.t('pricePerKm'), pricePerKm.toFixed(2), i18n.t('uah'))}
+		{@render valueCard(
+			i18n.t('energyDischargedPerTrip'),
 			energyDischargedPerTrip !== null && energyChargedPerTrip !== null
 				? energyDischargedPerTrip.toFixed(1)
 				: '-',
-			'кВт·год'
+			i18n.t(UNIT_LABELS.KILOWATT_HOUR)
 		)}
 		{@render valueCard(
-			'Повернуто в батарею рекуперацією',
+			i18n.t('returnedByRegen'),
 			energyDischargedPerTrip !== null &&
 				energyChargedPerTrip !== null &&
 				energyDischargedPerTrip !== 0
 				? ((energyChargedPerTrip / energyDischargedPerTrip) * 100).toFixed()
 				: '-',
-			'%'
+			i18n.t(UNIT_LABELS.PERCENT)
 		)}
 		{@render valueCard(
-			'Розрахункова ємність батареї',
+			i18n.t('calculatedBatteryCapacity'),
 			calculatedBatteryCapacity !== null ? calculatedBatteryCapacity.toFixed(1) : '-',
-			'кВт·год'
+			i18n.t(UNIT_LABELS.KILOWATT_HOUR)
 		)}
 	</div>
 </div>

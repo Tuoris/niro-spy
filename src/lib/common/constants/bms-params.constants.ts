@@ -13,7 +13,7 @@ export const BMS_FIELD_NAMES = {
 	CUMULATIVE_CAPACITY_DISCHARGED: 'cumulativeCapacityDischarged',
 	CUMULATIVE_ENERGY_CHARGED: 'cumulativeEnergyCharged',
 	CUMULATIVE_ENERGY_DISCHARGED: 'cumulativeEnergyDischarged',
-	AVERAGE_CONSUMPTION: 'averageConsumption',
+	AVERAGE_LIFETIME_CONSUMPTION: 'averageLifetimeConsumption',
 	BATTERY_CURRENT: 'batteryCurrent',
 	BATTERY_VOLTAGE: 'batteryVoltage',
 	BATTERY_MAX_TEMP: 'batteryMaxTemp',

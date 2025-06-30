@@ -37,6 +37,10 @@
 		{
 			language: LOCALES.KO,
 			icon: 'fi-kr'
+		},
+		{
+			language: LOCALES.SK,
+			icon: 'fi-sk'
 		}
 	];
 
@@ -44,7 +48,7 @@
 </script>
 
 <div class="flex shrink justify-between font-bold text-neutral-400">
-	<div class="ms-1 mt-1 flex w-30 items-center">
+	<div class="ms-1 mt-1 flex w-40 items-center">
 		<a
 			class="flex rounded-sm border border-transparent p-1 hover:bg-neutral-600"
 			href="/settings"
@@ -54,7 +58,7 @@
 		</a>
 	</div>
 	<div class="py-1">Niro Spy <span class="fi fi-ua"></span> <small>0.10.5</small></div>
-	<div class="flex w-30 items-center gap-2">
+	<div class="flex w-40 items-center gap-2">
 		{#each localesConfig as localeConfig}
 			<button
 				aria-label={localeConfig.language}

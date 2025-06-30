@@ -190,10 +190,10 @@ export async function startDataReading() {
 				(cumulativeEnergyDischargedValues[cumulativeEnergyDischargedValues.length - 1].value /
 					odometerValues[odometerValues.length - 1].value) *
 				100;
-			if (!paramsState.values[PARAM_FIELDS.AVERAGE_CONSUMPTION]) {
-				paramsState.values[PARAM_FIELDS.AVERAGE_CONSUMPTION] = [];
+			if (!paramsState.values[PARAM_FIELDS.AVERAGE_LIFETIME_CONSUMPTION]) {
+				paramsState.values[PARAM_FIELDS.AVERAGE_LIFETIME_CONSUMPTION] = [];
 			}
-			paramsState.values[PARAM_FIELDS.AVERAGE_CONSUMPTION].push({
+			paramsState.values[PARAM_FIELDS.AVERAGE_LIFETIME_CONSUMPTION].push({
 				timestamp:
 					cumulativeEnergyDischargedValues[cumulativeEnergyDischargedValues.length - 1].timestamp,
 				value: lifetimeEfficiency
@@ -270,7 +270,7 @@ export async function mockStartDataReading() {
 			const jitterByField = {
 				[PARAM_FIELDS.BATTERY_POWER]: 8000,
 				[PARAM_FIELDS.SOH]: 1,
-				[PARAM_FIELDS.AVERAGE_CONSUMPTION]: 1,
+				[PARAM_FIELDS.AVERAGE_LIFETIME_CONSUMPTION]: 1,
 				[PARAM_FIELDS.MAX_POWER]: 0,
 				[PARAM_FIELDS.MAX_REGENERATION_POWER]: 0,
 				[PARAM_FIELDS.BATTERY_MAX_CELL_VOLTAGE]: 0.02,

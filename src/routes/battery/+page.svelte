@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { PARAM_FIELDS, type FieldType } from '$lib/common/constants/common-params.constants';
+	import { UNIT_LABELS } from '$lib/common/constants/unit-labels.constants';
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
+	import { i18n } from '$lib/i18n/i18n';
 	import { paramsState } from '$lib/params.svelte';
 
 	const NUMBER_OF_BATTERY_CELLS = 98;
@@ -36,7 +38,9 @@
 
 	let socValue = $derived(getLastLiveValue(PARAM_FIELDS.SOC_BMS));
 	let sohValue = $derived(getLastLiveValue(PARAM_FIELDS.SOH));
-	let averageConsumption = $derived(getLastLiveValue(PARAM_FIELDS.AVERAGE_CONSUMPTION));
+	let averageLifetimeConsumption = $derived(
+		getLastLiveValue(PARAM_FIELDS.AVERAGE_LIFETIME_CONSUMPTION)
+	);
 	let maxPower = $derived(getLastLiveValue(PARAM_FIELDS.MAX_POWER));
 	let maxRegenerationPower = $derived(getLastLiveValue(PARAM_FIELDS.MAX_REGENERATION_POWER));
 	let batteryPower = $derived(getLastLiveValue(PARAM_FIELDS.BATTERY_POWER));
@@ -136,42 +140,67 @@
 		<ButtonLink href="/" aria-label="Назад" variant="tertiary" size="compact">
 			<span class="icon-[mdi--arrow-back]"></span>
 		</ButtonLink>
-		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">Батарея</h2>
+		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">
+			{i18n.t('batteryHeader')}
+		</h2>
 	</div>
 
 	<div class="mx-auto mt-4 mb-4 grid max-w-2xl grid-cols-2 gap-4 pb-4 lg:max-w-4xl lg:grid-cols-4">
-		{@render valueCard('Рівень заряду (SOC)', socValue.toFixed(1), '%', socValue < 10)}
 		{@render valueCard(
-			'Середня витрата (за весь пробіг)',
-			averageConsumption.toFixed(1),
-			'кВт·год/100км',
-			averageConsumption > 22 || averageConsumption < 16
+			i18n.t('socVerbose'),
+			socValue.toFixed(1),
+			i18n.t(UNIT_LABELS.PERCENT),
+			socValue < 10
 		)}
-		{@render valueCard("Здоров'я батареї (SOH)", sohValue.toFixed(1), '%', sohValue < 100)}
 		{@render valueCard(
-			'Температура батареї',
+			i18n.t('averageLifetimeConsumption'),
+			averageLifetimeConsumption.toFixed(1),
+			i18n.t(UNIT_LABELS.KILOWATT_HOUR_PER_100_KILOMETERS),
+			averageLifetimeConsumption > 22 || averageLifetimeConsumption < 16
+		)}
+		{@render valueCard(
+			i18n.t('sohoVerbose'),
+			sohValue.toFixed(1),
+			i18n.t(UNIT_LABELS.PERCENT),
+			sohValue < 100
+		)}
+		{@render valueCard(
+			i18n.t('batteryTemperature'),
 			averageTemperature.toFixed(1),
-			'°C',
+			i18n.t(UNIT_LABELS.CELSIUS),
 			averageTemperature > 55 || averageTemperature < -10
 		)}
-		{@render valueCard('Доступна потужність', maxPower.toFixed(), 'кВт')}
-		{@render valueCard('Доступна потужність рекуперації', maxRegenerationPower.toFixed(), 'кВт')}
+		{@render valueCard(i18n.t('availablePower'), maxPower.toFixed(), i18n.t(UNIT_LABELS.KILOWATT))}
+		{@render valueCard(
+			i18n.t('availableRegenPower'),
+			maxRegenerationPower.toFixed(),
+			i18n.t(UNIT_LABELS.KILOWATT)
+		)}
 
 		{@render valueCard(
-			'Миттєва потужність',
+			i18n.t('batteryPower'),
 			Math.abs(batteryPower) > 1000 ? (batteryPower / 1000).toFixed(2) : batteryPower.toFixed(),
-			Math.abs(batteryPower) > 1000 ? 'кВт' : 'Вт'
+			Math.abs(batteryPower) > 1000 ? i18n.t(UNIT_LABELS.KILOWATT) : i18n.t(UNIT_LABELS.WATT)
 		)}
-		{@render valueCard('Заряджання/рекуперація', isBatteryCharging ? 'так' : 'ні', '')}
+		{@render valueCard(
+			i18n.t('chargingOrRegen'),
+			isBatteryCharging ? i18n.t('yes') : i18n.t('no'),
+			''
+		)}
 	</div>
 
 	<h2 class="text-center text-lg font-bold dark:text-neutral-400">Елементи</h2>
 	<div class="mx-auto max-w-2xl">
-		<div>Найчастіша напруга елементу: <strong>{mostCommonValue}</strong> В</div>
 		<div>
-			Розбіжність напруг: <strong>
+			{i18n.t('mostCommonCellVoltage')} <strong>{mostCommonValue}</strong>
+			{i18n.t(UNIT_LABELS.VOLT)}
+		</div>
+		<div>
+			{i18n.t('cellVoltageDifference')}:
+			<strong>
 				{Math.abs(Math.max(...cellVoltageValues) - Math.min(...cellVoltageValues)).toFixed(2)}
-			</strong> В
+			</strong>
+			{i18n.t(UNIT_LABELS.VOLT)}
 		</div>
 		<div class="flex items-start justify-between gap-2 py-2">
 			<Button
@@ -185,7 +214,7 @@
 						: 'icon-[mdi--align-vertical-bottom]'}
 				></span></Button
 			>
-			<h3>{trackMinCellVoltages ? 'Мінімальні напруги' : 'Поточні напруги'}</h3>
+			<h3>{trackMinCellVoltages ? i18n.t('minCellVoltages') : i18n.t('liveCellVoltages')}</h3>
 			<Button
 				variant="tertiary"
 				size="compact"

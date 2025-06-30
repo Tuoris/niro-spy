@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { bluetoothState } from '$lib/bluetooth.store.svelte';
 	import ButtonLink from '$lib/components/button-link.svelte';
+	import { i18n } from '$lib/i18n/i18n';
 	import { changeGeolocationEnabled, settingsStore } from '$lib/settings.store.svelte';
 
 	let geolocationEnabled = $derived(settingsStore.geolocationEnabled);
@@ -43,19 +44,21 @@
 		<ButtonLink href="/" aria-label="Назад" variant="tertiary" size="compact">
 			<span class="icon-[mdi--arrow-back]"></span>
 		</ButtonLink>
-		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">Налаштування</h2>
+		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">
+			{i18n.t('settings')}
+		</h2>
 	</div>
 
 	<div>
 		<div class="flex items-center justify-between gap-2 border-b-1 border-neutral-600 p-2">
 			<div>
-				<div><strong>Використовувати геолокацію</strong></div>
+				<div><strong>{i18n.t('useGeolocation')}</strong></div>
 				{#if currentGeolocationPermission === 'granted' && !geolocationEnabled}
-					Натисніть на прапорець для використання
+					{i18n.t('clickOnCheckboxToUseGeolocation')}
 				{:else if currentGeolocationPermission === 'not available'}
-					Недоступно
+					{i18n.t('notAvailable')}
 				{:else if currentGeolocationPermission === 'denied'}
-					Використання геолокації заборонено
+					{i18n.t('geolocationUseDenied')}
 				{/if}
 			</div>
 			<div class="basis-24 border-l-1 border-neutral-600 p-2 text-center">
@@ -69,7 +72,7 @@
 			</div>
 		</div>
 		<div class="flex items-center justify-between gap-2 border-b-1 border-neutral-600 p-2">
-			<div>Ціна кВт·год, грн</div>
+			<div>{i18n.t('pricePerKwh')}</div>
 			<div class="flex basis-24 justify-end border-l-1 border-neutral-600">
 				<input type="number" step="0.01" class="w-18 p-2" bind:value={settingsStore.priceOfKwh} />
 			</div>
@@ -79,7 +82,7 @@
 		<ButtonLink
 			href="/debugger"
 			onclick={() => (bluetoothState.isElmDebuggerEnabled = true)}
-			variant="secondary">Налагоджувач</ButtonLink
+			variant="secondary">{i18n.t('debugger')}</ButtonLink
 		>
 	</div>
 </div>

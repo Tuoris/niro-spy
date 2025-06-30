@@ -11,6 +11,7 @@
 		unsignedIntFromBytes
 	} from '$lib/elm-device/parsers/elm-parser.utils';
 	import { parseUdsInfoBuffer, PARSING_ERROR_RESPONSE } from '$lib/elm-device/parsers/hkmc.parsers';
+	import { i18n } from '$lib/i18n/i18n';
 	import { downloadJsonFile } from '$lib/utils/file.utils';
 
 	let pageDisplayMode = $state('heatmap');
@@ -468,7 +469,9 @@
 		<ButtonLink href="/" aria-label="Назад" variant="tertiary" size="compact">
 			<span class="icon-[mdi--arrow-back]"></span>
 		</ButtonLink>
-		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">Налагоджувач</h2>
+		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">
+			{i18n.t('debugger')}
+		</h2>
 		<Button
 			variant="tertiary"
 			size="compact"
@@ -517,7 +520,7 @@
 				{/each}
 			</select>
 		{:else}
-			<div class="p-2">Немає даних</div>
+			<div class="p-2">{i18n.t('missingData')}</div>
 		{/if}
 		<div class="flex gap-2">
 			{#if pageDisplayMode !== 'heatmap'}
@@ -538,44 +541,45 @@
 	<div>
 		{#if pagesToCompare || (pageDisplayMode === 'heatmap' && pageHeatmap !== null && pagesToCompare)}
 			<div class="text-center text-sm text-neutral-300">
-				Виберіть байт за допомогою лівої кнопки миші або Shift+Ліва кнопка миші для вибору кількох
-				байтів
+				{i18n.t('clickToSelectByteOrBytes')}
 			</div>
 
 			{#if pageDisplayMode === 'heatmap' && pageHeatmap !== null}
 				<div class="grid grid-cols-1 justify-items-center md:grid-cols-2">
 					<div>
-						<div class="text-center text-xs">Пакет #{pagesToCompare.length}</div>
+						<div class="text-center text-xs">
+							{i18n.t('packetPage', { page: pagesToCompare.length - 1 })}
+						</div>
 						{@render heatmapTable(pageHeatmap)}
 					</div>
 					{#if selectedValue}
 						<div class="p-4 text-sm md:text-base">
-							Вибрано:
+							{i18n.t('selected')}:
 							<div class="grid grid-cols-2">
-								<div>Шістнадцяткове число</div>
+								<div>{i18n.t('hexNumber')}</div>
 								<div class="text-right font-mono font-bold">{selectedValue}</div>
 
-								<div>Десяткове число</div>
+								<div>{i18n.t('decimal')}</div>
 								<div class="text-right font-mono font-bold">
 									{unsignedIntFromBytes(selectedValue)}
 								</div>
 
-								<div>Десяткове число зі знаком</div>
+								<div>{i18n.t('decimalSigned')}</div>
 								<div class="text-right font-mono font-bold">
 									{signedIntFromBytes(selectedValue)}
 								</div>
 
-								<div>Температура (XX / 2 - 40)</div>
+								<div>{i18n.t('temperature')}</div>
 								<div class="text-right font-mono font-bold">
 									{unsignedIntFromBytes(selectedValue) / 2 - 40}°C
 								</div>
 
-								<div>Символ</div>
+								<div>{i18n.t('character')}</div>
 								<div class="text-right font-mono font-bold">
 									{String.fromCharCode(unsignedIntFromBytes(selectedValue))}
 								</div>
 
-								<div>Біти</div>
+								<div>{i18n.t('bits')}</div>
 								<div class="text-right font-mono font-bold">
 									{#each selectedValue as byte}
 										{unsignedIntFromBytes(byte).toString(2).padStart(8, '0')}
@@ -588,11 +592,11 @@
 			{:else}
 				<div class="grid grid-cols-2 justify-items-center">
 					<div>
-						<div class="text-center text-xs">Пакет #{page + 1}</div>
+						<div class="text-center text-xs">{i18n.t('packetPage', { page: page + 1 })}</div>
 						{@render bytesTable(pagesToCompare[0])}
 					</div>
 					<div>
-						<div class="text-center text-xs">Пакет #{page + 2}</div>
+						<div class="text-center text-xs">{i18n.t('packetPage', { page: page + 2 })}</div>
 						{@render bytesTable(pagesToCompare[1], pagesToCompare[0])}
 					</div>
 				</div>
@@ -601,28 +605,32 @@
 		{#if selectedValue && pageDisplayMode !== 'heatmap'}
 			<div class="grid grid-cols-2">
 				<div class="col-span-2 px-4 text-sm md:text-base">
-					Вибрано:
+					{i18n.t('selected')}:
 					<div class="grid grid-cols-2">
-						<div>Шістнадцяткове число</div>
+						<div>{i18n.t('hexNumber')}</div>
 						<div class="text-right font-mono font-bold">{selectedValue}</div>
 
-						<div>Десяткове число</div>
-						<div class="text-right font-mono font-bold">{unsignedIntFromBytes(selectedValue)}</div>
+						<div>{i18n.t('decimal')}</div>
+						<div class="text-right font-mono font-bold">
+							{unsignedIntFromBytes(selectedValue)}
+						</div>
 
-						<div>Десяткове число зі знаком</div>
-						<div class="text-right font-mono font-bold">{signedIntFromBytes(selectedValue)}</div>
+						<div>{i18n.t('decimalSigned')}</div>
+						<div class="text-right font-mono font-bold">
+							{signedIntFromBytes(selectedValue)}
+						</div>
 
-						<div>Температура (XX / 2 - 40)</div>
+						<div>{i18n.t('temperature')}</div>
 						<div class="text-right font-mono font-bold">
 							{unsignedIntFromBytes(selectedValue) / 2 - 40}°C
 						</div>
 
-						<div>Символ</div>
+						<div>{i18n.t('character')}</div>
 						<div class="text-right font-mono font-bold">
 							{String.fromCharCode(unsignedIntFromBytes(selectedValue))}
 						</div>
 
-						<div>Біти</div>
+						<div>{i18n.t('bits')}</div>
 						<div class="text-right font-mono font-bold">
 							{#each selectedValue as byte}
 								{unsignedIntFromBytes(byte).toString(2).padStart(8, '0')}
@@ -636,7 +644,7 @@
 	</div>
 
 	{#if selectedIndexes}
-		<div class="mt-8 text-center text-sm text-neutral-300">Код для копіювання</div>
+		<div class="mt-8 text-center text-sm text-neutral-300">{i18n.t('codeToCopy')}</div>
 		<code>
 			<pre>
 				[ {selectedIndexes.map((index) => `bytes[${index[1]}][${index[2]}]}`).join(', ')} ]

@@ -14,6 +14,7 @@ export const UNIT_LABELS = {
 	METER: 'meter',
 	AMPERE_HOUR: 'ampereHour',
 	KILOWATT_HOUR: 'kilowattHour',
+	WATT_HOUR: 'wattHour',
 	KILOMETERS_PER_HOUR: 'kilometersPerHour',
 	KILOWATT_HOUR_PER_100_KILOMETERS: 'kilowattHourPer_100Kilometers',
 	BAR: 'bar'

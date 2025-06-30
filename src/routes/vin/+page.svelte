@@ -3,6 +3,7 @@
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { COMMANDS } from '$lib/elm-device/elm-commands.constants';
+	import { i18n } from '$lib/i18n/i18n';
 	import { vinParse } from '$lib/vin-parse';
 
 	const fakeVin =
@@ -43,7 +44,7 @@
 		<ButtonLink href="/" aria-label="Назад" variant="tertiary" size="compact">
 			<span class="icon-[mdi--arrow-back]"></span>
 		</ButtonLink>
-		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">VIN</h2>
+		<h2 class="flex-grow text-center text-lg font-bold dark:text-neutral-400">{i18n.t('vin')}</h2>
 	</div>
 
 	<div class="m-4 flex flex-col gap-4">
@@ -57,37 +58,46 @@
 		/>
 		<div class="h-6 text-center text-sm text-red-500">
 			{#if vinError}
-				Не вдалось отримати VIN код
+				{i18n.t('unableToRetrieveVinCode')}
 			{/if}
 		</div>
-		<Button onclick={checkVinCode}>Отримати VIN</Button>
+		<Button onclick={checkVinCode}>{i18n.t('retrieveVinCode')}</Button>
 	</div>
 	{#if vinCode !== fakeVin}
 		<div class="mx-4 grid grid-cols-4">
-			<h2 class="col-span-4 py-2 text-xl">Інформація</h2>
+			<h2 class="col-span-4 py-2 text-xl">{i18n.t('info')}</h2>
 			{#if parsedVinInfo.manufacturer}
-				<div class="col-span-4 text-sm md:col-span-1">Виробник</div>
-				<div class="col-span-4 px-2 font-bold md:col-span-3">{parsedVinInfo.manufacturer}</div>
+				<div class="col-span-4 text-sm md:col-span-1">{i18n.t('manufacturer')}</div>
+				<div class="col-span-4 px-2 font-bold md:col-span-3">
+					{i18n.t(parsedVinInfo.manufacturer)}
+				</div>
 			{/if}
 			{#if parsedVinInfo.model}
-				<div class="col-span-4 text-sm md:col-span-1">Модель</div>
-				<div class="col-span-4 px-2 font-bold md:col-span-3">{parsedVinInfo.model}</div>
+				<div class="col-span-4 text-sm md:col-span-1">{i18n.t('model')}</div>
+				<div class="col-span-4 px-2 font-bold md:col-span-3">
+					{i18n.t(parsedVinInfo.model)}
+					{parsedVinInfo.market ? i18n.t(parsedVinInfo.market) : ''}
+				</div>
 			{/if}
 			{#if parsedVinInfo.year}
-				<div class="col-span-4 text-sm md:col-span-1">Рік випуску</div>
+				<div class="col-span-4 text-sm md:col-span-1">{i18n.t('manufacturingYear')}</div>
 				<div class="col-span-4 px-2 font-bold md:col-span-3">{parsedVinInfo.year}</div>
 			{/if}
 			{#if parsedVinInfo.type}
-				<div class="col-span-4 text-sm md:col-span-1">Батарея і двигун</div>
-				<div class="col-span-4 px-2 font-bold md:col-span-3">{parsedVinInfo.type}</div>
+				<div class="col-span-4 text-sm md:col-span-1">{i18n.t('batteryAndMotor')}</div>
+				<div class="col-span-4 px-2 font-bold md:col-span-3">{i18n.t(parsedVinInfo.type)}</div>
 			{/if}
 			{#if parsedVinInfo.productionPlant}
-				<div class="col-span-4 text-sm md:col-span-1">Завод</div>
-				<div class="col-span-4 px-2 font-bold md:col-span-3">{parsedVinInfo.productionPlant}</div>
+				<div class="col-span-4 text-sm md:col-span-1">{i18n.t('factory')}</div>
+				<div class="col-span-4 px-2 font-bold md:col-span-3">
+					{i18n.t(parsedVinInfo.productionPlant)}
+				</div>
 			{/if}
 			{#if parsedVinInfo.sequenceNumber}
-				<div class="col-span-4 text-sm md:col-span-1">Порядковий номер</div>
-				<div class="col-span-4 px-2 font-bold md:col-span-3">{parsedVinInfo.sequenceNumber}</div>
+				<div class="col-span-4 text-sm md:col-span-1">{i18n.t('sequenceNumber')}</div>
+				<div class="col-span-4 px-2 font-bold md:col-span-3">
+					{i18n.t(parsedVinInfo.sequenceNumber)}
+				</div>
 			{/if}
 		</div>
 	{/if}

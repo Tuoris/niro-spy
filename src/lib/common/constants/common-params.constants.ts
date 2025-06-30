@@ -184,8 +184,8 @@ export const PARAMS_CONFIG = [
 		format: (value: number) => value.toFixed()
 	},
 	{
-		name: 'averageConsumption',
-		field: PARAM_FIELDS.AVERAGE_CONSUMPTION,
+		name: 'averageLifetimeConsumption',
+		field: PARAM_FIELDS.AVERAGE_LIFETIME_CONSUMPTION,
 		exampleValue: 18,
 		range: [0, 40],
 		unit: UNIT_LABELS.KILOWATT_HOUR_PER_100_KILOMETERS,

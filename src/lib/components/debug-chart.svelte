@@ -12,6 +12,7 @@
 		unsignedIntFromBytes
 	} from '$lib/elm-device/parsers/elm-parser.utils';
 	import ByteDebugChart from './byte-debug-chart.svelte';
+	import { i18n } from '$lib/i18n/i18n';
 
 	const {
 		selectedValueTimeline
@@ -80,7 +81,21 @@
 			formatter: (params) => {
 				const seriesParams = params[0];
 				const [timestamp, value, bytes] = seriesParams.data;
-				return `<strong>${new Date(timestamp).toLocaleString()}</strong><br/>Десяткове число: ${value}<br/>Десяткове число зі знаком: ${signedIntFromBytes(bytes)}<br/>Температура: ${value / 2 - 40}°C<br/>Шістнадцяткове число: ${bytes}<br/>Біти: ${bytes.map((byte) => unsignedIntFromBytes(byte).toString(2).padStart(8, '0')).join('')}`;
+
+				const displayValues = [
+					i18n.t('selected') + ' : ' + bytes.join(','),
+					i18n.t('decimal') + ' : ' + value,
+					i18n.t('decimalSigned') + ' : ' + signedIntFromBytes(bytes),
+					i18n.t('temperature') + ' : ' + (value / 2 - 40) + '°C',
+					i18n.t('character') + ' : ' + String.fromCharCode(unsignedIntFromBytes(bytes)),
+					i18n.t('bits') +
+						' : ' +
+						bytes
+							.map((byte: string) => unsignedIntFromBytes(byte).toString(2).padStart(8, '0'))
+							.join('')
+				];
+
+				return `<strong>${new Date(timestamp).toLocaleString()}</strong><br/>${displayValues.join('<br>')}`;
 			}
 		},
 
@@ -144,8 +159,10 @@
 					onclick={() => {
 						selectedByteIndex = byteIndex;
 					}}
-					size="compact">Байт {byteIndex + 1}: {byte}</Button
+					size="compact"
 				>
+					{i18n.t('selectedByte', { byteIndex: byteIndex + 1, byte })}
+				</Button>
 			{/each}
 		</div>
 		<ByteDebugChart {selectedByteTimeline} />
