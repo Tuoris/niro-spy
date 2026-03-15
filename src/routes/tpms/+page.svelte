@@ -53,7 +53,7 @@
 				i18n
 			)}
 			<span class="text-sm">
-				{TPMS_PARAMS_CONFIG.find((config) => config.field == pressureField)?.unit}
+				{i18n.t(TPMS_PARAMS_CONFIG.find((config) => config.field == pressureField)?.unit || "")}
 			</span>
 
 			/
@@ -63,7 +63,7 @@
 				i18n
 			)}
 			<span class="text-sm">
-				{TPMS_PARAMS_CONFIG.find((config) => config.field == temperatureField)?.unit}
+				{i18n.t(TPMS_PARAMS_CONFIG.find((config) => config.field == temperatureField)?.unit || "")}
 			</span>
 		</div>
 	</div>
