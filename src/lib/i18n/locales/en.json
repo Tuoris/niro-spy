@@ -193,7 +193,8 @@
   "pricePerKm": "Price Per km",
   "energyDischargedPerTrip": "Energy Discharged Per Trip",
   "returnedByRegen": "Returned By Regen",
-  "calculatedBatteryCapacity": "Calculated Battery Capacity",
+  "calculatedBatteryCapacity": "Estimated maximum battery capacity",
+  "calculatedBatteryEnergyContent": "Estimated remaining battery capacity",
   "settings": "Settings",
   "useGeolocation": "Use geolocation",
   "clickOnCheckboxToUseGeolocation": "Click the checkbox to use",
@@ -213,5 +214,15 @@
   "packetPage": "Packet #{{page}}",
   "codeToCopy": "Code to copy",
   "selectedByte": "Byte {{byteIndex}}: {{byte}}",
-  "bit": "Bit"
+  "bit": "Bit",
+  "connectionCancelled": "The connection to the device has been canceled.",
+  "errorWithName": "Error: {{error}}",
+  "webBluetoothApiIsNotSupported": "The Web Bluetooth API is not supported by the browser. Please use Google Chrome or any browser with the Chromium engine.",
+  "efficiency": "Efficiency",
+  "calculatedSoh": "Estimated Battery Health (SOH)",
+  "calculatedSohInstructions": "To get estimated data discharge 10 kW·h or more.",
+  "goToCalculatedBatteryParams": "Go to calculated parameters (SOH/remaining energy)",
+  "reconnectToScanner": "Reconnect",
+  "disconnected": "Disconnected",
+  "invalid-vin": "Invalid VIN"
 }

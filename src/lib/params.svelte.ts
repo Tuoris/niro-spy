@@ -5,11 +5,13 @@ export type ParamValue = {
 	value: number;
 };
 
+export type ParamStateValues = Record<FieldType, ParamValue[]>
+
 const INITIAL_PARAM_VALUES_ENTRIES = Object.entries(PARAM_FIELDS).map(([_, param]) => [param, []]);
 export const INITIAL_PARAM_VALUES = Object.fromEntries(INITIAL_PARAM_VALUES_ENTRIES);
 
 export const paramsState = $state<{
-	values: Record<FieldType, ParamValue[]>;
+	values: ParamStateValues;
 	selectedParams: FieldType[];
 	recording: boolean;
 }>({

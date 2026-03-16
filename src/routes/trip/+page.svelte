@@ -6,11 +6,15 @@
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { i18n } from '$lib/i18n/i18n';
-	import { paramsState, type ParamValue } from '$lib/params.svelte';
+	import { paramsState, type ParamStateValues, type ParamValue } from '$lib/params.svelte';
 	import { settingsStore } from '$lib/settings.store.svelte';
 	import { downloadTripDataFile } from '$lib/trip-data';
-	import { time } from 'echarts';
 	import { RangeSlider } from 'svelte-range-slider-pips';
+
+	const NOMINAL_BATTER_VOLTAGE_64_KWH = 3.63 * 98;
+	const NOMINAL_BATTER_VOLTAGE_39_KWH = 3.63 * 90;
+	const NOMINAL_BATTER_CAPACITY_64_KWH = 64.8;
+	const NOMINAL_BATTER_CAPACITY_39_KWH = 39.2;
 
 	let recordingSliderValues = $state([0, 100]);
 	let recordingSliderStart = $derived(recordingSliderValues[0]);
@@ -326,38 +330,196 @@
 		return energyChargedPerTrip;
 	});
 
-	let calculatedBatteryCapacity = $derived.by(() => {
-		let socBms = paramsState.values[PARAM_FIELDS.SOC_BMS];
-		socBms = filterValuesWithSlider(socBms);
-		if (socBms.length < 2) {
-			return null;
+	const is64kwhModel = $derived.by(() => {
+		const cellVoltage98Values = paramsState.values[PARAM_FIELDS.CELL_VOLTAGE_98];
+
+		if (!cellVoltage98Values.length) {
+			// fallback to 64 kWh model
+			return true;
 		}
 
-		const socChange = socBms[0].value - socBms[socBms.length - 1].value;
-
-		let discharged = paramsState.values[PARAM_FIELDS.CUMULATIVE_ENERGY_DISCHARGED];
-		discharged = filterValuesWithSlider(discharged);
-
-		const dischargedChange = discharged[discharged.length - 1].value - discharged[0].value;
-
-		let charged = paramsState.values[PARAM_FIELDS.CUMULATIVE_ENERGY_CHARGED];
-		charged = filterValuesWithSlider(charged);
-
-		const chargedChange = charged[charged.length - 1].value - charged[0].value;
-
-		const energyChange = dischargedChange - chargedChange;
-
-		const MIN_SOC_CHANGE = 10;
-		const MIN_ENERGY_CHANGE = 6.4;
-
-		const calculatedBatteryCapacity = energyChange / (socChange / 100);
-
-		if (Math.abs(socChange) < MIN_SOC_CHANGE || Math.abs(energyChange) < MIN_ENERGY_CHANGE) {
-			return null;
-		}
-
-		return calculatedBatteryCapacity;
+		return cellVoltage98Values[0].value !== 0;
 	});
+
+	const filterPowerValuesWhenNotOnCharging = (
+		powerValues: ParamValue[],
+		parkingIntervals: number[][]
+	) =>
+		powerValues.filter(({ timestamp, value }) => {
+			if (value > 0) {
+				return true;
+			}
+			for (const parkingInterval of parkingIntervals) {
+				if (timestamp >= parkingInterval[0] && timestamp <= parkingInterval[1]) {
+					return false;
+				}
+			}
+			return true;
+		});
+
+	const filterValuesWhenExternallyCharged = (values: ParamValue[], parkingIntervals: number[][]) =>
+		values.filter(({ timestamp, value }) => {
+			for (const parkingInterval of parkingIntervals) {
+				if (timestamp >= parkingInterval[0] && timestamp <= parkingInterval[1] && value < 0) {
+					return true;
+				}
+			}
+			return false;
+		});
+
+	const getDataForCapacityCalculation = (
+		paramsStateValues: ParamStateValues,
+		filterValueFunction: (values: ParamValue[]) => ParamValue[]
+	) => {
+		let socBms = paramsStateValues[PARAM_FIELDS.SOC_BMS];
+		socBms = filterValueFunction ? filterValueFunction(socBms) : socBms;
+
+		let dischargedAh = paramsStateValues[PARAM_FIELDS.CUMULATIVE_CAPACITY_DISCHARGED];
+		dischargedAh = filterValueFunction ? filterValueFunction(dischargedAh) : dischargedAh;
+
+		let chargedAh = paramsStateValues[PARAM_FIELDS.CUMULATIVE_CAPACITY_CHARGED];
+		chargedAh = filterValueFunction ? filterValueFunction(chargedAh) : chargedAh;
+
+		let power = paramsStateValues[PARAM_FIELDS.BATTERY_POWER];
+		power = filterValueFunction ? filterValueFunction(power) : power;
+
+		let currentGearValue = paramsStateValues[PARAM_FIELDS.GEAR];
+		currentGearValue = filterValueFunction
+			? filterValueFunction(currentGearValue)
+			: currentGearValue;
+
+		let isExternallyCharged = filterValuesWhenExternallyCharged(power, parkingIntervals).length;
+
+		return {
+			socBms: socBms,
+			dischargedAh: dischargedAh,
+			chargedAh: chargedAh,
+			power: power,
+			isExternallyCharged: isExternallyCharged
+		};
+	};
+
+	const calculateBatteryCapacityForSamplingRange = (
+		socBmsValues: ParamValue[],
+		dischargedAhValues: ParamValue[],
+		chargedAhValues: ParamValue[],
+		is64kwhModel: boolean,
+		startIndex = 0,
+		endIndex = 1
+	) => {
+		const socChange =
+			socBmsValues[startIndex].value - socBmsValues[socBmsValues.length - endIndex].value;
+		const dischargedAhChange =
+			dischargedAhValues[dischargedAhValues.length - endIndex].value -
+			dischargedAhValues[startIndex].value;
+		const chargedAhChange =
+			chargedAhValues[chargedAhValues.length - endIndex].value - chargedAhValues[startIndex].value;
+
+		const calculatedCapacityAh = (dischargedAhChange - chargedAhChange) / (socChange / 100);
+
+		const packVoltage = is64kwhModel
+			? NOMINAL_BATTER_VOLTAGE_64_KWH
+			: NOMINAL_BATTER_VOLTAGE_39_KWH;
+
+		return (calculatedCapacityAh * packVoltage) / 1000;
+	};
+	const roundToFraction = (value: number, numerator: number, denominator: number) =>
+		Math.round((value * denominator) / numerator) / (denominator / numerator);
+
+	const calculateBatteryCapacity = (
+		paramsStateValues: ParamStateValues,
+		is64kwhModel: boolean,
+		filterValueFunction: (values: ParamValue[]) => ParamValue[]
+	) => {
+		const {
+			socBms: socBmsValues,
+			dischargedAh: dischargedAhValues,
+			chargedAh: chargedAhValues,
+			power: powerValues
+		} = getDataForCapacityCalculation(paramsStateValues, filterValueFunction);
+
+		if (powerValues.length < 2) {
+			return null;
+		}
+
+		const averagePower = averageByTime(powerValues);
+		const firstPowerValue = powerValues[0];
+		const hoursPassed =
+			(powerValues[powerValues.length - 1].timestamp - firstPowerValue.timestamp) / 1000 / 60 / 60;
+
+		if ((averagePower * hoursPassed) / 1000 < 10) {
+			return null;
+		}
+
+		const samplesCount = 16;
+		const samplesCountThreshould = samplesCount * 1.5;
+		if (socBmsValues.length < samplesCountThreshould) {
+			return null;
+		}
+		const capacities = [];
+		for (let step = 0; step < samplesCount; step++) {
+			let startIndex = 0;
+			let endIndex = step + 1;
+			if (step >= Math.round(samplesCount / 2)) {
+				startIndex = step - Math.round(samplesCount / 2) + 1;
+				endIndex = 1;
+			}
+			const sampleCapacity = calculateBatteryCapacityForSamplingRange(
+				socBmsValues,
+				dischargedAhValues,
+				chargedAhValues,
+				is64kwhModel,
+				startIndex,
+				endIndex
+			);
+			capacities.push(sampleCapacity);
+		}
+		const uniqueRoundedCapacities = new Map();
+		for (const capacity of capacities) {
+			const roundedValue = roundToFraction(capacity, 1, 10);
+			uniqueRoundedCapacities.set(
+				roundedValue,
+				(uniqueRoundedCapacities.get(roundedValue) || 0) + 1
+			);
+		}
+		const numberOfCapacities = capacities.length;
+		let sum = 0;
+		for (const [value, count] of uniqueRoundedCapacities.entries()) {
+			sum += (value * count) / numberOfCapacities;
+		}
+		return sum;
+	};
+
+	let calculatedBatteryCapacity = $derived.by(() =>
+		calculateBatteryCapacity(paramsState.values, is64kwhModel, filterValuesWithSlider)
+	);
+
+	let calculatedSoh = $derived.by(() => {
+		if (!calculatedBatteryCapacity) {
+			return null;
+		}
+		const nominalCapacityKwh = is64kwhModel
+			? NOMINAL_BATTER_CAPACITY_64_KWH
+			: NOMINAL_BATTER_CAPACITY_39_KWH;
+
+		return (calculatedBatteryCapacity / nominalCapacityKwh) * 100;
+	});
+
+	const currentSocFromBms = $derived.by(() => {
+		let socValues = paramsState.values[PARAM_FIELDS.SOC_BMS];
+		socValues = filterValuesWithSlider(socValues);
+		if (socValues.length) {
+			return socValues[socValues.length - 1].value;
+		} else {
+			return null;
+		}
+	});
+
+	const calculatedCurrentBatteryEnergyContent = $derived.by(() =>
+		!calculatedBatteryCapacity || !currentSocFromBms
+			? null
+			: (calculatedBatteryCapacity * currentSocFromBms) / 100
+	);
 
 	const downloadData = () => downloadTripDataFile({ values: paramsState.values });
 
@@ -501,6 +663,9 @@
 		{@render valueCard(i18n.t('altitudeChange'), altitudeChange, i18n.t(UNIT_LABELS.METER))}
 		{@render valueCard(i18n.t('tripPrice'), tripPrice.toFixed(2), i18n.t('currency'))}
 		{@render valueCard(i18n.t('pricePerKm'), pricePerKm.toFixed(2), i18n.t('currency'))}
+		<div class="col-span-2 font-bold lg:col-span-4">
+			<div class="text-center font-bold">{i18n.t('efficiency')}</div>
+		</div>
 		{@render valueCard(
 			i18n.t('energyDischargedPerTrip'),
 			energyDischargedPerTrip !== null && energyChargedPerTrip !== null
@@ -517,9 +682,35 @@
 				: '-',
 			i18n.t(UNIT_LABELS.PERCENT)
 		)}
+		<div class="col-span-2 lg:col-span-4" id="calculated-battery-params">
+			<div class="text-center font-bold">{i18n.t('battery')}</div>
+			<div
+				class="flex items-center justify-center gap-2 px-2 text-sm dark:border-gray-800 dark:text-neutral-400"
+			>
+				<span class="icon-[mdi--information-outline]"></span>
+				<span>{i18n.t('calculatedSohInstructions')}</span>
+			</div>
+		</div>
+		{@render valueCard(
+			i18n.t('calculatedSoh'),
+			calculatedSoh !== null ? calculatedSoh.toFixed(1) : '-',
+			i18n.t(UNIT_LABELS.PERCENT)
+		)}
 		{@render valueCard(
 			i18n.t('calculatedBatteryCapacity'),
 			calculatedBatteryCapacity !== null ? calculatedBatteryCapacity.toFixed(1) : '-',
+			i18n.t(UNIT_LABELS.KILOWATT_HOUR)
+		)}
+		{@render valueCard(
+			i18n.t('socBms'),
+			currentSocFromBms !== null ? currentSocFromBms.toFixed(1) : '-',
+			i18n.t(UNIT_LABELS.PERCENT)
+		)}
+		{@render valueCard(
+			i18n.t('calculatedBatteryEnergyContent'),
+			calculatedCurrentBatteryEnergyContent !== null
+				? calculatedCurrentBatteryEnergyContent.toFixed(1)
+				: '-',
 			i18n.t(UNIT_LABELS.KILOWATT_HOUR)
 		)}
 	</div>

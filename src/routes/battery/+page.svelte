@@ -188,6 +188,12 @@
 			''
 		)}
 	</div>
+	<div>
+		<ButtonLink href="/trip#calculated-battery-params" variant="tertiary"
+			>{i18n.t('goToCalculatedBatteryParams')}
+			<span class="icon-[mdi--arrow-right] text-lg"></span></ButtonLink
+		>
+	</div>
 
 	<h2 class="text-center text-lg font-bold dark:text-neutral-400">Елементи</h2>
 	<div class="mx-auto max-w-2xl">

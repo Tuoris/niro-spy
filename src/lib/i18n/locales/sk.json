@@ -193,7 +193,8 @@
   "pricePerKm": "Cena 1 km",
   "energyDischargedPerTrip": "Celková spotrebovaná energia batérie",
   "returnedByRegen": "Vrátená do batérie rekuperáciou",
-  "calculatedBatteryCapacity": "Odhadovaná kapacita batérie",
+  "calculatedBatteryCapacity": "Odhadovaná maximálna kapacita batérie",
+  "calculatedBatteryEnergyContent": "Odhadovaná zostávajúca kapacita batérie",
   "settings": "Nastavenia",
   "useGeolocation": "Použiť geolokáciu",
   "clickOnCheckboxToUseGeolocation": "Kliknite na začiarkavacie políčko pre použitie",
@@ -213,5 +214,15 @@
   "packetPage": "Paket č. {{page}}",
   "codeToCopy": "Kód na kopírovanie",
   "selectedByte": "Bajt {{byteIndex}}: {{byte}}",
-  "bit": "Bit"
+  "bit": "Bit",
+  "connectionCancelled": "Pripojenie k zariadeniu bolo zrušené.",
+  "errorWithName": "Chyba: {{error}}",
+  "webBluetoothApiIsNotSupported": "Prehliadač nepodporuje rozhranie Web Bluetooth API. Použite Google Chrome alebo iné prehliadače s enginom Chromium.",
+  "efficiency": "Účinnosť",
+  "calculatedSoh": "Odhadovaný stav batérie (SOH)",
+  "calculatedSohInstructions": "Ak chcete získať odhadované údaje o vybíjaní 10 kW·h alebo viac.",
+  "goToCalculatedBatteryParams": "Prejdite na vypočítané parametre (SOH/zostávajúca energia)",
+  "reconnectToScanner": "Znovu pripojiť",
+  "disconnected": "Odpojené",
+  "invalid-vin": "Neplatné VIN číslo"
 }

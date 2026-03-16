@@ -193,7 +193,8 @@
   "pricePerKm": "km당 가격",
   "energyDischargedPerTrip": "주행당 소모 에너지",
   "returnedByRegen": "회생으로 회수된 에너지",
-  "calculatedBatteryCapacity": "계산된 배터리 용량",
+  "calculatedBatteryCapacity": "예상 최대 배터리 용량",
+  "calculatedBatteryEnergyContent": "예상 남은 배터리 용량",
   "settings": "설정",
   "useGeolocation": "지리적 위치 사용",
   "clickOnCheckboxToUseGeolocation": "체크박스를 클릭하여 사용",
@@ -213,5 +214,15 @@
   "packetPage": "패킷 번호{{페이지}}",
   "codeToCopy": "복사할 코드",
   "selectedByte": "바이트 {{byteIndex}}: {{byte}}",
-  "bit": "비트"
+  "bit": "비트",
+  "connectionCancelled": "기기 연결이 취소되었습니다.",
+  "errorWithName": "오류: {{error}}",
+  "webBluetoothApiIsNotSupported": "웹 블루투스 API는 브라우저에서 지원되지 않습니다. Google Chrome 또는 Chromium 엔진이 탑재된 다른 브라우저를 사용하세요.",
+  "efficiency": "효율",
+  "calculatedSoh": "예상 배터리 상태(SOH)",
+  "calculatedSohInstructions": "추정 데이터 배출량은 10kW·h 이상입니다.",
+  "goToCalculatedBatteryParams": "계산된 매개변수(SOH/잔여 에너지)로 이동하세요.",
+  "reconnectToScanner": "다시 연결",
+  "disconnected": "연결 끊김",
+  "invalid-vin": "잘못된 VIN"
 }
