@@ -59,6 +59,8 @@
 		<div class="h-6 text-center text-sm text-red-500">
 			{#if vinError}
 				{i18n.t('unableToRetrieveVinCode')}
+			{:else if !parsedVinInfo.isValidVin}
+				{i18n.t('invalidVin')}
 			{/if}
 		</div>
 		<Button onclick={checkVinCode}>{i18n.t('retrieveVinCode')}</Button>
@@ -75,7 +77,7 @@
 			{#if parsedVinInfo.model}
 				<div class="col-span-4 text-sm md:col-span-1">{i18n.t('model')}</div>
 				<div class="col-span-4 px-2 font-bold md:col-span-3">
-					{i18n.t(parsedVinInfo.model)}
+					{parsedVinInfo.model}
 					{parsedVinInfo.market ? i18n.t(parsedVinInfo.market) : ''}
 				</div>
 			{/if}
@@ -96,7 +98,7 @@
 			{#if parsedVinInfo.sequenceNumber}
 				<div class="col-span-4 text-sm md:col-span-1">{i18n.t('sequenceNumber')}</div>
 				<div class="col-span-4 px-2 font-bold md:col-span-3">
-					{i18n.t(parsedVinInfo.sequenceNumber)}
+					{parsedVinInfo.sequenceNumber}
 				</div>
 			{/if}
 		</div>

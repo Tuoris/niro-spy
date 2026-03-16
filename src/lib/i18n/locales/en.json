@@ -224,5 +224,5 @@
   "goToCalculatedBatteryParams": "Go to calculated parameters (SOH/remaining energy)",
   "reconnectToScanner": "Reconnect",
   "disconnected": "Disconnected",
-  "invalid-vin": "Invalid VIN"
+  "invalidVin": "Invalid VIN"
 }

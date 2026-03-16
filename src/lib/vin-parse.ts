@@ -86,11 +86,16 @@ export function vinParse(vin: string) {
 	} else if (vin[3] == 'C') {
 		model = 'Niro';
 	} else if (vin[3] == 'K') {
-		model = 'Kona';
-	} else {
+		if (['M', 'N', 'R'].includes(vin[4])) {
+			model = 'Ioniq 5';
+		} else {
+			model = 'Kona';
+		}
+	} else if (vin[3] === 'M') {
+		model = 'Ioniq 6';
 	}
 
-	const a: Record<string, number> = {
+	const letterToYear: Record<string, number> = {
 		A: 2010,
 		B: 2011,
 		C: 2012,
@@ -114,11 +119,11 @@ export function vinParse(vin: string) {
 		Y: 2030
 	};
 
-	const year = a[vin[9] as string];
+	const year = letterToYear[vin[9] as string];
 
 	let type = '';
 
-	if (vin[7] == 'E') {
+	if (vin[7] == 'E' && model !== 'Ioniq 5') {
 		type = MODEL_SPECS_LABELS.MODEL_39_KWH_80_KW;
 	} else if (vin[7] == 'G') {
 		type = MODEL_SPECS_LABELS.MODEL_64_KWH_150_KW;
@@ -140,6 +145,12 @@ export function vinParse(vin: string) {
 	}
 
 	let sequenceNumber = vin.slice(11, 17);
+
+	const isValidVin =
+		vin.length === 17 && market === MARKET_LABELS.FOR_THE_US_CANADA_AND_MEXICO_MARKET
+			? validateNorthAmericanVin(vin)
+			: true;
+
 	return {
 		manufacturer,
 		market,
@@ -147,6 +158,69 @@ export function vinParse(vin: string) {
 		year,
 		type,
 		productionPlant,
-		sequenceNumber
+		sequenceNumber,
+		isValidVin
 	} as const;
+}
+
+function validateNorthAmericanVin(vin: string) {
+	const vinCharacterToNumber: Record<string, number> = {
+		1: 1,
+		2: 2,
+		3: 3,
+		4: 4,
+		5: 5,
+		6: 6,
+		7: 7,
+		8: 8,
+		9: 9,
+		0: 0,
+		A: 1,
+		B: 2,
+		C: 3,
+		D: 4,
+		E: 5,
+		F: 6,
+		G: 7,
+		H: 8,
+		J: 1,
+		K: 2,
+		L: 3,
+		M: 4,
+		N: 5,
+		P: 7,
+		R: 9,
+		S: 2,
+		T: 3,
+		U: 4,
+		V: 5,
+		W: 6,
+		X: 7,
+		Y: 8,
+		Z: 9
+	};
+
+	const characterIndexToWeight = [8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2];
+
+	const sum = Array.from(vin)
+		.map((character, index) => vinCharacterToNumber[character] * characterIndexToWeight[index])
+		.reduce((accumulator, value) => accumulator + value, 0);
+
+	const checkDigitToCharacter: Record<number, string> = {
+		0: '0',
+		1: '1',
+		2: '2',
+		3: '3',
+		4: '4',
+		5: '5',
+		6: '6',
+		7: '7',
+		8: '8',
+		9: '9',
+		10: 'X'
+	};
+
+	const checkDigit = sum % 11;
+
+	return checkDigitToCharacter[checkDigit] === vin[8];
 }

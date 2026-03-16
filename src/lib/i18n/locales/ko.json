@@ -224,5 +224,5 @@
   "goToCalculatedBatteryParams": "계산된 매개변수(SOH/잔여 에너지)로 이동하세요.",
   "reconnectToScanner": "다시 연결",
   "disconnected": "연결 끊김",
-  "invalid-vin": "잘못된 VIN"
+  "invalidVin": "잘못된 VIN"
 }
