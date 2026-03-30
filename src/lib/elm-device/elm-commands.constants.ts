@@ -12,6 +12,10 @@ export const COMMANDS = {
 		payload: 'AT WS',
 		responseParser: obdParsers.defaultParser
 	},
+	SET_PROTOCOL_6: {
+		payload: 'AT SP 6',
+		responseParser: obdParsers.defaultParser
+	},
 	ECHO_OFF: {
 		payload: 'AT E 0',
 		responseParser: obdParsers.defaultParser

@@ -78,14 +78,31 @@ export async function connect() {
 	}
 
 	bluetoothState.serialConnectionStatus = 'connected';
+	webBluetoothSerialDevice.addDisconnectHandler((event) => {
+		bluetoothState.serialConnectionStatus = 'disconnected';
+		bluetoothState.bluetoothError = '';
+		bluetoothState.elmDeviceStatus = 'idle';
+		bluetoothState.heartbeat = 0;
+		bluetoothState.lastCommandTime = 0;
+		bluetoothState.stopPollingCommand = false;
+	});
 
 	bluetoothState.elmDeviceStatus = 'initializing';
 	try {
-		await elmDevice.sendCommand(COMMANDS.WARM_START);
-		await elmDevice.sendCommand(COMMANDS.ECHO_OFF);
-		await elmDevice.sendCommand(COMMANDS.EXTEND_WAIT_TIMEOUT);
-		await elmDevice.sendCommand(COMMANDS.ALLOW_LONG_OBD2_RESPONSES);
-		await elmDevice.sendCommand(COMMANDS.PIDS_SUPPORTED);
+		for (const command of [
+			COMMANDS.WARM_START,
+			COMMANDS.ECHO_OFF,
+			COMMANDS.SET_PROTOCOL_6,
+			COMMANDS.EXTEND_WAIT_TIMEOUT,
+			COMMANDS.ALLOW_LONG_OBD2_RESPONSES,
+			COMMANDS.PIDS_SUPPORTED,
+		]) {
+			if (bluetoothState.serialConnectionStatus === 'connected') {
+				await elmDevice.sendCommand(command);
+			} else {
+				throw Error('Disconnected')
+			}
+		}
 		bluetoothState.elmDeviceStatus = 'ready';
 	} catch {
 		bluetoothState.elmDeviceStatus = 'error';
@@ -156,6 +173,14 @@ export async function startDataReading() {
 				break;
 			}
 
+			const isConnected = webBluetoothSerialDevice.isConnected;
+
+			if (!isConnected) {
+				stopPollingGeolocation();
+				webBluetoothSerialDevice.cleanUp();
+				return;
+			}
+
 			try {
 				const response = await elmDevice.sendCommand(command);
 
@@ -179,7 +204,11 @@ export async function startDataReading() {
 				const end = new Date().valueOf();
 				bluetoothState.lastCommandTime = end - start;
 				start = end;
-			} catch {}
+			} catch (error) {
+				console.log('Error in data reading loop:', error);
+				await new Promise((resolve) => setTimeout(() => resolve(''), 1000))
+				return;
+			}
 		}
 
 		const cumulativeEnergyDischargedValues =

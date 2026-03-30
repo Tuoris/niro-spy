@@ -29,10 +29,10 @@ export class WebBluetoothSerial {
 	}
 
 	async connect() {
-		this.log('Запит будь-якого пристрою Bluetooth, який підтримує сервіс ELM327...');
+		this.log('Request any Bluetooth device that supports ELM327 service...');
 
 		if (!this.checkWebBluetoothApiAvailable()) {
-			this.log('Web Bluetooth API не підтримується браузером.', 'error');
+			this.log('Web Bluetooth API is not supported by the browser.', 'error');
 			return {
 				isConnected: this.isConnected,
 				error: `Web Bluetooth API не підтримується браузером.`
@@ -45,9 +45,10 @@ export class WebBluetoothSerial {
 				optionalServices: CONFIGS.map((config) => config.serviceUuid)
 			});
 
-			this.log(`Запит пристрою: ${device.name} (${device.id})`);
+			this.log(`Requesting device: ${device.name} (${device.id})`);
 			this.bluetoothDevice = device;
 			const isConnected = await this.connectAndSetupBluetoothSerialDevice();
+			this.bluetoothDevice.addEventListener('gattserverdisconnected', () => this.cleanUp())
 			return { isConnected, error: '' };
 		} catch (error) {
 			const errorMessage = `${error}`.includes('NotFoundError')
@@ -58,14 +59,20 @@ export class WebBluetoothSerial {
 		}
 	}
 
+	addDisconnectHandler(handler: (event: Event) => void) {
+		if (this.bluetoothDevice) {
+			this.bluetoothDevice.addEventListener('gattserverdisconnected', handler)
+		}
+	}
+
 	async connectAndSetupBluetoothSerialDevice() {
 		if (!this.bluetoothDevice || !this.bluetoothDevice.gatt) {
 			return this.isConnected;
 		}
 
 		const server = await this.bluetoothDevice.gatt.connect();
-		this.log('Сервер GATT підключено.');
-		this.log('Отримання сервісу пристрою...');
+		this.log('GATT server connected.');
+		this.log('Getting device service...');
 
 		let service;
 		let validConfig;
@@ -73,14 +80,14 @@ export class WebBluetoothSerial {
 			try {
 				service = await server.getPrimaryService(config.serviceUuid);
 				validConfig = config;
-				this.log('Сервіс знайдено, отримання характеристики (джерела даних)...');
+				this.log('Service found, getting characteristics (data sources)...');
 			} catch {
-				this.log(`Сервіс ${config.serviceUuid} не підтримується...`);
+				this.log(`Service ${config.serviceUuid} is not supported...`);
 			}
 		}
 
 		if (!service || !validConfig) {
-			this.log('Пристрій не підтримує жодного з профілів комунікації.', 'error');
+			this.log('The device does not support any of the communication profiles.', 'error');
 			return this.isConnected;
 		}
 
@@ -93,17 +100,17 @@ export class WebBluetoothSerial {
 			this.writeCharacteristic = this.readCharacteristic;
 		}
 
-		this.log(`Знайдено Read Характеристику: ${this.readCharacteristic.uuid}`);
-		this.log(`Знайдено Write Характеристику: ${this.writeCharacteristic.uuid}`);
+		this.log(`Found Read Characteristic: ${this.readCharacteristic.uuid}`);
+		this.log(`Found Write Characteristic: ${this.writeCharacteristic.uuid}`);
 
-		this.log('Створення підписки на отримання відповідей.');
+		this.log('Creating a subscription to receive data...');
 		this.readCharacteristic.addEventListener('characteristicvaluechanged', () => {
 			const rawValue = this.readCharacteristic?.value || EMPTY_DATA_VIEW;
 			this.receiveValue(rawValue);
 		});
 		await this.readCharacteristic.startNotifications();
 
-		this.log('Підписку створено - готовий до роботи.');
+		this.log('Subscribed - ready to received data.');
 
 		this.isConnected = true;
 		return this.isConnected;
@@ -115,7 +122,7 @@ export class WebBluetoothSerial {
 
 	receiveValue(rawValue: DataView) {
 		const value = new TextDecoder().decode(rawValue).trim();
-		this.log(`Отримано: ${value}`);
+		this.log(`Received: ${value}`);
 
 		this.receiveBuffer += value;
 
@@ -127,9 +134,9 @@ export class WebBluetoothSerial {
 	resolveReceivedValue(value: string) {
 		if (this.commandTimeStart) {
 			const commandTime = new Date().valueOf() - this.commandTimeStart;
-			this.log(`Час виконання: ${commandTime} мілісекунд.`);
+			this.log(`Execution time: ${commandTime} milliseconds.`);
 		} else {
-			console.warn('Отримано результат без початкового часу виконання.');
+			console.warn('Data received without the initial time.');
 		}
 
 		if (this.responseResolve) {
@@ -143,16 +150,16 @@ export class WebBluetoothSerial {
 	pendingCommandPromise: Promise<string> | null = null;
 
 	async sendData(data: string) {
-		if (!this.writeCharacteristic) {
-			this.log(`Спроба надіслати команду: ${data} - відсутнє підключення.`, 'error');
+		if (!this.writeCharacteristic || !this.isConnected) {
+			this.log(`Attempting to send command: ${data} - no connection.`, 'error');
 			return;
 		}
 
 		if (this.pendingCommandPromise) {
-			this.log('Очікую на відповідь на попередню команду...');
+			this.log('Waiting for a response to the previous command...');
 			const timeout = setTimeout(() => {
 				this.log(
-					'Відповідь від попередньої команди не отримано протягом 1 секунди - її буде скасовано!',
+					'The response from the previous command was not received within 1 second - it will be canceled!',
 					'error'
 				);
 				this.resolveReceivedValue('');
@@ -162,10 +169,11 @@ export class WebBluetoothSerial {
 		}
 
 		if (data) {
-			this.log(`Надсилання: ${data}`);
+			this.log(`Sending: ${data}`);
 			this.commandTimeStart = new Date().valueOf();
-			this.writeCharacteristic.writeValue(new TextEncoder().encode(data + '\r'));
+			await this.writeCharacteristic.writeValueWithoutResponse(new TextEncoder().encode(data + '\r'));
 			this.currentCommand = data.trim();
+			this.log('Sent, waiting for response...')
 		}
 
 		this.pendingCommandPromise = new Promise((resolve) => {
@@ -173,5 +181,14 @@ export class WebBluetoothSerial {
 		});
 
 		return this.pendingCommandPromise;
+	}
+
+	cleanUp() {
+		try {
+			this.resolveReceivedValue('>');
+			this.isConnected = false;
+		} catch (error) {
+			console.warn('Error during cleanUp', error);
+		}
 	}
 }

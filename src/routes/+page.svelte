@@ -23,7 +23,8 @@
 		}
 	};
 
-	let elmDeviceStatus = $derived(bluetoothState.elmDeviceStatus);
+	let serialConnectionStatus = $derived.by(() => bluetoothState.serialConnectionStatus);
+	let elmDeviceStatus = $derived.by(() => bluetoothState.elmDeviceStatus);
 
 	const localesConfig = [
 		{
@@ -78,7 +79,9 @@
 <div class="flex grow items-center justify-center">
 	<div class="flex min-w-48 flex-col items-stretch gap-2">
 		<Button variant="primary" onclick={connectAndStartDataReading}
-			>{i18n.t('connectToScanner')}</Button
+			>{serialConnectionStatus === 'idle'
+				? i18n.t('connectToScanner')
+				: i18n.t('reconnectToScanner')}</Button
 		>
 		<hr />
 		<ButtonLink href="all-parameters" variant="secondary" disabled={!routesEnabled}
