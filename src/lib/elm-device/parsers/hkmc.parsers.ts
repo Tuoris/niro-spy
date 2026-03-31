@@ -74,7 +74,7 @@ export function parseHkmcEvBmsInfo01(value: string) {
 		(cumulativeEnergyDischarged / cumulativeCapacityDischarged) * 1000;
 
 	const operationalTimeSeconds = unsignedIntFromBytes(separatePacketBytes[7].slice(1, 5));
-	const operationalTimeHours = operationalTimeSeconds / 60;
+	const operationalTimeHours = operationalTimeSeconds / 60 / 60;
 
 	// DC Charging: 00001001
 	const bmsIgnition = unsignedIntFromBytes(separatePacketBytes[7][5]);
@@ -495,21 +495,27 @@ export const sampleParseHkmcEvBmsInfo06 = `027 \r0: 62 01 06 FF FF FF1: FF 14 00
 export function parseHkmcEvBmsInfo06(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
 
+	if (separatePacketBytes.length === 4) {
+		const coolingWaterTemp = signedIntFromBytes(separatePacketBytes[1][1]);
+		const bmsMode = unsignedIntFromBytes(separatePacketBytes[2][4]);
+
+		return {
+			coolingWaterTemp,
+			bmsMode,
+		};
+	}
+
 	const expectedResponseLines = 6;
 	if (separatePacketBytes.length !== expectedResponseLines) {
 		return PARSING_ERROR_RESPONSE;
 	}
 
 	const coolingWaterTemp = signedIntFromBytes(separatePacketBytes[1][1]);
-	const unknownTempC = signedIntFromBytes(separatePacketBytes[1][3]);
 	const bmsMode = unsignedIntFromBytes(separatePacketBytes[2][4]);
-	const unknownTempD = signedIntFromBytes(separatePacketBytes[3][3]);
 
 	return {
 		coolingWaterTemp,
-		unknownTempC,
 		bmsMode,
-		unknownTempD
 	};
 }
 
@@ -949,6 +955,18 @@ export const sample02HkmcEvObcInfo01 = `03A \r
 export function parseHkmcEvObcInfo01(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
 
+	if (separatePacketBytes.length === 4) {
+		// MY2020+ (?)
+		const obcTemperatureA = unsignedIntFromBytes(separatePacketBytes[2][2]) / 2 - 40;
+		const obcTemperatureB = unsignedIntFromBytes(separatePacketBytes[2][4]) / 2 - 40;
+		const numberOfAcChargingSessions = unsignedIntFromBytes(separatePacketBytes[3].slice(0, 2));
+		return {
+			obcTemperatureA,
+			obcTemperatureB,
+			numberOfAcChargingSessions
+		};
+	}
+
 	const expectedResponseLines = 9;
 	if (separatePacketBytes.length !== expectedResponseLines) {
 		return PARSING_ERROR_RESPONSE;
@@ -1010,6 +1028,14 @@ export const sampleHkmcEvObcInfo03 = `031 \r
 
 export function parseHkmcEvObcInfo03(value: string) {
 	const separatePacketBytes = parseUdsInfoBuffer(value);
+
+	if (separatePacketBytes.length === 9) {
+		// MY2020+ (?)
+		const acChargingCurrent = unsignedIntFromBytes(separatePacketBytes[1].slice(0, 2)) / 100;
+		return {
+			acChargingCurrent
+		};
+	}
 
 	const expectedResponseLines = 8;
 	if (separatePacketBytes.length !== expectedResponseLines) {

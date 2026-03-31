@@ -226,5 +226,9 @@
   "reconnectToScanner": "З'єднати ще раз",
   "disconnected": "Роз'єднано",
   "invalidVin": "Недійсний VIN-код",
-  "vinPageHint": "Введіть VIN-код для перевірки вручну або отримайте його з блоку VMCU"
+  "vinPageHint": "Введіть VIN-код для перевірки вручну або отримайте його з блоку VMCU",
+  "saveScannerHint": "Зберегти сканер для наступного підключення?",
+  "neverAskAgain": "Ні, і більше не питати",
+  "defaultScannerName": "Назва сканеру за замовчуванням",
+  "askAbountSavingDefaultScanner": "Питати про збереження сканера за замовчуванням"
 }

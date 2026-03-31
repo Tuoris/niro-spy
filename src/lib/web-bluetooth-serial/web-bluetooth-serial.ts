@@ -28,7 +28,7 @@ export class WebBluetoothSerial {
 		return Boolean(navigator?.bluetooth) && navigator.bluetooth.requestDevice;
 	}
 
-	async connect() {
+	async connect(defaultScannerName = '') {
 		this.log('Request any Bluetooth device that supports ELM327 service...');
 
 		if (!this.checkWebBluetoothApiAvailable()) {
@@ -41,15 +41,18 @@ export class WebBluetoothSerial {
 
 		try {
 			const device = await navigator.bluetooth.requestDevice({
-				acceptAllDevices: true,
+				...(defaultScannerName ? {
+					filters: [{ name: defaultScannerName }],
+				} : { acceptAllDevices: true, }),
 				optionalServices: CONFIGS.map((config) => config.serviceUuid)
 			});
 
-			this.log(`Requesting device: ${device.name} (${device.id})`);
+			const scannerName = device.name;
+			this.log(`Requesting device: ${scannerName} (${device.id})`);
 			this.bluetoothDevice = device;
 			const isConnected = await this.connectAndSetupBluetoothSerialDevice();
 			this.bluetoothDevice.addEventListener('gattserverdisconnected', () => this.cleanUp())
-			return { isConnected, error: null };
+			return { isConnected, scannerName, error: null };
 		} catch (error) {
 			this.log(`${error}`, 'error');
 			const errorMessage = `${error}`.includes('NotFoundError')

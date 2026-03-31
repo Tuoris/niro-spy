@@ -90,6 +90,7 @@
   "dcOutputVoltageObc": "Charger (OBC) Output Voltage",
   "dcOutputCurrentObc": "Charger (OBC) Output Current",
   "batteryVoltageObc": "Battery Voltage (OBC)",
+  "numberOfDcChargingSessions": "[TEST] Number of DC fast charging sessions",
   "numberOfAcChargingSessions": "[TEST] Number of AC Charging Sessions",
   "numberOfSuccessfulAcChargingSessions": "[TEST] Number of Successful AC Charging Sessions",
   "acChargingCurrent": "Charger (OBC) Current Consumption",
@@ -225,5 +226,9 @@
   "reconnectToScanner": "Reconnect",
   "disconnected": "Disconnected",
   "invalidVin": "Invalid VIN",
-  "vinPageHint": "Enter the VIN code manually or get it from the VMCU unit"
+  "vinPageHint": "Enter the VIN code manually or get it from the VMCU unit",
+  "saveScannerHint": "Save scanner for next connection?",
+  "neverAskAgain": "No and don't ask again",
+  "defaultScannerName": "Default scanner name",
+  "askAbountSavingDefaultScanner": "Ask to save the default scanner"
 }

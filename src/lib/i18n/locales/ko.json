@@ -90,6 +90,7 @@
   "dcOutputVoltageObc": "충전기(OBC) 출력 전압",
   "dcOutputCurrentObc": "충전기(OBC) 출력 전류",
   "batteryVoltageObc": "배터리 전압(OBC)",
+  "numberOfDcChargingSessions": "[테스트] DC 고속 충전 횟수",
   "numberOfAcChargingSessions": "[테스트] AC 충전 세션 수",
   "numberOfSuccessfulAcChargingSessions": "[테스트] AC 충전 세션 성공 횟수",
   "acChargingCurrent": "충전기(OBC) 전류 소비량",
@@ -225,5 +226,9 @@
   "reconnectToScanner": "다시 연결",
   "disconnected": "연결 끊김",
   "invalidVin": "잘못된 VIN",
-  "vinPageHint": "차량 식별 번호(VIN)를 수동으로 입력하거나 VMCU 장치에서 확인하세요."
+  "vinPageHint": "차량 식별 번호(VIN)를 수동으로 입력하거나 VMCU 장치에서 확인하세요.",
+  "saveScannerHint": "다음 연결을 위해 스캐너 이름을 저장하시겠습니까?",
+  "neverAskAgain": "아니요, 다시 묻지 마세요.",
+  "defaultScannerName": "기본 스캐너 이름",
+  "askAbountSavingDefaultScanner": "기본 스캐너를 저장할지 묻습니다."
 }

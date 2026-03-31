@@ -90,6 +90,7 @@
   "dcOutputVoltageObc": "Výstupné napätie nabíjačky",
   "dcOutputCurrentObc": "Výstupný prúd nabíjačky",
   "batteryVoltageObc": "Napätie batérie (OBC)",
+  "numberOfDcChargingSessions": "[TEST] Počet relácií rýchleho nabíjania jednosmerným prúdom",
   "numberOfAcChargingSessions": "[TEST] Počet nabíjaní AC",
   "numberOfSuccessfulAcChargingSessions": "[TEST] Počet úspešných nabíjaní AC",
   "acChargingCurrent": "Spotreba nabíjačky",
@@ -225,5 +226,9 @@
   "reconnectToScanner": "Znovu pripojiť",
   "disconnected": "Odpojené",
   "invalidVin": "Neplatné VIN číslo",
-  "vinPageHint": "Zadajte VIN kód manuálne alebo ho získajte z jednotky VMCU"
+  "vinPageHint": "Zadajte VIN kód manuálne alebo ho získajte z jednotky VMCU",
+  "saveScannerHint": "Uložiť skener pre ďalšie pripojenie? ",
+  "neverAskAgain": "Nie a už sa nepýtať",
+  "defaultScannerName": "Predvolený názov skenera",
+  "askAbountSavingDefaultScanner": "Požiadať o uloženie predvoleného skenera"
 }

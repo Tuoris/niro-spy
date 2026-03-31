@@ -3,7 +3,11 @@
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import { isInDemoMode, exitDemoMode, enterDemoMode } from '$lib/demo-mode.svelte';
 	import { i18n } from '$lib/i18n/i18n';
-	import { changeGeolocationEnabled, settingsStore } from '$lib/settings.store.svelte';
+	import {
+		changeGeolocationEnabled,
+		settingsStore,
+		settingsSaveToLocalStorage
+	} from '$lib/settings.store.svelte';
 
 	let geolocationEnabled = $derived(settingsStore.geolocationEnabled);
 
@@ -38,6 +42,8 @@
 			options
 		);
 	};
+
+	$effect(settingsSaveToLocalStorage);
 </script>
 
 <div class="h-full w-full p-2 dark:text-neutral-100">
@@ -76,6 +82,22 @@
 			<div>{i18n.t('pricePerKwh')}</div>
 			<div class="flex basis-24 justify-end border-l-1 border-neutral-600">
 				<input type="number" step="0.01" class="w-18 p-2" bind:value={settingsStore.priceOfKwh} />
+			</div>
+		</div>
+		<div class="flex items-center justify-between gap-2 border-b-1 border-neutral-600 p-2">
+			<div>{i18n.t('defaultScannerName')}</div>
+			<div class="flex basis-24 justify-end border-l-1 border-neutral-600">
+				<input type="text" class="w-18 p-2" bind:value={settingsStore.defaultScannerName} />
+			</div>
+		</div>
+		<div class="flex items-center justify-between gap-2 border-b-1 border-neutral-600 p-2">
+			<div>{i18n.t('askAbountSavingDefaultScanner')}</div>
+			<div class="basis-24 border-l-1 border-neutral-600 p-2 text-center">
+				<input
+					type="checkbox"
+					class="h-4 w-4"
+					bind:checked={settingsStore.askAboutSavingDefaultScanner}
+				/>
 			</div>
 		</div>
 	</div>

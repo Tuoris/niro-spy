@@ -8,7 +8,7 @@ import {
 } from './common/constants/common-params.constants';
 import { INITIAL_PARAM_VALUES, paramsState } from './params.svelte';
 import { pollGeolocation, stopPollingGeolocation } from './geolocation.svelte';
-import { getGeolocationSettingEnabled } from './settings.store.svelte';
+import { getGeolocationSettingEnabled, getDefaultScannerName } from './settings.store.svelte';
 import type { ElmResponseLoggerArgs } from './elm-device/elm-device.types';
 import { PARSING_ERROR_RESPONSE } from './elm-device/parsers/hkmc.parsers';
 import { MOCK_ELM_RESPONSES } from './common/constants/mock-elm-responses.constants';
@@ -20,6 +20,7 @@ initialElmResponses = {};
 
 export const bluetoothState = $state({
 	serialConnectionStatus: 'idle',
+	scannerName: '',
 	bluetoothError: null as BluetoothError,
 	elmDeviceStatus: 'idle',
 	heartbeat: 0,
@@ -73,7 +74,8 @@ export async function connect() {
 	}
 
 	bluetoothState.serialConnectionStatus = 'connecting';
-	const { isConnected, error } = await webBluetoothSerialDevice.connect();
+	const defaultScannerName = getDefaultScannerName()
+	const { isConnected, scannerName, error } = await webBluetoothSerialDevice.connect(defaultScannerName);
 	if (!isConnected) {
 		bluetoothState.serialConnectionStatus = 'error';
 		bluetoothState.bluetoothError = error;
@@ -81,6 +83,7 @@ export async function connect() {
 	}
 
 	bluetoothState.serialConnectionStatus = 'connected';
+	bluetoothState.scannerName = scannerName ?? '';
 	webBluetoothSerialDevice.addDisconnectHandler((event) => {
 		bluetoothState.serialConnectionStatus = 'disconnected';
 		bluetoothState.bluetoothError = null;

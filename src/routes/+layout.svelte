@@ -8,16 +8,47 @@
 	import NoSleep from 'nosleep.js';
 	import { onMount } from 'svelte';
 	import type { BluetoothError } from '$lib/common/types/common.types';
+	import Button from '$lib/components/button.svelte';
+	import { settingsStore, settingsSaveToLocalStorage } from '$lib/settings.store.svelte';
 
 	let serialConnectionStatus = $derived(bluetoothState.serialConnectionStatus);
 	let elmDeviceStatus = $derived(bluetoothState.elmDeviceStatus);
 	let bluetoothError = $derived(bluetoothState.bluetoothError);
+	let scannerName = $derived(bluetoothState.scannerName);
 	let lastCommandTime = $derived(bluetoothState.lastCommandTime);
 	let heartbeat = $derived.by(() => (bluetoothState.heartbeat % 3) + 1);
 
 	let { children } = $props();
 
-	let notifications: BluetoothError[] = $derived.by(() => (bluetoothError ? [bluetoothError] : []));
+	let errorNotifications: BluetoothError[] = $derived.by(() =>
+		bluetoothError ? [bluetoothError] : []
+	);
+
+	let hideNewScannerNotification = $state(false);
+	let shouldShowNewScannerNotification = $derived.by(() => {
+		return (
+			elmDeviceStatus === 'ready' &&
+			settingsStore.askAboutSavingDefaultScanner &&
+			scannerName !== settingsStore.defaultScannerName &&
+			!hideNewScannerNotification
+		);
+	});
+
+	const saveScannerName = () => {
+		hideNewScannerNotification = true;
+		settingsStore.defaultScannerName = scannerName;
+		settingsSaveToLocalStorage();
+	};
+
+	const discardSaveScannerName = () => {
+		hideNewScannerNotification = true;
+		settingsSaveToLocalStorage();
+	};
+
+	const discardAndDontAskAgainSaveScannerName = () => {
+		settingsStore.askAboutSavingDefaultScanner = false;
+		settingsSaveToLocalStorage();
+	};
 
 	const noSleep = new NoSleep();
 
@@ -48,11 +79,11 @@
 {#if i18n.isInitialized}
 	<div
 		class={[
-			'fixed right-0 bottom-0 z-10 flex flex-col gap-4 border-0',
-			notifications.length ? 'px-4 py-4' : ''
+			'fixed right-2 bottom-2 z-10 flex flex-col gap-4 border-0',
+			errorNotifications.length ? 'px-4 py-4' : ''
 		]}
 	>
-		{#each notifications as notification, index}
+		{#each errorNotifications as notification, index}
 			{#if notification}
 				<div
 					class="red pointer-events-auto flex rounded-sm border-2 border-l-8 border-red-600 bg-red-950 px-8 py-4 pl-4 font-bold"
@@ -66,6 +97,31 @@
 				</div>
 			{/if}
 		{/each}
+		{#if shouldShowNewScannerNotification}
+			<div
+				class="neutral pointer-events-auto flex rounded-sm border-2 border-l-8 border-neutral-600 bg-neutral-950 px-8 py-4 pl-4 font-bold"
+			>
+				<div class="flex items-center gap-4">
+					<span class="icon-[mdi--error-outline] text-2xl text-neutral-400"></span>
+					<div>
+						<p class="pb-4">{i18n.t('saveScannerHint')}</p>
+						<div class="flex items-center gap-2">
+							<Button size="compact" onclick={saveScannerName}
+								><span class="capitalize">{i18n.t('yes')}</span></Button
+							>
+							<Button size="compact" variant="tertiary" onclick={discardSaveScannerName}
+								><span class="capitalize">{i18n.t('no')}</span></Button
+							>
+							<Button
+								size="compact"
+								variant="tertiary"
+								onclick={discardAndDontAskAgainSaveScannerName}>{i18n.t('neverAskAgain')}</Button
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
 	</div>
 	<section class="flex h-full flex-col">
 		<main class="flex grow flex-col overflow-auto">
