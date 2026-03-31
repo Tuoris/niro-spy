@@ -224,5 +224,6 @@
   "goToCalculatedBatteryParams": "Prejdite na vypočítané parametre (SOH/zostávajúca energia)",
   "reconnectToScanner": "Znovu pripojiť",
   "disconnected": "Odpojené",
-  "invalidVin": "Neplatné VIN číslo"
+  "invalidVin": "Neplatné VIN číslo",
+  "vinPageHint": "Zadajte VIN kód manuálne alebo ho získajte z jednotky VMCU"
 }

@@ -225,5 +225,6 @@
   "goToCalculatedBatteryParams": "Перейти до розрахованих параметрів (SOH/залишкова енергія)",
   "reconnectToScanner": "З'єднати ще раз",
   "disconnected": "Роз'єднано",
-  "invalidVin": "Недійсний VIN-код"
+  "invalidVin": "Недійсний VIN-код",
+  "vinPageHint": "Введіть VIN-код для перевірки вручну або отримайте його з блоку VMCU"
 }

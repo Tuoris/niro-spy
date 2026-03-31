@@ -55,6 +55,10 @@
 	</div>
 
 	<div class="m-4 flex flex-col gap-4">
+		<div class="flex items-center gap-2 px-2 text-sm dark:border-gray-800 dark:text-neutral-400">
+			<span class="icon-[mdi--information-outline]"></span>
+			<span>{i18n.t('vinPageHint')}</span>
+		</div>
 		<input
 			bind:value={vinCode}
 			class={[

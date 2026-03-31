@@ -224,5 +224,6 @@
   "goToCalculatedBatteryParams": "Go to calculated parameters (SOH/remaining energy)",
   "reconnectToScanner": "Reconnect",
   "disconnected": "Disconnected",
-  "invalidVin": "Invalid VIN"
+  "invalidVin": "Invalid VIN",
+  "vinPageHint": "Enter the VIN code manually or get it from the VMCU unit"
 }
