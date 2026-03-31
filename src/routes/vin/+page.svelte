@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { elmDevice, enterCommandMode, exitCommandMode } from '$lib/bluetooth.store.svelte';
+	import {
+		bluetoothState,
+		elmDevice,
+		enterCommandMode,
+		exitCommandMode
+	} from '$lib/bluetooth.store.svelte';
 	import ButtonLink from '$lib/components/button-link.svelte';
 	import Button from '$lib/components/button.svelte';
 	import { COMMANDS } from '$lib/elm-device/elm-commands.constants';
@@ -16,7 +21,7 @@
 	let vinError = $state(false);
 	let vinCodePending = $state(false);
 
-	const checkVinCode = async () => {
+	const retrieveAndCheckVinCode = async () => {
 		if (vinCodePending) {
 			return;
 		}
@@ -37,6 +42,8 @@
 	};
 
 	let parsedVinInfo = $derived.by(() => vinParse(vinCode));
+
+	const isRetrieveVinButtonEnabled = $derived.by(() => bluetoothState.elmDeviceStatus === 'ready');
 </script>
 
 <div class="h-full w-full p-2 dark:text-neutral-100">
@@ -63,7 +70,9 @@
 				{i18n.t('invalidVin')}
 			{/if}
 		</div>
-		<Button onclick={checkVinCode}>{i18n.t('retrieveVinCode')}</Button>
+		<Button disabled={!isRetrieveVinButtonEnabled} onclick={retrieveAndCheckVinCode}
+			>{i18n.t('retrieveVinCode')}</Button
+		>
 	</div>
 	{#if vinCode !== fakeVin}
 		<div class="mx-4 grid grid-cols-4">

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { bluetoothState } from '$lib/bluetooth.store.svelte';
 	import ButtonLink from '$lib/components/button-link.svelte';
+	import { isInDemoMode, exitDemoMode, enterDemoMode } from '$lib/demo-mode.svelte';
 	import { i18n } from '$lib/i18n/i18n';
 	import { changeGeolocationEnabled, settingsStore } from '$lib/settings.store.svelte';
 
@@ -78,11 +79,22 @@
 			</div>
 		</div>
 	</div>
-	<div class="mt-8 flex items-center justify-center">
+	<div class="mt-8 flex flex-col items-center justify-center gap-2">
 		<ButtonLink
 			href="/debugger"
 			onclick={() => (bluetoothState.isElmDebuggerEnabled = true)}
 			variant="secondary">{i18n.t('debugger')}</ButtonLink
+		>
+		<ButtonLink
+			href="/settings"
+			variant="tertiary"
+			onclick={isInDemoMode ? exitDemoMode : enterDemoMode}
+		>
+			{#if isInDemoMode}
+				{i18n.t('exitDemoMode')}
+			{:else}
+				{i18n.t('demoMode')}
+			{/if}</ButtonLink
 		>
 	</div>
 </div>

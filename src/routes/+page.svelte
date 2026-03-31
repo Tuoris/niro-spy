@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { enterDemoMode, exitDemoMode, isInDemoMode } from '$lib/demo-mode.svelte';
+	import { isInDemoMode } from '$lib/demo-mode.svelte';
 	import {
 		connect as realConnect,
 		mockConnect,
@@ -93,15 +93,8 @@
 		<ButtonLink href="/tpms" variant="secondary" disabled={!routesEnabled}>
 			{i18n.t('tpms')}</ButtonLink
 		>
+		<hr />
 		<ButtonLink href="/vin" variant="secondary">VIN</ButtonLink>
 		<ButtonLink href="/trip" variant="secondary">{i18n.t('trip')}</ButtonLink>
-		<hr />
-		<ButtonLink href="/" variant="tertiary" onclick={isInDemoMode ? exitDemoMode : enterDemoMode}>
-			{#if isInDemoMode}
-				{i18n.t('exitDemoMode')}
-			{:else}
-				{i18n.t('demoMode')}
-			{/if}</ButtonLink
-		>
 	</div>
 </div>
