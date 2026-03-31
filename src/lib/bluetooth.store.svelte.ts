@@ -126,7 +126,7 @@ export async function mockConnect() {
 
 export async function startDataReading() {
 	bluetoothState.stopPollingCommand = false;
-	paramsState.values = INITIAL_PARAM_VALUES;
+	// paramsState.values = INITIAL_PARAM_VALUES;
 	paramsState.recording = false;
 
 	let start = new Date().valueOf();
