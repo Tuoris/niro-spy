@@ -31,7 +31,8 @@ export const PARAM_FIELDS = {
 	...AIRCON_FIELD_NAMES,
 	...OBC_FIELD_NAMES,
 	ALTITUDE_GPS: 'altitudeGps',
-	SPEED_GPS: 'speedGps'
+	SPEED_GPS: 'speedGps',
+	ELM_VOLTAGE: 'elmVoltage'
 } as const;
 
 export type FieldType = ObjectValues<typeof PARAM_FIELDS>;
@@ -210,5 +211,13 @@ export const PARAMS_CONFIG = [
 		range: [0, 8000],
 		unit: UNIT_LABELS.METER,
 		format: (value: number) => value.toFixed(1)
-	}
+	},
+	// {
+	// 	name: 'elmVoltage',
+	// 	field: PARAM_FIELDS.ELM_VOLTAGE,
+	// 	exampleValue: 12.2,
+	// 	range: [0, 16],
+	// 	unit: UNIT_LABELS.VOLT,
+	// 	format: (value: number) => value.toFixed(1)
+	// }
 ] as const;

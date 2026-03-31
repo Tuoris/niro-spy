@@ -33,6 +33,17 @@ export function defaultParser(value: string) {
 	return { value };
 }
 
+
+export function parseElmVoltage(value: string) {
+	const elmVoltage = parseFloat(value);
+
+	if (Number.isNaN(elmVoltage)) {
+		return {}
+	}
+
+	return { elmVoltage };
+}
+
 export function parseMonitorStatusSinceDtcsCleared(value: string) {
 	const separateBytes = value.split(' ');
 	const byteA = separateBytes[2];

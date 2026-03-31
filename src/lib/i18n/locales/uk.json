@@ -230,5 +230,6 @@
   "saveScannerHint": "Зберегти сканер для наступного підключення?",
   "neverAskAgain": "Ні, і більше не питати",
   "defaultScannerName": "Назва сканеру за замовчуванням",
-  "askAbountSavingDefaultScanner": "Питати про збереження сканера за замовчуванням"
+  "askAbountSavingDefaultScanner": "Питати про збереження сканера за замовчуванням",
+  "elmVoltage": "Напруга ELM327"
 }

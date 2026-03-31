@@ -28,6 +28,10 @@ export const COMMANDS = {
 		payload: 'AT AL',
 		responseParser: obdParsers.defaultParser
 	},
+	ELM_VOLTAGE: {
+		payload: 'AT RV',
+		responseParser: obdParsers.parseElmVoltage
+	},
 	VIN: {
 		payload: '0902',
 		responseParser: obdParsers.parseVINResponse

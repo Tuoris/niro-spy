@@ -230,5 +230,6 @@
   "saveScannerHint": "Save scanner for next connection?",
   "neverAskAgain": "No and don't ask again",
   "defaultScannerName": "Default scanner name",
-  "askAbountSavingDefaultScanner": "Ask to save the default scanner"
+  "askAbountSavingDefaultScanner": "Ask to save the default scanner",
+  "elmVoltage": "ELM327 voltage"
 }

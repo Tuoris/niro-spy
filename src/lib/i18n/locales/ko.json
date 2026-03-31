@@ -230,5 +230,6 @@
   "saveScannerHint": "다음 연결을 위해 스캐너 이름을 저장하시겠습니까?",
   "neverAskAgain": "아니요, 다시 묻지 마세요.",
   "defaultScannerName": "기본 스캐너 이름",
-  "askAbountSavingDefaultScanner": "기본 스캐너를 저장할지 묻습니다."
+  "askAbountSavingDefaultScanner": "기본 스캐너를 저장할지 묻습니다.",
+  "elmVoltage": "ELM327 전압"
 }

@@ -230,5 +230,6 @@
   "saveScannerHint": "Uložiť skener pre ďalšie pripojenie? ",
   "neverAskAgain": "Nie a už sa nepýtať",
   "defaultScannerName": "Predvolený názov skenera",
-  "askAbountSavingDefaultScanner": "Požiadať o uloženie predvoleného skenera"
+  "askAbountSavingDefaultScanner": "Požiadať o uloženie predvoleného skenera",
+  "elmVoltage": "Napätie ELM327"
 }
