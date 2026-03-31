@@ -7,6 +7,7 @@
 	import { i18n } from '$lib/i18n/i18n';
 	import NoSleep from 'nosleep.js';
 	import { onMount } from 'svelte';
+	import type { BluetoothError } from '$lib/common/types/common.types';
 
 	let serialConnectionStatus = $derived(bluetoothState.serialConnectionStatus);
 	let elmDeviceStatus = $derived(bluetoothState.elmDeviceStatus);
@@ -16,7 +17,7 @@
 
 	let { children } = $props();
 
-	let notifications: string[] = $derived.by(() => (bluetoothError ? [bluetoothError] : []));
+	let notifications: BluetoothError[] = $derived.by(() => (bluetoothError ? [bluetoothError] : []));
 
 	const noSleep = new NoSleep();
 
@@ -52,14 +53,18 @@
 		]}
 	>
 		{#each notifications as notification, index}
-			<div
-				class="red pointer-events-auto flex rounded-sm border-2 border-l-8 border-red-600 bg-red-950 px-8 py-4 pl-4 font-bold"
-			>
-				<div class="flex items-center gap-4">
-					<span class="icon-[mdi--error-outline] text-2xl text-red-400"></span>
-					{notification}
+			{#if notification}
+				<div
+					class="red pointer-events-auto flex rounded-sm border-2 border-l-8 border-red-600 bg-red-950 px-8 py-4 pl-4 font-bold"
+				>
+					<div class="flex items-center gap-4">
+						<span class="icon-[mdi--error-outline] text-2xl text-red-400"></span>
+						{notification.params
+							? i18n.t(notification.message, notification.params)
+							: i18n.t(notification.message)}
+					</div>
 				</div>
-			</div>
+			{/if}
 		{/each}
 	</div>
 	<section class="flex h-full flex-col">

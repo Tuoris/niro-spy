@@ -13,13 +13,14 @@ import type { ElmResponseLoggerArgs } from './elm-device/elm-device.types';
 import { PARSING_ERROR_RESPONSE } from './elm-device/parsers/hkmc.parsers';
 import { MOCK_ELM_RESPONSES } from './common/constants/mock-elm-responses.constants';
 import { getCommandDebugKey } from './common/helpers/command.helpers';
+import type { BluetoothError } from './common/types/common.types';
 
 let initialElmResponses: typeof MOCK_ELM_RESPONSES = MOCK_ELM_RESPONSES;
 initialElmResponses = {};
 
 export const bluetoothState = $state({
 	serialConnectionStatus: 'idle',
-	bluetoothError: '',
+	bluetoothError: null as BluetoothError,
 	elmDeviceStatus: 'idle',
 	heartbeat: 0,
 	lastCommandTime: 0,
@@ -61,11 +62,13 @@ const webBluetoothSerialDevice = new WebBluetoothSerial();
 export const elmDevice = new ElmDevice(webBluetoothSerialDevice, appendElmResponse);
 
 export async function connect() {
-	bluetoothState.bluetoothError = '';
+	bluetoothState.bluetoothError = null;
 
 	if (!webBluetoothSerialDevice.checkWebBluetoothApiAvailable()) {
 		bluetoothState.serialConnectionStatus = 'error';
-		bluetoothState.bluetoothError = 'Web Bluetooth API не підтримується браузером.';
+		bluetoothState.bluetoothError = {
+			message: 'webBluetoothApiIsNotSupported'
+		};
 		return;
 	}
 
@@ -80,7 +83,7 @@ export async function connect() {
 	bluetoothState.serialConnectionStatus = 'connected';
 	webBluetoothSerialDevice.addDisconnectHandler((event) => {
 		bluetoothState.serialConnectionStatus = 'disconnected';
-		bluetoothState.bluetoothError = '';
+		bluetoothState.bluetoothError = null;
 		bluetoothState.elmDeviceStatus = 'idle';
 		bluetoothState.heartbeat = 0;
 		bluetoothState.lastCommandTime = 0;

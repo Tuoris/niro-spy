@@ -35,7 +35,7 @@ export class WebBluetoothSerial {
 			this.log('Web Bluetooth API is not supported by the browser.', 'error');
 			return {
 				isConnected: this.isConnected,
-				error: `Web Bluetooth API не підтримується браузером.`
+				error: { message: 'webBluetoothApiIsNotSupported' } as const
 			};
 		}
 
@@ -49,12 +49,19 @@ export class WebBluetoothSerial {
 			this.bluetoothDevice = device;
 			const isConnected = await this.connectAndSetupBluetoothSerialDevice();
 			this.bluetoothDevice.addEventListener('gattserverdisconnected', () => this.cleanUp())
-			return { isConnected, error: '' };
+			return { isConnected, error: null };
 		} catch (error) {
+			this.log(`${error}`, 'error');
 			const errorMessage = `${error}`.includes('NotFoundError')
-				? "З'єднання з пристроєм скасовано."
-				: `Помилка: ${error}`;
-			this.log(errorMessage, 'error');
+				? {
+					message: 'connectionCancelled'
+				} as const
+				: {
+					message: 'errorWithName',
+					params: {
+						error
+					}
+				} as const;
 			return { isConnected: this.isConnected, error: errorMessage };
 		}
 	}
